@@ -9,12 +9,12 @@
 
 int main(){
 
-float temp;
+//float temp;
 
 //Variables for printing date in right format
 char buffer[80];
 time_t rawtime;
-struct tm *info;
+//struct tm *info;
 
 srand(time(NULL));
 
@@ -22,10 +22,10 @@ srand(time(NULL));
 
 while(1){
 	time( &rawtime );
-	info = gmtime( &rawtime );
+	struct tm *info = gmtime( &rawtime );
 	strftime(buffer,80,"%a %d %b %Y %I:%M:%S %p %Z",info);
 
-	temp = ((double)rand() * (MAX-MIN))/(double)RAND_MAX+MIN;
+	float temp = ((double)rand() * (MAX-MIN))/(double)RAND_MAX+MIN;
 	printf("Temperature = %1.2f @ %s \n", temp, buffer);
 	fflush(stdout);
 	sleep(FREQUENCY);
