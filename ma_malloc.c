@@ -46,6 +46,7 @@ void ma_init() {
  * If the request is possible, the pointer to the first possible address byte (right after its header) in memory pool is returned.
  */
 void *ma_malloc(size tsize) {
+//printf("Requested size: %d\n", tsize);
 //Retrieve first free header and set status
     printf("ma_malloc called\n");
     mem_chunk_header* first;
@@ -77,7 +78,11 @@ void *ma_malloc(size tsize) {
     printf("Size of new header: %d\n", new_header->size);
     printf("Address of new header: %p\n", new_header);
 //Return pointer to allocated memory
-    return (byte*)((byte*)first + sizeof(mem_chunk_header));
+    byte* allocated_mem;
+    allocated_mem = (byte*)((byte*)first + sizeof(mem_chunk_header));
+    //printf("Address of allocated header: %p\n", first);
+    printf("Address of allocated memory: %p\n", allocated_mem);
+    return allocated_mem;
 }
 
 /**
@@ -106,18 +111,19 @@ void ma_print(void) {
 
 /** Debug:
 int main(){
-	char *ptr[15];
 	ma_init();
 	ma_malloc(600);
-	ptr[0] = ma_malloc(400);
-	printf("Going to call the ptr\n");
-	assert(ptr[0] != NULL);
 	ma_malloc(15);
 	ma_malloc(600);
 	ma_malloc(45);
 	ma_init();
 	ma_malloc(10);
         ma_malloc(15);
-        ma_malloc(20);
+	char* ptr;
+        ptr = ma_malloc(20);
+printf("Printing address of latest allocated mem...\n");
+printf("Addr.: %p\n", ptr);
+printf("Going to assert...\n");
+	assert(ptr!=NULL);
 	//ma_print();
-}*/
+}/**/

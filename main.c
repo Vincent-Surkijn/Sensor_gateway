@@ -26,13 +26,15 @@ printf("Just returned not enough space?\n");
     ma_init();
 printf("Just called init()\n");
     ptr[0] = ma_malloc(400); //->should not return NULL (ma_init() clears all)
+printf("Value of ptr[0]: %p\n", ptr[0]);
 //sketch 3
 printf("going to assert ptr\n");
-    assert(ptr[0] != NULL);	//fails because it seems to call ma_malloc()
+    assert(ptr[0] != NULL);
     // for debugging:
     // memset(ptr[0], 'a', 400); //-> makes this area easy to find when using GDB
     ma_free(ptr[0]);
 
+printf("Second assert...\n");
     ptr[0] = ma_malloc(200); //-> should not return NULL
     assert(ptr[0] != NULL);
     // for debugging:
