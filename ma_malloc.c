@@ -12,7 +12,7 @@ typedef unsigned char byte;
 
 //! An enum of statuses that can be used in the header
 typedef enum {
-    ALLOCATED, FREE
+    ALLOCATED, FREE		//allocated -> 0; free -> 1
 } mem_status;
 
 //! Every item in the pool will have at least a header with size and status of the following data
@@ -50,27 +50,29 @@ void *ma_malloc(size tsize) {
 //Retrieve first free header and set status
     printf("ma_malloc called\n");
     mem_chunk_header* first;
+    mem_chunk_header* last;
     first  = (mem_chunk_header*)mem_pool;
+    last = (mem_chunk_header*)((byte*)first + MEM_POOL_SIZE);
     int i =0;
-    while(first->status==ALLOCATED){ //Mem_pool has to be cleared or random positive values can still be there!
+    while(first->status==ALLOCATED || (first->size)<tsize ){
 	first = (mem_chunk_header*)(((byte*)first) + sizeof(mem_chunk_header) + first->size);
 	i++;
+	if(first>=last){
+	    printf("Not enough space left!\n");
+	    return NULL;
+	}
 /** Debug
+	printf("Loop %d\n", i);
 	printf("Status of header in loop: %d\n",first->status);
 	printf("Size of header in loop: %d\n",first->size);
         printf("Address of header in loop: %p\n",first);
   /**/  }
-    //printf("Amount of loops: %d\n",i);
-//Also the size needs to fit
-    if(tsize>first->size){
-	printf("Not enough space!\n");
-	return NULL;
-    }
+    printf("Amount of loops: %d\n",i);
     int temp_size = first->size;
     first->status=ALLOCATED;
     first->size=tsize;
 //Set status and size of next header
-    mem_chunk_header* new_header;
+    mem_chunk_header* new_header;	//New_header is the header that comes right after the newly allocated chunk
     new_header = (mem_chunk_header*)(((byte*)first) + sizeof(mem_chunk_header) + first->size);	//mem location of new header
     new_header->status = FREE;
     new_header->size = temp_size - sizeof(mem_chunk_header) - tsize;
@@ -81,7 +83,7 @@ void *ma_malloc(size tsize) {
     byte* allocated_mem;
     allocated_mem = (byte*)((byte*)first + sizeof(mem_chunk_header));
     //printf("Address of allocated header: %p\n", first);
-    printf("Address of allocated memory: %p\n", allocated_mem);
+    //printf("Address of allocated memory: %p\n", allocated_mem);
     return allocated_mem;
 }
 
@@ -90,9 +92,13 @@ void *ma_malloc(size tsize) {
  * Implement also the coalescing behavior.
  */
 void ma_free(void *ptr) {
-
-    //TODO: add your code here
-
+    printf("Free was called\n");
+    mem_chunk_header* temp;
+    temp = (mem_chunk_header*)((byte*)ptr - sizeof(mem_chunk_header));
+    printf("Address of chunk to free: %p\n", ptr);
+    printf("Address of header to free: %p\n", temp);
+//Set chunk to free
+    temp->status = 1;
 }
 
 /**
@@ -112,18 +118,26 @@ void ma_print(void) {
 /** Debug:
 int main(){
 	ma_init();
-	ma_malloc(600);
-	ma_malloc(15);
-	ma_malloc(600);
-	ma_malloc(45);
-	ma_init();
 	ma_malloc(10);
         ma_malloc(15);
+
 	char* ptr;
         ptr = ma_malloc(20);
-printf("Printing address of latest allocated mem...\n");
-printf("Addr.: %p\n", ptr);
-printf("Going to assert...\n");
-	assert(ptr!=NULL);
+        mem_chunk_header* ptr_h;
+        ptr_h = (mem_chunk_header*)((byte*)ptr - sizeof(mem_chunk_header));
+
+printf("Allocating 600\n");
+	ma_malloc(600);
+	ma_malloc(10);
+	ma_free(ptr);
+	ma_malloc(7);
+	ma_malloc(30);
+
+//printf("Printing address of latest allocated mem...\n");
+//printf("Addr.: %p\n", ptr);
+	ma_free(ptr);
+//printf("Printing value of freed pointer's header's size: %d\n", ptr_h->size);
+	ma_malloc(10);
+	ma_malloc(20);
 	//ma_print();
 }/**/
