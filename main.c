@@ -20,21 +20,17 @@ int main(int argc, char *argv[]) {
     ma_init();
 //sketch 2
     assert(NULL == ma_malloc(600)); //->should return NULL
-printf("Just returned not enough space?\n");
     assert(NULL != ma_malloc(200)); //->should not return NULL;
 
     ma_init();
-printf("Just called init()\n");
+
     ptr[0] = ma_malloc(400); //->should not return NULL (ma_init() clears all)
-printf("Value of ptr[0]: %p\n", ptr[0]);
 //sketch 3
-printf("going to assert ptr\n");
     assert(ptr[0] != NULL);
     // for debugging:
     // memset(ptr[0], 'a', 400); //-> makes this area easy to find when using GDB
     ma_free(ptr[0]);
 
-printf("Second assert...\n");
     ptr[0] = ma_malloc(200); //-> should not return NULL
     assert(ptr[0] != NULL);
     // for debugging:

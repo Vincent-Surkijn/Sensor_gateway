@@ -21,6 +21,12 @@ typedef struct {
     mem_status status;
 } mem_chunk_header;
 
+////! Every item in the pool will have a footer with size and status of the following data
+typedef struct{
+    size size;
+    mem_status status;
+} mem_chunk_footer;
+
 
 static byte mem_pool[MEM_POOL_SIZE];
 
@@ -29,6 +35,7 @@ static byte mem_pool[MEM_POOL_SIZE];
  * If some bytes have been used after calling ma_malloc(size), calling to ma_init() will result in clearing up the memory pool.
  */
 void ma_init() {
+    printf("Init is called\n");
 //Clear mem_pool
     for (size_t i = 0; i < 100; ++i)
 	mem_pool[i] = 0;
@@ -36,9 +43,12 @@ void ma_init() {
     mem_chunk_header* first;
     first = (mem_chunk_header*) mem_pool;	// mem_pool = &mem_pool[0]
     first->status = FREE;	// (*first).status = FREE;
-    first->size = MEM_POOL_SIZE - sizeof(mem_chunk_header);	//don't use variable in sizeof()
-    printf("Size of first header: %d\n", first->size);
-    printf("Address of first header: %p\n", first);
+    first->size = MEM_POOL_SIZE - sizeof(mem_chunk_header) - sizeof(mem_chunk_footer);	//don't use variable in sizeof()
+//Initialize first footer
+    mem_chunk_footer* firstf;
+    firstf = (mem_chunk_footer*)((byte*)first + sizeof(mem_chunk_header) + first->size);
+    firstf->status = first->status;
+    firstf->size = first->size;
 }
 
 /**
@@ -54,14 +64,15 @@ void *ma_malloc(size tsize) {
     first  = (mem_chunk_header*)mem_pool;
     last = (mem_chunk_header*)((byte*)first + MEM_POOL_SIZE);
     int i =0;
-    while(first->status==ALLOCATED || (first->size)<tsize ){
-	first = (mem_chunk_header*)(((byte*)first) + sizeof(mem_chunk_header) + first->size);
+    int size_needed = tsize + sizeof(mem_chunk_header) + sizeof(mem_chunk_footer);
+    while(first->status==ALLOCATED || (first->size)<size_needed ){
+	first = (mem_chunk_header*)(((byte*)first) + sizeof(mem_chunk_header) + first->size + sizeof(mem_chunk_footer));
 	i++;
 	if(first>=last){
 	    printf("Not enough space left!\n");
 	    return NULL;
 	}
-/** Debug
+/** Debug*/
 	printf("Loop %d\n", i);
 	printf("Status of header in loop: %d\n",first->status);
 	printf("Size of header in loop: %d\n",first->size);
@@ -73,12 +84,20 @@ void *ma_malloc(size tsize) {
     first->size=tsize;
 //Set status and size of next header
     mem_chunk_header* new_header;	//New_header is the header that comes right after the newly allocated chunk
-    new_header = (mem_chunk_header*)(((byte*)first) + sizeof(mem_chunk_header) + first->size);	//mem location of new header
+    new_header = (mem_chunk_header*)(((byte*)first) + sizeof(mem_chunk_header) + first->size + sizeof(mem_chunk_footer));	//mem location of new header
     new_header->status = FREE;
-    new_header->size = temp_size - sizeof(mem_chunk_header) - tsize;
+    new_header->size = temp_size - sizeof(mem_chunk_header) - tsize - sizeof(mem_chunk_footer);
+//Set status and size of next footer
+    mem_chunk_footer* new_footer;
+    new_footer = (mem_chunk_footer*)(((byte*)new_header) + sizeof(mem_chunk_header) + new_header->size);
+    new_footer->status = new_header->status;
+    new_footer->size = new_header->size;
 
+/** Debug*/
     printf("Size of new header: %d\n", new_header->size);
     printf("Address of new header: %p\n", new_header);
+    printf("Size of new footer: %d\n", new_footer->size);
+    printf("Address of new footer: %p\n", new_footer);/**/
 //Return pointer to allocated memory
     byte* allocated_mem;
     allocated_mem = (byte*)((byte*)first + sizeof(mem_chunk_header));
@@ -115,7 +134,7 @@ void ma_print(void) {
     }
 }
 
-/** Debug:
+/** Debug:*/
 int main(){
 	ma_init();
 	ma_malloc(10);
@@ -130,14 +149,8 @@ printf("Allocating 600\n");
 	ma_malloc(600);
 	ma_malloc(10);
 	ma_free(ptr);
-	ma_malloc(7);
+	ma_malloc(3);
 	ma_malloc(30);
 
-//printf("Printing address of latest allocated mem...\n");
-//printf("Addr.: %p\n", ptr);
-	ma_free(ptr);
-//printf("Printing value of freed pointer's header's size: %d\n", ptr_h->size);
-	ma_malloc(10);
-	ma_malloc(20);
 	//ma_print();
 }/**/
