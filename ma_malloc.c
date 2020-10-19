@@ -49,6 +49,8 @@ void ma_init() {
     firstf = (mem_chunk_footer*)((byte*)first + sizeof(mem_chunk_header) + first->size);
     firstf->status = first->status;
     firstf->size = first->size;
+//printf("First header adrr: %p\n", first);
+//printf("First footer adrr: %p\n", firstf);
 }
 
 /**
@@ -64,7 +66,6 @@ void *ma_malloc(size tsize) {
 
     first  = (mem_chunk_header*)mem_pool;
     last = (mem_chunk_header*)((byte*)first + MEM_POOL_SIZE);
-    foot = (mem_chunk_footer*)((byte*)first +sizeof(mem_chunk_header) + first->size);
 
     int i =0;
     int size_needed = tsize + sizeof(mem_chunk_header) + sizeof(mem_chunk_footer);
@@ -80,7 +81,7 @@ void *ma_malloc(size tsize) {
 	printf("Status of header in loop: %d\n",first->status);
 	printf("Size of header in loop: %d\n",first->size);
         printf("Address of header in loop: %p\n",first);
-  /**/  }
+  */  }
     //printf("Amount of loops: %d\n",i);
     int temp_size = first->size;
 //Set status and size of current header and footer
@@ -105,7 +106,7 @@ void *ma_malloc(size tsize) {
     printf("Size of new header: %d\n", new_header->size);
     printf("Address of new header: %p\n", new_header);
     printf("Size of new footer: %d\n", new_footer->size);
-    printf("Address of new footer: %p\n", new_footer);/**/
+    printf("Address of new footer: %p\n", new_footer);*/
 //Return pointer to allocated memory
     byte* allocated_mem;
     allocated_mem = (byte*)((byte*)first + sizeof(mem_chunk_header));
@@ -132,24 +133,33 @@ void ma_free(void *ptr) {
     temp->status = FREE;
     tempf->status = temp->status;
 //Check next header
-//What if no next header??
     mem_chunk_header* next;
     next = (mem_chunk_header*)(((byte*)temp) + sizeof(mem_chunk_header) + temp->size + sizeof(mem_chunk_footer));
 
     mem_chunk_footer* nextf;
     nextf = (mem_chunk_footer*)((byte*)next + next->size + sizeof(mem_chunk_header));
+	//Some variables necessary to check if we are still in mem_pool
+    mem_chunk_header* first;
+    mem_chunk_header* last;
 
-    if(next->status==FREE){		//If next chunk is also free they can be merged
+    first  = (mem_chunk_header*)mem_pool;
+    last = (mem_chunk_header*)((byte*)first + MEM_POOL_SIZE);
+
+
+    if(next->status==FREE && next<last){		//If next chunk is also free and within mem_pool they can be merged
        	//New size is sum of both sizes and also the size of the next header and footer since they can be removed
 	temp->size = temp->size + next->size + sizeof(mem_chunk_header) + sizeof(mem_chunk_footer);
 	nextf->size = temp->size;	//New chunk has current header and next footer
 /**Debug
 	printf("Next header is free\n");
+	printf("Addr of next header: %p\n", next);
+	printf("Addr of last addr: %p\n",last);
+	printf("Size of next header: %d\n",next->size);
 	printf("New size is %d\n", temp->size);
 	printf("Address of new header: %p\n", temp);
         printf("Address of new footer: %p\n", nextf);
 	printf("Size in new footer: %d\n", nextf->size);
-/**/	}
+*/	}
 //Check previous header
     mem_chunk_footer* prevf;
     prevf = (mem_chunk_footer*)((byte*)temp - sizeof(mem_chunk_footer));
@@ -160,7 +170,7 @@ void ma_free(void *ptr) {
     prev = (mem_chunk_header*)((byte*)prevf - prevf->size - sizeof(mem_chunk_header));
 //printf("Addr of prev: %p\n", prev);
 
-    if(prevf->status==FREE){		//If previous chunk is also free they can be merged
+    if(prevf->status==FREE && prev>=first){		//If previous chunk is also free they can be merged
 	prev->size = prev->size + temp->size + sizeof(mem_chunk_header) + sizeof(mem_chunk_footer);
 	tempf->size = prev->size;
 /**Debug
@@ -169,7 +179,7 @@ void ma_free(void *ptr) {
         printf("Address of new header: %p\n", prev);
         printf("Address of new footer: %p\n", tempf);	//Problem with footer address
         printf("Size in new footer: %d\n", tempf->size);
-   /**/ }
+   */ }
 }
 
 /**
@@ -205,9 +215,10 @@ int main(){
 //	ma_malloc(600);
 //	ma_malloc(50);
 	ma_free(ptr);
+	ma_malloc(15);
 	ma_free(ptr2);
-	//ma_malloc(35);
-	//ma_malloc(30);
+	ma_malloc(35);
+	ma_malloc(30);
 
 	//ma_print();
-}/**/
+}*/
