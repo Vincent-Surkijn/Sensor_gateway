@@ -15,6 +15,10 @@ test :
 	@echo -e '*************************'
 	./build/dplist_test
 
+debug :
+        gcc dplist.c dplist_test.c -g -o build/dplist_test $(FLAGS)
+        CK_FORK=no gdb ./build/dplist_test
+
 .PHONY : clean check
 
 check : $(SOURCE) $(HEADERS)

@@ -118,9 +118,13 @@ dplist_t *dpl_remove_at_index(dplist_t *list, int index) {
 }
 
 int dpl_size(dplist_t *list) {
-
-    //TODO: add your code here
-    return -1;
+    int count;
+    dplist_node_t *dummy;
+    DPLIST_ERR_HANDLER(list == NULL, DPLIST_INVALID_ERROR);
+    if (list->head == NULL) return 0;
+    for (dummy = list->head, count = 1; dummy->next != NULL; dummy = dummy->next, count++) {
+    }
+    return count;
 }
 
 dplist_node_t *dpl_get_reference_at_index(dplist_t *list, int index) {
@@ -135,16 +139,59 @@ dplist_node_t *dpl_get_reference_at_index(dplist_t *list, int index) {
 }
 
 element_t dpl_get_element_at_index(dplist_t *list, int index) {
-
-    //TODO: add your code here
-
+//Get ref at index and then return its element
+    dplist_node_t* temp;
+    temp = dpl_get_reference_at_index(list, index);
+    return temp->element;
 }
 
 int dpl_get_index_of_element(dplist_t *list, element_t element) {
-
-    //TODO: add your code here
-
+    int count;
+    dplist_node_t *dummy;
+    DPLIST_ERR_HANDLER(list == NULL, DPLIST_INVALID_ERROR);
+    if (list->head == NULL){
+        printf("No elements in list\n");
+        return -1;
+    }
+    for (dummy = list->head, count = 0; dummy->next != NULL; dummy = dummy->next, count++) {
+        if(dummy->element==element){
+            printf("Element %c found at %d\n",element, count);
+            return count;
+        }
+    }
+    printf("Element not in list");
+    return -1;
 }
 
+/** Debug:*/
+int main(){
+    dplist_t *list;
+    list = dpl_create();
+    printf("Size of list before insert: %d\n", dpl_size(list));
+    *dpl_insert_at_index(list, 'A' , 0);
+    *dpl_insert_at_index(list, 'B' , 1);
+    *dpl_insert_at_index(list, 'C' , 2);
+    *dpl_insert_at_index(list, 'D' , 3);
+    printf("Size of list: %d\n", dpl_size(list));
 
+    dpl_get_index_of_element(list, 'A');
+    dpl_get_index_of_element(list, 'C');
+    printf("Element at index 0: %c\n",dpl_get_element_at_index(list, 0));
+    printf("Element at index 1: %c\n",dpl_get_element_at_index(list, 1));
+    printf("Element at index 2: %c\n",dpl_get_element_at_index(list, 2));
+    printf("Element at index 3: %c\n",dpl_get_element_at_index(list, 3));
 
+//Print contents
+dplist_node_t *dummy;
+    DPLIST_ERR_HANDLER(list == NULL, DPLIST_INVALID_ERROR);
+    if (list->head == NULL){
+        printf("No elements in list\n");
+        return -1;
+    }
+    for (dummy = list->head; dummy->next != NULL; dummy = dummy->next) {
+        printf("Element %c\n", dummy->element);
+    }
+        printf("Element %c\n", dummy->element);
+
+}
+/**/
