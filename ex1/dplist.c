@@ -58,9 +58,30 @@ dplist_t *dpl_create() {
 }
 
 void dpl_free(dplist_t **list) {
-
-    //TODO: add your code here
-
+    dplist_t *list_ptr = *list;	//list_ptr is a copy of the ptr that points to start of the list
+    if(list_ptr == NULL) return;
+    if(list_ptr->head == NULL){
+	*list = NULL;
+	return;
+    }
+    int index = dpl_size(list_ptr) - 1;  //Start at last index of list
+    dplist_node_t *dummy = dpl_get_reference_at_index(list_ptr,index);
+    printf("Size of list_ptr: %d\n",index + 1);
+    while(dummy->prev != NULL)
+    {
+	dplist_node_t* prevn = dummy->prev;
+	printf("Element in loop: %c\n", dummy->element);
+	free(dummy->next);
+	dummy->prev = NULL;
+	dummy->element = 0;
+	dummy = prevn;
+    }
+    printf("Element in dummy now: %c\n", dummy->element);
+    free(dummy->next);
+    free(dummy->prev);
+    dummy->element = 0;
+    *list = NULL;
+    list = NULL;
 }
 
 /* Important note: to implement any list manipulation operator (insert, append, delete, sort, ...), always be aware of the following cases:
@@ -76,7 +97,7 @@ dplist_t *dpl_insert_at_index(dplist_t *list, element_t element, int index) {
     if (list == NULL) return NULL;
 
     list_node = malloc(sizeof(dplist_node_t));
-    DPLIST_ERR_HANDLER(list_node == NULL, DPLIST_MEMORY_ERROR);
+    //DPLIST_ERR_HANDLER(list_node == NULL, DPLIST_MEMORY_ERROR);
     list_node->element = element;
     // pointer drawing breakpoint
     if (list->head == NULL) { // covers case 1
@@ -120,7 +141,7 @@ dplist_t *dpl_remove_at_index(dplist_t *list, int index) {
 int dpl_size(dplist_t *list) {
     int count;
     dplist_node_t *dummy;
-    DPLIST_ERR_HANDLER(list == NULL, DPLIST_INVALID_ERROR);
+    if(list == NULL) return -1;
     if (list->head == NULL) return 0;
     for (dummy = list->head, count = 1; dummy->next != NULL; dummy = dummy->next, count++) {
     }
@@ -130,7 +151,7 @@ int dpl_size(dplist_t *list) {
 dplist_node_t *dpl_get_reference_at_index(dplist_t *list, int index) {
     int count;
     dplist_node_t *dummy;
-    DPLIST_ERR_HANDLER(list == NULL, DPLIST_INVALID_ERROR);
+    if(list == NULL) return NULL;
     if (list->head == NULL) return NULL;
     for (dummy = list->head, count = 0; dummy->next != NULL; dummy = dummy->next, count++) {
         if (count >= index) return dummy;
@@ -139,7 +160,10 @@ dplist_node_t *dpl_get_reference_at_index(dplist_t *list, int index) {
 }
 
 element_t dpl_get_element_at_index(dplist_t *list, int index) {
-//Get ref at index and then return its element
+    if(list==NULL) return 0;
+    if(list->head==NULL) return 0;
+
+    //Get ref at index and then return its element
     dplist_node_t* temp;
     temp = dpl_get_reference_at_index(list, index);
     return temp->element;
@@ -148,13 +172,21 @@ element_t dpl_get_element_at_index(dplist_t *list, int index) {
 int dpl_get_index_of_element(dplist_t *list, element_t element) {
     int count;
     dplist_node_t *dummy;
-    DPLIST_ERR_HANDLER(list == NULL, DPLIST_INVALID_ERROR);
+
+    if(list==NULL) return -1;
+
     if (list->head == NULL){
         printf("No elements in list\n");
         return -1;
     }
+
+    if(list->head->element == element){
+        printf("Element %c found at 0", element);
+        return 0;
+    }
+
     for (dummy = list->head, count = 0; dummy->next != NULL; dummy = dummy->next, count++) {
-        if(dummy->element==element){
+	if(dummy->element==element){
             printf("Element %c found at %d\n",element, count);
             return count;
         }
@@ -163,11 +195,26 @@ int dpl_get_index_of_element(dplist_t *list, element_t element) {
     return -1;
 }
 
-/** Debug:*/
+/** Debug:
 int main(){
     dplist_t *list;
     list = dpl_create();
-    printf("Size of list before insert: %d\n", dpl_size(list));
+
+    list = dpl_insert_at_index(list, 'A', 0);
+    //list = dpl_insert_at_index(list, 'B', 1);
+    //list = dpl_insert_at_index(list, 'C', 2);
+
+   int index = dpl_size(list)-1;
+   while(index>0){
+	printf("Prev addr: %p\n",dpl_get_reference_at_index(list, index)->prev);
+        printf("Element: %c\n",dpl_get_reference_at_index(list, index)->element);
+	index--;}
+
+    dpl_free(&list);
+
+    printf("List: %p\n", list);
+
+/*    printf("Size of list before insert: %d\n", dpl_size(list));
     *dpl_insert_at_index(list, 'A' , 0);
     *dpl_insert_at_index(list, 'B' , 1);
     *dpl_insert_at_index(list, 'C' , 2);
@@ -192,6 +239,5 @@ dplist_node_t *dummy;
         printf("Element %c\n", dummy->element);
     }
         printf("Element %c\n", dummy->element);
-
 }
 /**/
