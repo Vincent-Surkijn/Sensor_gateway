@@ -32,24 +32,24 @@ START_TEST(test_ListFree)
         // Test free NULL
         dplist_t *list = NULL;
         dpl_free(&list);
-        ck_assert_msg(list == NULL, "Failure1: expected result to be NULL , but was %p", list);
+        ck_assert_msg(list == NULL, "Failure: expected result to be NULL , but was %p", list);
 
         // Test free empty list
         list = dpl_create();
         dpl_free(&list);
-        ck_assert_msg(list == NULL, "Failure2: expected result to be NULL, but was %p", list);
+        ck_assert_msg(list == NULL, "Failure: expected result to be NULL, but was %p", list);
         // Test free with one element
         list = dpl_create();
 	list = dpl_insert_at_index(list, 'A', 0);
 	dpl_free(&list);
-        ck_assert_msg(list == NULL, "Failure3: expected result to be NULL, but was %p", list);
+        ck_assert_msg(list == NULL, "Failure: expected result to be NULL, but was %p", list);
         // Test free with multiple element
         list = dpl_create();
         list = dpl_insert_at_index(list, 'A', 0);
         list = dpl_insert_at_index(list, 'B', 1);
         list = dpl_insert_at_index(list, 'C', 2);
         dpl_free(&list);
-        ck_assert_msg(list == NULL, "Failure4: expected result to be NULL, but was %p", list);
+        ck_assert_msg(list == NULL, "Failure: expected result to be NULL, but was %p", list);
     }
 END_TEST
 
@@ -180,11 +180,74 @@ START_TEST(test_Size)
 END_TEST
 
 
-START_TEST(test_RemoveAtIndex)
+START_TEST(test_RemoveAtIndexListNull)
 {
-    // TODO:
-    // Test when List = NULL
-    dplist_t *list = NULL;
+    // Test RemoveAtIndex when index = -1
+    dplist_t *result = dpl_remove_at_index(NULL, -1);
+    ck_assert_msg(result == NULL,"Failure: expected NULL, but got %p",result);
+    // Test RemoveAtIndex when index = 0
+    result = dpl_remove_at_index(NULL, 0);
+    ck_assert_msg(result == NULL,"Failure: expected NULL, but got %p",result);
+    // Test RemoveAtIndex when index = 99
+    result = dpl_remove_at_index(NULL, 99);
+    ck_assert_msg(result == NULL,"Failure: expected NULL, but got %p",result);
+}
+END_TEST
+
+
+START_TEST(test_RemoveAtIndexListEmpty)
+{
+    dplist_t *list = dpl_create();
+    // Test RemoveAtIndex when index = -1
+    dplist_t *result = dpl_remove_at_index(list, -1);
+    ck_assert_msg(result == list,"Failure1: expected %p, but got %p",list,result);
+    // Test RemoveAtIndex when index = 0
+    result = dpl_remove_at_index(list, 0);
+    ck_assert_msg(result == list,"Failure2: expected %p, but got %p",list,result);
+    // Test RemoveAtIndex when index = 99
+    result = dpl_remove_at_index(list, 99);
+    ck_assert_msg(result == list,"Failure3: expected %p, but got %p",list,result);
+}
+END_TEST
+
+
+START_TEST(test_RemoveAtIndexListOneElement)
+{
+    dplist_t *list = dpl_create();
+    list = dpl_insert_at_index(list, 'A', 0);
+    // Test RemoveAtIndex when index = -1
+    dplist_t *result = dpl_remove_at_index(list, -1);
+    ck_assert_msg(dpl_size(result) == 0,"Failure: expected size to be 0, but it is %d",dpl_size(result));
+    // Test RemoveAtIndex when index = 0
+    list = dpl_insert_at_index(list, 'A', 0);
+    result = dpl_remove_at_index(list, 0);
+    ck_assert_msg(dpl_size(result) == 0,"Failure: expected size to be 0, but it is %d",dpl_size(result));
+    // Test RemoveAtIndex when index = 99
+    list = dpl_insert_at_index(list, 'A', 0);
+    result = dpl_remove_at_index(list, 99);
+    ck_assert_msg(dpl_size(result) == 0,"Failure: expected size to be 0, but it is %d",dpl_size(result));
+}
+END_TEST
+
+
+START_TEST(test_RemoveAtIndexListMultipleElements)
+{
+    dplist_t *list = dpl_create();
+    list = dpl_insert_at_index(list, 'A', 0);
+    list = dpl_insert_at_index(list, 'B', 1);
+    list = dpl_insert_at_index(list, 'C', 2);
+    list = dpl_insert_at_index(list, 'D', 3);
+    // Test RemoveAtIndex when index = -1
+    dplist_t *result = dpl_remove_at_index(list, -1);
+    ck_assert_msg(dpl_size(result) == 3,"Failure: expected size to be 3, but it is %d",dpl_size(result));
+    // Test RemoveAtIndex when index = 0
+    list = dpl_insert_at_index(list, 'A', -1);
+    result = dpl_remove_at_index(list, 0);
+    ck_assert_msg(dpl_size(result) == 3,"Failure: expected size to be 3, but it is %d",dpl_size(result));
+    // Test RemoveAtIndex when index = 99
+    list = dpl_insert_at_index(list, 'A', 0);
+    result = dpl_remove_at_index(list, 99);
+    ck_assert_msg(dpl_size(result) == 3,"Failure: expected size to be 3, but it is %d",dpl_size(result));
 }
 END_TEST
 
@@ -417,6 +480,10 @@ int main(void) {
     tcase_add_test(tc1_1,test_GetElementAtIndexListEmpty);
     tcase_add_test(tc1_1,test_GetElementAtIndexListOneElement);
     tcase_add_test(tc1_1,test_GetElementAtIndexListMultipleElements);
+    tcase_add_test(tc1_1,test_RemoveAtIndexListNull);
+    tcase_add_test(tc1_1,test_RemoveAtIndexListEmpty);
+    tcase_add_test(tc1_1,test_RemoveAtIndexListOneElement);
+    tcase_add_test(tc1_1,test_RemoveAtIndexListMultipleElements);
     // Add other tests here...
 
     srunner_run_all(sr, CK_VERBOSE);

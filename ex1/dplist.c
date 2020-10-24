@@ -132,10 +132,61 @@ dplist_t *dpl_insert_at_index(dplist_t *list, element_t element, int index) {
     return list;
 }
 
+/* Important note: to implement any list manipulation operator (insert, append, delete, sort, ...), always be aware of the following cases:
+ * 1. empty list ==> avoid errors
+ * 2. do operation at the start of the list ==> typically requires some special pointer manipulation
+ * 3. do operation at the end of the list ==> typically requires some special pointer manipulation
+ * 4. do operation in the middle of the list ==> default case with default pointer manipulation
+ * ALWAYS check that you implementation works correctly in all these cases (check this on paper with list representation drawings!)
+ **/
 dplist_t *dpl_remove_at_index(dplist_t *list, int index) {
-
-    //TODO: add your code here
-
+    //printf("List head: %p\n", list->head);
+    if(list==NULL) return NULL;
+    if(list->head==NULL) return list;	//covers case 1
+    else if(index <= 0){	//covers case 2
+	printf("Rem case 2\n");
+	dplist_node_t *toRem = dpl_get_reference_at_index(list, 0);
+	if(toRem->next!=NULL){
+	    dplist_node_t* next = toRem->next;
+	    next->prev = NULL;
+            list->head = next;
+	}
+	else{
+	    list->head = NULL;
+	}
+	toRem->next = NULL;
+	toRem->element = 0;
+	return list;
+    }
+    else if(index >= dpl_size(list) - 1){	//covers case 3
+        printf("Rem case 3\n");
+	dplist_node_t *toRem = dpl_get_reference_at_index(list, 99);
+	if(toRem->prev != NULL){
+            dplist_node_t* prev = toRem->prev;
+            prev->next = NULL;
+	}
+	else{
+	    list->head = NULL;
+	}
+	toRem->prev = NULL;
+	toRem->element = 0;
+	return list;
+    }
+    else{	//covers case 4
+        printf("Rem case 4\n");
+        dplist_node_t *toRem = dpl_get_reference_at_index(list, index);
+	printf("Element to remove: %c\n", toRem->element);
+	printf("NextElement to remove: %c\n", toRem->next->element);
+	printf("Prev Element to remove: %c\n", toRem->prev->element);
+        toRem->next->prev = toRem->prev;
+	toRem->prev->next = toRem->next;
+        printf("Next prev: %p\n", toRem->next->prev);
+        printf("Prev next: %p\n", toRem->prev->next);
+	toRem->prev = NULL;
+	toRem->next = NULL;
+	toRem->element = 0;
+	return list;
+    }
 }
 
 int dpl_size(dplist_t *list) {
@@ -143,8 +194,7 @@ int dpl_size(dplist_t *list) {
     dplist_node_t *dummy;
     if(list == NULL) return -1;
     if (list->head == NULL) return 0;
-    for (dummy = list->head, count = 1; dummy->next != NULL; dummy = dummy->next, count++) {
-    }
+    for (dummy = list->head, count = 1; dummy->next != NULL; dummy = dummy->next, count++) {}
     return count;
 }
 
@@ -181,7 +231,7 @@ int dpl_get_index_of_element(dplist_t *list, element_t element) {
     }
 
     if(list->head->element == element){
-        printf("Element %c found at 0", element);
+        printf("Element %c found at 0\n", element);
         return 0;
     }
 
@@ -191,35 +241,21 @@ int dpl_get_index_of_element(dplist_t *list, element_t element) {
             return count;
         }
     }
-    printf("Element not in list");
+    printf("Element not in list\n");
     return -1;
 }
 
 /** Debug:
 int main(){
-    dplist_t *list;
-    list = dpl_create();
-
+    dplist_t *list = dpl_create();
     list = dpl_insert_at_index(list, 'A', 0);
     //list = dpl_insert_at_index(list, 'B', 1);
     //list = dpl_insert_at_index(list, 'C', 2);
+    //list = dpl_insert_at_index(list, 'D', 3);
 
-   int index = dpl_size(list)-1;
-   while(index>0){
-	printf("Prev addr: %p\n",dpl_get_reference_at_index(list, index)->prev);
-        printf("Element: %c\n",dpl_get_reference_at_index(list, index)->element);
-	index--;}
-
-    dpl_free(&list);
-
-    printf("List: %p\n", list);
-
-/*    printf("Size of list before insert: %d\n", dpl_size(list));
-    *dpl_insert_at_index(list, 'A' , 0);
-    *dpl_insert_at_index(list, 'B' , 1);
-    *dpl_insert_at_index(list, 'C' , 2);
-    *dpl_insert_at_index(list, 'D' , 3);
-    printf("Size of list: %d\n", dpl_size(list));
+    printf("Size of list before remove: %d\n", dpl_size(list));
+    dplist_t *result = dpl_remove_at_index(list, 1);
+    printf("Size of list after remove: %d\n", dpl_size(result));
 
     dpl_get_index_of_element(list, 'A');
     dpl_get_index_of_element(list, 'C');
@@ -228,16 +264,5 @@ int main(){
     printf("Element at index 2: %c\n",dpl_get_element_at_index(list, 2));
     printf("Element at index 3: %c\n",dpl_get_element_at_index(list, 3));
 
-//Print contents
-dplist_node_t *dummy;
-    DPLIST_ERR_HANDLER(list == NULL, DPLIST_INVALID_ERROR);
-    if (list->head == NULL){
-        printf("No elements in list\n");
-        return -1;
-    }
-    for (dummy = list->head; dummy->next != NULL; dummy = dummy->next) {
-        printf("Element %c\n", dummy->element);
-    }
-        printf("Element %c\n", dummy->element);
 }
 /**/
