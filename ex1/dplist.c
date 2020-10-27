@@ -71,16 +71,20 @@ void dpl_free(dplist_t **list) {
     {
 	dplist_node_t* prevn = dummy->prev;
 	printf("Element in loop: %c\n", dummy->element);
-	free(dummy->next);
-	dummy->prev = NULL;
-	dummy->element = 0;
+	free(dummy);
+	//free(dummy->next);
+	//dummy->prev = NULL;
+	//dummy->element = 0;
 	dummy = prevn;
     }
     printf("Element in dummy now: %c\n", dummy->element);
-    free(dummy->next);
-    free(dummy->prev);
-    dummy->element = 0;
-    *list = NULL;
+    free(dummy);
+    //free(dummy->next);
+    //free(dummy->prev);
+    //dummy->element = 0;
+   // *list = NULL;
+    free(*list);	// Free list(contains head)
+    *list=NULL;		// Free ptr to list
     list = NULL;
 }
 
@@ -154,8 +158,9 @@ dplist_t *dpl_remove_at_index(dplist_t *list, int index) {
 	else{
 	    list->head = NULL;
 	}
-	toRem->next = NULL;
-	toRem->element = 0;
+	free(toRem);
+	//toRem->next = NULL;
+	//toRem->element = 0;
 	return list;
     }
     else if(index >= dpl_size(list) - 1){	//covers case 3
@@ -168,8 +173,9 @@ dplist_t *dpl_remove_at_index(dplist_t *list, int index) {
 	else{
 	    list->head = NULL;
 	}
-	toRem->prev = NULL;
-	toRem->element = 0;
+	free(toRem);
+	//toRem->prev = NULL;
+	//toRem->element = 0;
 	return list;
     }
     else{	//covers case 4
@@ -182,9 +188,10 @@ dplist_t *dpl_remove_at_index(dplist_t *list, int index) {
 	toRem->prev->next = toRem->next;
         printf("Next prev: %p\n", toRem->next->prev);
         printf("Prev next: %p\n", toRem->prev->next);
-	toRem->prev = NULL;
-	toRem->next = NULL;
-	toRem->element = 0;
+	free(toRem);
+	//toRem->prev = NULL;
+	//toRem->next = NULL;
+	//toRem->element = 0;
 	return list;
     }
 }
@@ -235,7 +242,7 @@ int dpl_get_index_of_element(dplist_t *list, element_t element) {
         return 0;
     }
 
-    for (dummy = list->head, count = 0; dummy->next != NULL; dummy = dummy->next, count++) {
+    for (dummy = list->head, count = 0; count<dpl_size(list); dummy = dummy->next, count++) {
 	if(dummy->element==element){
             printf("Element %c found at %d\n",element, count);
             return count;
@@ -249,13 +256,18 @@ int dpl_get_index_of_element(dplist_t *list, element_t element) {
 int main(){
     dplist_t *list = dpl_create();
     list = dpl_insert_at_index(list, 'A', 0);
-    //list = dpl_insert_at_index(list, 'B', 1);
-    //list = dpl_insert_at_index(list, 'C', 2);
-    //list = dpl_insert_at_index(list, 'D', 3);
+    list = dpl_insert_at_index(list, 'B', 1);
+    list = dpl_insert_at_index(list, 'C', 2);
+    list = dpl_insert_at_index(list, 'D', 3);
 
     printf("Size of list before remove: %d\n", dpl_size(list));
-    dplist_t *result = dpl_remove_at_index(list, 1);
+    dplist_t *result = dpl_remove_at_index(list, 0);
     printf("Size of list after remove: %d\n", dpl_size(result));
+
+    printf("Size of list before remove2: %d\n", dpl_size(list));
+    result = dpl_remove_at_index(list, 99);
+    printf("Size of list after remove2: %d\n", dpl_size(result));
+
 
     dpl_get_index_of_element(list, 'A');
     dpl_get_index_of_element(list, 'C');
@@ -264,5 +276,6 @@ int main(){
     printf("Element at index 2: %c\n",dpl_get_element_at_index(list, 2));
     printf("Element at index 3: %c\n",dpl_get_element_at_index(list, 3));
 
+    dpl_free(&list);
 }
 /**/

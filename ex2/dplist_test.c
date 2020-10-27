@@ -29,6 +29,15 @@ void teardown(void) {
 }
 START_TEST(test_ListFree)
     {
+    char *ptr = malloc(sizeof(char));
+    *ptr='A';
+    char *ptrb = malloc(sizeof(char));
+    *ptrb='B';
+    char *ptrc = malloc(sizeof(char));
+    *ptrc='C';
+    char *ptrd = malloc(sizeof(char));
+    *ptrd='D';
+
         // Test free NULL
         dplist_t *list = NULL;
         dpl_free(&list);
@@ -40,34 +49,33 @@ START_TEST(test_ListFree)
         ck_assert_msg(list == NULL, "Failure: expected result to be NULL, but was %p", list);
         // Test free with one element
         list = dpl_create();
-	char a = 'A';
-	char *ptr = &a;
 	list = dpl_insert_at_index(list, ptr, 0);
 	dpl_free(&list);
         ck_assert_msg(list == NULL, "Failure: expected result to be NULL, but was %p", list);
         // Test free with multiple elements
         list = dpl_create();
-        char b = 'B';
-        char *ptrb = &b;
-        char c = 'C';
-        char *ptrc = &c;
         list = dpl_insert_at_index(list, ptr, 0);
         list = dpl_insert_at_index(list, ptrb, 1);
         list = dpl_insert_at_index(list, ptrc, 2);
         dpl_free(&list);
         ck_assert_msg(list == NULL, "Failure: expected result to be NULL, but was %p", list);
+
+	// Needed to free pointers???
     }
 END_TEST
 
 START_TEST(test_ListInsertAtIndexListNULL)
     {
         // Test inserting at index -1
-        char a = 'A';
-        char *ptr = &a;
-	char b = 'B';
-        char *ptrb = &b;
-        char c = 'C';
-        char *ptrc = &c;
+    char *ptr = malloc(sizeof(char));
+    *ptr='A';
+    char *ptrb = malloc(sizeof(char));
+    *ptrb='B';
+    char *ptrc = malloc(sizeof(char));
+    *ptrc='C';
+    char *ptrd = malloc(sizeof(char));
+    *ptrd='D';
+
         dplist_t *result = dpl_insert_at_index(NULL, ptr, -1);
         ck_assert_msg(result == NULL, "Failure: expected list to be NULL");
         // Test inserting at index 0
@@ -82,12 +90,15 @@ END_TEST
 
 START_TEST(test_ListInsertAtIndexListEmpty)
 {
-        char a = 'A';
-        char *ptr = &a;
-        char b = 'B';
-        char *ptrb = &b;
-        char c = 'C';
-        char *ptrc = &c;
+    char *ptr = malloc(sizeof(char));
+    *ptr='A';
+    char *ptrb = malloc(sizeof(char));
+    *ptrb='B';
+    char *ptrc = malloc(sizeof(char));
+    *ptrc='C';
+    char *ptrd = malloc(sizeof(char));
+    *ptrd='D';
+
     // Test inserting at index -1
     dplist_t *list = dpl_create();
     dplist_t *result = dpl_insert_at_index(list, ptr, -1);
@@ -112,48 +123,46 @@ END_TEST
 
 START_TEST(test_ListInsertAtIndexListOneElement)
 {
-        char a = 'A';
-        char *ptr = &a;
-        char b = 'B';
-        char *ptrb = &b;
-        char c = 'C';
-        char *ptrc = &c;
+    char *ptr = malloc(sizeof(char));
+    *ptr='A';
+    char *ptrb = malloc(sizeof(char));
+    *ptrb='B';
+
     // Test inserting at index -1
     dplist_t *list = dpl_create();
-    dplist_t *result = dpl_insert_at_index(list, ptr, -1);
-    result = dpl_insert_at_index(list, ptrb, -1);
-    ck_assert_msg(dpl_size(result) == 2, "Failure: expected list to have size of 2, got a size of %d",
-                                         dpl_size(result));
-    dpl_free(&list);
+    list = dpl_insert_at_index(list, ptr, 0);
+    list = dpl_insert_at_index(list, ptrb, -1);
+    ck_assert_msg(dpl_size(list) == 2, "Failure: expected list to have size of 2, got a size of %d",
+                                         dpl_size(list));
+
     //Test inserting at index 0
     list = dpl_create();
-    result = dpl_insert_at_index(list, ptr, 0);
-    result = dpl_insert_at_index(list, ptrb, 0);
-    ck_assert_msg(dpl_size(result) == 2, "Failure: expected list to have size of 2, got a size of %d",
-                                         dpl_size(result));
-    dpl_free(&list);
+    list = dpl_insert_at_index(list, ptr, 0);
+    list = dpl_insert_at_index(list, ptrb, 0);
+    ck_assert_msg(dpl_size(list) == 2, "Failure: expected list to have size of 2, got a size of %d",
+                                         dpl_size(list));
 
     //Test inserting at index 99
     list = dpl_create();
-    result = dpl_insert_at_index(list, ptr, 99);
-    result = dpl_insert_at_index(list, ptrb, 99);
-    ck_assert_msg(dpl_size(result) == 2, "Failure: expected list to have size of 2, got a size of %d",
-                                         dpl_size(result));
-    dpl_free(&list);
+    list = dpl_insert_at_index(list, ptr, 0);
+    list = dpl_insert_at_index(list, ptrb, 99);
+    ck_assert_msg(dpl_size(list) == 2, "Failure: expected list to have size of 2, got a size of %d",
+                                         dpl_size(list));
 
 }
 END_TEST
 
 START_TEST(test_ListInsertAtIndexListMultipleElements)
 {
-        char a = 'A';
-        char *ptr = &a;
-        char b = 'B';
-        char *ptrb = &b;
-        char c = 'C';
-        char *ptrc = &c;
-	char d = 'D';
-	char *ptrd = &d;
+    char *ptr = malloc(sizeof(char));
+    *ptr='A';
+    char *ptrb = malloc(sizeof(char));
+    *ptrb='B';
+    char *ptrc = malloc(sizeof(char));
+    *ptrc='C';
+    char *ptrd = malloc(sizeof(char));
+    *ptrd='D';
+
     // Test inserting at index -1
     dplist_t *list = dpl_create();
     dplist_t *result = dpl_insert_at_index(list, ptr, -1);
@@ -162,7 +171,6 @@ START_TEST(test_ListInsertAtIndexListMultipleElements)
     result = dpl_insert_at_index(list, ptrd, -1);
     ck_assert_msg(dpl_size(result) == 4, "Failure: expected list to have size of 4, got a size of %d",
                                          dpl_size(result));
-    dpl_free(&list);
     //Test inserting at index 0
     list = dpl_create();
     result = dpl_insert_at_index(list, ptr, 0);
@@ -171,7 +179,6 @@ START_TEST(test_ListInsertAtIndexListMultipleElements)
     result = dpl_insert_at_index(list, ptrd, 0);
     ck_assert_msg(dpl_size(result) == 4, "Failure: expected list to have size of 4, got a size of %d",
                                          dpl_size(result));
-    dpl_free(&list);
 
     //Test inserting at index 99
     list = dpl_create();
@@ -181,21 +188,21 @@ START_TEST(test_ListInsertAtIndexListMultipleElements)
     result = dpl_insert_at_index(list, ptrd, 99);
     ck_assert_msg(dpl_size(result) == 4, "Failure: expected list to have size of 4, got a size of %d",
                                          dpl_size(result));
-    dpl_free(&list);
 }
 END_TEST
 
 
 START_TEST(test_Size)
 {
-        char a = 'A';
-        char *ptr = &a;
-        char d = 'D';
-        char *ptrd = &d;
-        char b = 'B';
-        char *ptrb = &b;
-        char c = 'C';
-        char *ptrc = &c;
+    char *ptr = malloc(sizeof(char));
+    *ptr='A';
+    char *ptrb = malloc(sizeof(char));
+    *ptrb='B';
+    char *ptrc = malloc(sizeof(char));
+    *ptrc='C';
+    char *ptrd = malloc(sizeof(char));
+    *ptrd='D';
+
 
     // Test when List = NULL
     dplist_t *list = NULL;
@@ -254,19 +261,24 @@ END_TEST
 
 START_TEST(test_RemoveAtIndexListOneElement)
 {
-        char a = 'A';
-        char *ptr = &a;
+    char *ptr = malloc(sizeof(char));
+    *ptr='A';
+    char *ptrb = malloc(sizeof(char));
+    *ptrb='B';
+    char *ptrc = malloc(sizeof(char));
+    *ptrc='C';
+
     dplist_t *list = dpl_create();
     list = dpl_insert_at_index(list, ptr, 0);
     // Test RemoveAtIndex when index = -1
     dplist_t *result = dpl_remove_at_index(list, -1);
     ck_assert_msg(dpl_size(result) == 0,"Failure: expected size to be 0, but it is %d",dpl_size(result));
     // Test RemoveAtIndex when index = 0
-    list = dpl_insert_at_index(list, ptr, 0);
+    list = dpl_insert_at_index(list, ptrb, 0);
     result = dpl_remove_at_index(list, 0);
     ck_assert_msg(dpl_size(result) == 0,"Failure: expected size to be 0, but it is %d",dpl_size(result));
     // Test RemoveAtIndex when index = 99
-    list = dpl_insert_at_index(list, ptr, 0);
+    list = dpl_insert_at_index(list, ptrc, 0);
     result = dpl_remove_at_index(list, 99);
     ck_assert_msg(dpl_size(result) == 0,"Failure: expected size to be 0, but it is %d",dpl_size(result));
 }
@@ -275,14 +287,19 @@ END_TEST
 
 START_TEST(test_RemoveAtIndexListMultipleElements)
 {
-        char a = 'A';
-        char *ptr = &a;
-        char b = 'B';
-        char *ptrb = &b;
-        char c = 'C';
-        char *ptrc = &c;
-	char d = 'D';
-	char *ptrd = &d;
+    char *ptr = malloc(sizeof(char));
+    *ptr='A';
+    char *ptrb = malloc(sizeof(char));
+    *ptrb='B';
+    char *ptrc = malloc(sizeof(char));
+    *ptrc='C';
+    char *ptrd = malloc(sizeof(char));
+    *ptrd='D';
+    char *ptre = malloc(sizeof(char));
+    *ptre='E';
+    char *ptrf = malloc(sizeof(char));
+    *ptrf='F';
+
     dplist_t *list = dpl_create();
     list = dpl_insert_at_index(list, ptr, 0);
     list = dpl_insert_at_index(list, ptrb, 1);
@@ -292,11 +309,11 @@ START_TEST(test_RemoveAtIndexListMultipleElements)
     dplist_t *result = dpl_remove_at_index(list, -1);
     ck_assert_msg(dpl_size(result) == 3,"Failure: expected size to be 3, but it is %d",dpl_size(result));
     // Test RemoveAtIndex when index = 0
-    list = dpl_insert_at_index(list, ptr, -1);
+    list = dpl_insert_at_index(list, ptre, 0);
     result = dpl_remove_at_index(list, 0);
     ck_assert_msg(dpl_size(result) == 3,"Failure: expected size to be 3, but it is %d",dpl_size(result));
     // Test RemoveAtIndex when index = 99
-    list = dpl_insert_at_index(list, ptr, 0);
+    list = dpl_insert_at_index(list, ptrf, 0);
     result = dpl_remove_at_index(list, 99);
     ck_assert_msg(dpl_size(result) == 3,"Failure: expected size to be 3, but it is %d",dpl_size(result));
 }
@@ -340,8 +357,9 @@ END_TEST
 
 START_TEST(test_GetReferenceAtIndexListOneElement)
 {
-        char a = 'A';
-        char *ptr = &a;
+    char *ptr = malloc(sizeof(char));
+    *ptr='A';
+
     // Test getReference when index = -1
     dplist_t *list = dpl_create();
     list = dpl_insert_at_index(list, ptr, 0);
@@ -361,14 +379,15 @@ END_TEST
 START_TEST(test_GetReferenceAtIndexListMultipleElements)
 {
     // Initialize list, can be reused
-        char a = 'A';
-        char *ptr = &a;
-        char b = 'B';
-        char *ptrb = &b;
-        char c = 'C';
-        char *ptrc = &c;
-	char d = 'D';
-	char *ptrd = &d;
+    char *ptr = malloc(sizeof(char));
+    *ptr='A';
+    char *ptrb = malloc(sizeof(char));
+    *ptrb='B';
+    char *ptrc = malloc(sizeof(char));
+    *ptrc='C';
+    char *ptrd = malloc(sizeof(char));
+    *ptrd='D';
+
     dplist_t *list = dpl_create();
     list = dpl_insert_at_index(list, ptr, 0);
     list = dpl_insert_at_index(list, ptrb, 1);
@@ -392,8 +411,8 @@ END_TEST
 
 START_TEST(test_GetIndexOfElementListNull)
 {
-        char a = 'A';
-        char *ptr = &a;
+    char *ptr = malloc(sizeof(char));
+    *ptr='A';
     int result = dpl_get_index_of_element(NULL, ptr);
     ck_assert_msg(result == -1, "Failure: expected -1, but got %d", result);
 }
@@ -402,8 +421,8 @@ END_TEST
 
 START_TEST(test_GetIndexOfElementListEmpty)
 {
-        char a = 'A';
-        char *ptr = &a;
+    char *ptr = malloc(sizeof(char));
+    *ptr='A';
     dplist_t *list = dpl_create();
     int result = dpl_get_index_of_element(list, ptr);
     ck_assert_msg(result == -1, "Failure: expected -1, but got %d", result);
@@ -413,10 +432,10 @@ END_TEST
 
 START_TEST(test_GetIndexOfElementListOneElement)
 {
-        char a = 'A';
-        char *ptr = &a;
-	char b = 'B';
-	char *ptrb = &b;
+    char *ptr = malloc(sizeof(char));
+    *ptr='A';
+    char *ptrb = malloc(sizeof(char));
+    *ptrb='B';
     dplist_t *list = dpl_create();
     list = dpl_insert_at_index(list, ptr, 0);
 
@@ -432,16 +451,17 @@ END_TEST
 
 START_TEST(test_GetIndexOfElementListMultipleElements)
 {
-        char a = 'A';
-        char *ptr = &a;
-        char b = 'B';
-        char *ptrb = &b;
-        char c = 'C';
-        char *ptrc = &c;
-	char d = 'D';
-	char *ptrd = &d;
-	char x = 'X';
-	char *ptrx = &x;
+    char *ptr = malloc(sizeof(char));
+    *ptr='A';
+    char *ptrb = malloc(sizeof(char));
+    *ptrb='B';
+    char *ptrc = malloc(sizeof(char));
+    *ptrc='C';
+    char *ptrd = malloc(sizeof(char));
+    *ptrd='D';
+    char *ptrx = malloc(sizeof(char));
+    *ptrx='X';
+
     dplist_t *list = dpl_create();
     list = dpl_insert_at_index(list, ptr, 0);
     list = dpl_insert_at_index(list, ptrb, 1);
@@ -494,8 +514,8 @@ END_TEST
 
 START_TEST(test_GetElementAtIndexListOneElement)
 {
-        char a = 'A';
-        char *ptr = &a;
+    char *ptr = malloc(sizeof(char));
+    *ptr='A';
     //Test GetElementAtIndex when index = -1
     dplist_t *list = dpl_create();
     list = dpl_insert_at_index(list, ptr, 0);
@@ -513,14 +533,14 @@ END_TEST
 
 START_TEST(test_GetElementAtIndexListMultipleElements)
 {
-        char a = 'A';
-        char *ptr = &a;
-        char b = 'B';
-        char *ptrb = &b;
-        char c = 'C';
-        char *ptrc = &c;
-	char d = 'D';
-	char *ptrd = &d;
+    char *ptr = malloc(sizeof(char));
+    *ptr='A';
+    char *ptrb = malloc(sizeof(char));
+    *ptrb='B';
+    char *ptrc = malloc(sizeof(char));
+    *ptrc='C';
+    char *ptrd = malloc(sizeof(char));
+    *ptrd='D';
     //Test GetElementAtIndex when index = -1
     dplist_t *list = dpl_create();
     list = dpl_insert_at_index(list, ptr, 0);

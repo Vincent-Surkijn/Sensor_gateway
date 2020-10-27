@@ -32,24 +32,24 @@ START_TEST(test_ListFree)
         // Test free NULL
         dplist_t *list = NULL;
         dpl_free(&list);
-        ck_assert_msg(list == NULL, "Failure: expected result to be NULL , but was %p", list);
+        ck_assert_msg(list == NULL, "Failure1: expected result to be NULL , but was %p", list);
 
         // Test free empty list
         list = dpl_create();
         dpl_free(&list);
-        ck_assert_msg(list == NULL, "Failure: expected result to be NULL, but was %p", list);
+        ck_assert_msg(list == NULL, "Failure2: expected result to be NULL, but was %p", list);
         // Test free with one element
         list = dpl_create();
 	list = dpl_insert_at_index(list, 'A', 0);
 	dpl_free(&list);
-        ck_assert_msg(list == NULL, "Failure: expected result to be NULL, but was %p", list);
+        ck_assert_msg(list == NULL, "Failure3: expected result to be NULL, but was %p", list);
         // Test free with multiple element
         list = dpl_create();
         list = dpl_insert_at_index(list, 'A', 0);
         list = dpl_insert_at_index(list, 'B', 1);
         list = dpl_insert_at_index(list, 'C', 2);
         dpl_free(&list);
-        ck_assert_msg(list == NULL, "Failure: expected result to be NULL, but was %p", list);
+        ck_assert_msg(list == NULL, "Failure4: expected result to be NULL, but was %p", list);
     }
 END_TEST
 
