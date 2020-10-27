@@ -85,7 +85,6 @@ void dpl_free(dplist_t **list) {
     //dummy->element=0;
     free(*list);	// Free list(contains head)
     *list = NULL;	// Set ptr to list to null
-    list = NULL;
 }
 
 /* Important note: to implement any list manipulation operator (insert, append, delete, sort, ...), always be aware of the following cases:
@@ -256,7 +255,7 @@ int dpl_get_index_of_element(dplist_t *list, element_t element) {
     return -1;
 }
 
-/** Debug:*/
+/** Debug:
 int main(){
     dplist_t *list = dpl_create();
 

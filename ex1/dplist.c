@@ -85,7 +85,6 @@ void dpl_free(dplist_t **list) {
    // *list = NULL;
     free(*list);	// Free list(contains head)
     *list=NULL;		// Free ptr to list
-    list = NULL;
 }
 
 /* Important note: to implement any list manipulation operator (insert, append, delete, sort, ...), always be aware of the following cases:
