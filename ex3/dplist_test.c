@@ -119,7 +119,7 @@ START_TEST(test_ListFree)
         *name = 'v';
         element->id = 1;
         element->name = name;
-    tcase_add_test(tc1_1, test_GetElementAtIndexListOneElement);        dpl_insert_at_index(list, element, 0, false);
+        dpl_insert_at_index(list, element, 0, false);
 
 	my_element_t *element2 = malloc(sizeof(my_element_t));
 	char *name2 = malloc(sizeof(char));
@@ -150,7 +150,7 @@ START_TEST(test_ListFree)
         element2->name = name2;
         dpl_insert_at_index(list, element2, 0, true);
 
-	my_element_t **ptr2 = (my_element_t**)(&(dpl_get_reference_at_index(list, 0)->element));
+	my_element_t **ptr2 = (my_element_t**)(&(dpl_get_reference_at_index(list, 1)->element));
 
         dpl_free(&list, true);
         ck_assert_msg(list == NULL, "Failure: expected result to be NULL");
@@ -866,6 +866,194 @@ START_TEST(test_GetElementAtIndexListMultipleElements)
 END_TEST
 
 
+START_TEST(test_RemoveAtIndexListNull)
+{
+    // Test RemoveAtIndex when index = -1 & free_element = true
+    dplist_t *result = dpl_remove_at_index(NULL, -1, true);
+    ck_assert_msg(result == NULL,"Failure: expected NULL, but got %p",result);
+    // Test RemoveAtIndex when index = 0
+    result = dpl_remove_at_index(NULL, 0, true);
+    ck_assert_msg(result == NULL,"Failure: expected NULL, but got %p",result);
+    // Test RemoveAtIndex when index = 99
+    result = dpl_remove_at_index(NULL, 99, true);
+    ck_assert_msg(result == NULL,"Failure: expected NULL, but got %p",result);
+    // Test RemoveAtIndex when index = -1 & free_element = false
+    result = dpl_remove_at_index(NULL, -1, false);
+    ck_assert_msg(result == NULL,"Failure: expected NULL, but got %p",result);
+    // Test RemoveAtIndex when index = 0
+    result = dpl_remove_at_index(NULL, 0, false);
+    ck_assert_msg(result == NULL,"Failure: expected NULL, but got %p",result);
+    // Test RemoveAtIndex when index = 99
+    result = dpl_remove_at_index(NULL, 99, false);
+    ck_assert_msg(result == NULL,"Failure: expected NULL, but got %p",result);
+
+}
+END_TEST
+
+
+START_TEST(test_RemoveAtIndexListEmpty)
+{
+    dplist_t *list = dpl_create(element_copy, element_free, element_compare);
+    // Test RemoveAtIndex when index = -1 & free_element = true
+    dplist_t *result = dpl_remove_at_index(list, -1, true);
+    ck_assert_msg(result == list,"Failure1: expected %p, but got %p",list,result);
+    // Test RemoveAtIndex when index = 0
+    result = dpl_remove_at_index(list, 0, true);
+    ck_assert_msg(result == list,"Failure2: expected %p, but got %p",list,result);
+    // Test RemoveAtIndex when index = 99
+    result = dpl_remove_at_index(list, 99, true);
+    ck_assert_msg(result == list,"Failure3: expected %p, but got %p",list,result);
+    // Test RemoveAtIndex when index = -1 & free_element = false
+    result = dpl_remove_at_index(list, -1, false);
+    ck_assert_msg(result == list,"Failure1: expected %p, but got %p",list,result);
+    // Test RemoveAtIndex when index = 0
+    result = dpl_remove_at_index(list, 0, false);
+    ck_assert_msg(result == list,"Failure2: expected %p, but got %p",list,result);
+    // Test RemoveAtIndex when index = 99
+    result = dpl_remove_at_index(list, 99, false);
+    ck_assert_msg(result == list,"Failure3: expected %p, but got %p",list,result);
+
+}
+END_TEST
+
+
+START_TEST(test_RemoveAtIndexListOneElement){
+    dplist_t *list = dpl_create(element_copy, element_free, element_compare);
+    my_element_t *element = malloc(sizeof(my_element_t));
+    char *name = malloc(sizeof(char));
+    *name = 'v';
+    element->id = 1;
+    element->name = name;
+    list = dpl_insert_at_index(list, element, -1, false);
+    my_element_t *element2 = malloc(sizeof(my_element_t));
+    char *name2 = malloc(sizeof(char));
+    *name2 = 'a';
+    element2->id = 2;
+    element2->name = name2;
+    my_element_t *element3 = malloc(sizeof(my_element_t));
+    char *name3 = malloc(sizeof(char));
+    *name3 = 'b';
+    element3->id = 3;
+    element3->name = name3;
+
+
+    // Test RemoveAtIndex when index = -1 & free_element = false
+    dplist_t *result = dpl_remove_at_index(list, -1, false);
+    ck_assert_msg(dpl_size(result)==0,"Failure1: expected 0, but got %d",dpl_size(result));
+
+    // Test RemoveAtIndex when index = 0 & free_element = false
+    list = dpl_insert_at_index(list, element, 0, false);
+    result = dpl_remove_at_index(list, 0, false);
+    ck_assert_msg(dpl_size(result)==0,"Failure2: expected 0, but got %d",dpl_size(result));
+
+    // Test RemoveAtIndex when index = 99 & free_element = false
+    list = dpl_insert_at_index(list, element, 0, false);
+    result = dpl_remove_at_index(list, 99, false);
+    ck_assert_msg(dpl_size(result)==0,"Failure3: expected 0, but got %d",dpl_size(result));
+
+
+
+    // Test RemoveAtIndex when index = -1 & free_element = true
+    list = dpl_insert_at_index(list, element, 0, false);
+    my_element_t **ptr1 = (my_element_t**)(&(dpl_get_reference_at_index(list, -1)->element));
+    result = dpl_remove_at_index(list, -1, true);
+    ck_assert_msg(dpl_size(result)==0,"Failure4: expected 0, but got %d",dpl_size(result));
+    ck_assert_msg(*ptr1 == NULL,"Failure4: expected ptr to be NULL");
+
+
+    // Test RemoveAtIndex when index = 0 & free_element = true
+    list = dpl_insert_at_index(list, element2, 0, false);
+    ptr1 = (my_element_t**)(&(dpl_get_reference_at_index(result, 0)->element));
+    result = dpl_remove_at_index(list, 0, true);
+    ck_assert_msg(dpl_size(result)==0,"Failure5: expected 0, but got %d",dpl_size(result));
+    ck_assert_msg(*ptr1 == NULL,"Failure5: expected ptr to be NULL");
+
+    // Test RemoveAtIndex when index = 99 & free_element = true
+    list = dpl_insert_at_index(list, element3, 0, false);
+    ptr1 = (my_element_t**)(&(dpl_get_reference_at_index(result, 0)->element));
+    result = dpl_remove_at_index(list, 99, true);
+    ck_assert_msg(dpl_size(result)==0,"Failure6: expected 0, but got %d",dpl_size(result));
+    ck_assert_msg(*ptr1 == NULL,"Failure6: expected ptr to be NULL");
+
+}
+END_TEST
+
+
+START_TEST(test_RemoveAtIndexListMultipleElements){
+    dplist_t *list = dpl_create(element_copy, element_free, element_compare);
+    my_element_t *element = malloc(sizeof(my_element_t));
+    char *name = malloc(sizeof(char));
+    *name = 'v';
+    element->id = 1;
+    element->name = name;
+    my_element_t *element2 = malloc(sizeof(my_element_t));
+    char *name2 = malloc(sizeof(char));
+    *name2 = 'a';
+    element2->id = 2;
+    element2->name = name2;
+    my_element_t *element3 = malloc(sizeof(my_element_t));
+    char *name3 = malloc(sizeof(char));
+    *name3 = 'b';
+    element3->id = 3;
+    element3->name = name3;
+    my_element_t *element4 = malloc(sizeof(my_element_t));
+    char *name4 = malloc(sizeof(char));
+    *name4 = 'c';
+    element4->id = 4;
+    element4->name = name4;
+    my_element_t *element5 = malloc(sizeof(my_element_t));
+    char *name5 = malloc(sizeof(char));
+    *name5 = 'd';
+    element5->id = 5;
+    element5->name = name5;
+
+    list = dpl_insert_at_index(list, element, 0, false);
+    list = dpl_insert_at_index(list, element2, 1, false);
+    list = dpl_insert_at_index(list, element3, 2, false);
+
+    // Test RemoveAtIndex when index = -1 & free_element = false
+    dplist_t *result = dpl_remove_at_index(list, -1, false);
+    ck_assert_msg(dpl_size(result)==2,"Failure1: expected 2, but got %d",dpl_size(result));
+
+    // Test RemoveAtIndex when index = 0 & free_element = false
+    list = dpl_insert_at_index(list, element, 0, false);
+    result = dpl_remove_at_index(list, 0, false);
+    ck_assert_msg(dpl_size(result)==2,"Failure2: expected 2, but got %d",dpl_size(result));
+
+    // Test RemoveAtIndex when index = 99 & free_element = false
+    list = dpl_insert_at_index(list, element, 0, false);
+    result = dpl_remove_at_index(list, 99, false);
+    ck_assert_msg(dpl_size(result)==2,"Failure3: expected 2, but got %d",dpl_size(result));
+
+
+
+
+    // Test RemoveAtIndex when index = -1 & free_element = true
+    list = dpl_insert_at_index(list, element, 0, false);
+    my_element_t **ptr1 = (my_element_t**)(&(dpl_get_reference_at_index(list, -1)->element));
+    result = dpl_remove_at_index(list, -1, true);
+    ck_assert_msg(dpl_size(result)==2,"Failure4: expected 2, but got %d",dpl_size(result));
+    ck_assert_msg(*ptr1 == NULL,"Failure4: expected ptr to be NULL");
+
+
+    // Test RemoveAtIndex when index = 0 & free_element = true
+    list = dpl_insert_at_index(list, element4, 0, false);
+    ptr1 = (my_element_t**)(&(dpl_get_reference_at_index(result, 0)->element));
+    result = dpl_remove_at_index(list, 0, true);
+    ck_assert_msg(dpl_size(result)==2,"Failure5: expected 2, but got %d",dpl_size(result));
+    ck_assert_msg(*ptr1 == NULL,"Failure5: expected ptr to be NULL");
+
+    // Test RemoveAtIndex when index = 99 & free_element = true
+    list = dpl_insert_at_index(list, element5, 0, false);
+    ptr1 = (my_element_t**)(&(dpl_get_reference_at_index(result, 99)->element));
+    result = dpl_remove_at_index(list, 99, true);
+    ck_assert_msg(dpl_size(result)==2,"Failure6: expected 2, but got %d",dpl_size(result));
+    ck_assert_msg(*ptr1 == NULL,"Failure6: expected ptr to be NULL");
+
+}
+END_TEST
+
+
 //START_TEST(test_nameOfYourTest)
 //  Add other testcases here...
 //END_TEST
@@ -888,15 +1076,19 @@ int main(void) {
     tcase_add_test(tc1_1, test_GetReferenceAtIndexListEmpty);
     tcase_add_test(tc1_1, test_GetReferenceAtIndexListOneElement);
     tcase_add_test(tc1_1, test_GetReferenceAtIndexListMultipleElements);
-    tcase_add_test(tc1_1,test_GetIndexOfElementListNull);
-    tcase_add_test(tc1_1,test_GetIndexOfElementListEmpty);
-    tcase_add_test(tc1_1,test_GetIndexOfElementListOneElement);
-    tcase_add_test(tc1_1,test_GetIndexOfElementListMultipleElements);
+    tcase_add_test(tc1_1, test_GetIndexOfElementListNull);
+    tcase_add_test(tc1_1, test_GetIndexOfElementListEmpty);
+    tcase_add_test(tc1_1, test_GetIndexOfElementListOneElement);
+    tcase_add_test(tc1_1, test_GetIndexOfElementListMultipleElements);
     tcase_add_test(tc1_1, test_GetElementAtRef);
     tcase_add_test(tc1_1, test_GetElementAtIndexListNull);
     tcase_add_test(tc1_1, test_GetElementAtIndexListEmpty);
     tcase_add_test(tc1_1, test_GetElementAtIndexListOneElement);
     tcase_add_test(tc1_1, test_GetElementAtIndexListMultipleElements);
+    tcase_add_test(tc1_1, test_RemoveAtIndexListNull);
+    tcase_add_test(tc1_1, test_RemoveAtIndexListEmpty);
+    tcase_add_test(tc1_1, test_RemoveAtIndexListOneElement);
+    tcase_add_test(tc1_1, test_RemoveAtIndexListMultipleElements);
     // Add other tests here...
 
     srunner_run_all(sr, CK_VERBOSE);

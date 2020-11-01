@@ -61,6 +61,7 @@ void dpl_free(dplist_t **list) {
     dplist_t *list_ptr = *list;	//list_ptr is a copy of the ptr that points to start of the list
     if(list_ptr == NULL) return;
     if(list_ptr->head == NULL){
+	free(*list);
 	*list = NULL;
 	return;
     }
