@@ -385,4 +385,4 @@ int main(){
     printf("Free the real element3 as well\n");
     element_free( (void **)(&element3) );
 
-}/**/
+}*/
