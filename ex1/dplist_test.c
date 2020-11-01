@@ -293,15 +293,15 @@ START_TEST(test_GetReferenceAtIndexListOneElement)
     dplist_t *list = dpl_create();
     list = dpl_insert_at_index(list, 'A', 0);
     dplist_node_t *result =  dpl_get_reference_at_index(list, -1);
-    ck_assert_msg(result == list->head,"Failure: expected NULL, but got %p",result);
+    ck_assert_msg(result == list->head,"Failure: expected head, but got %p",result);
 
     // Test getReference when index = 0
     result =  dpl_get_reference_at_index(list, 0);
-    ck_assert_msg(result == list->head,"Failure: expected NULL, but got %p",result);
+    ck_assert_msg(result == list->head,"Failure: expected head, but got %p",result);
 
     // Test getReference when index = 99
     result =  dpl_get_reference_at_index(list, 99);
-    ck_assert_msg(result == list->head,"Failure: expected NULL, but got %p",result);
+    ck_assert_msg(result == list->head,"Failure: expected head, but got %p",result);
 }
 END_TEST
 
