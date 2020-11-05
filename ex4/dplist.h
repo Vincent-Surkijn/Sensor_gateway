@@ -196,6 +196,22 @@ int dpl_get_index_of_reference(dplist_t *list, dplist_node_t *reference);
  */
 dplist_t *dpl_insert_at_reference(dplist_t *list, void *element, dplist_node_t *reference, bool insert_copy);
 
+/** Swaps two subsequent nodes
+ * \param list pointer to list of nodes
+ * \param node1 pointer to first node
+ * \param node2 pointer to second node
+*/
+void dpl_swap(dplist_t *list, dplist_node_t *node1, dplist_node_t *node2);
+
+/** Sorts the list in a determined order
+ * - If 'list' is is NULL, NULL is returned.
+ * - If 'list' is empty, NULL is returned
+ * \param list a pointer to the list
+ * \param asc if true sort in ascending order, if false sort in descending order
+ * \return pointer to sorted list
+*/
+dplist_t *dpl_sort_list(dplist_t *list, bool asc);
+
 /** Inserts a new list node containing 'element' in the sorted list and returns a pointer to the new list.
  * - The list must be sorted or empty before calling this function.
  * - The sorting is done in ascending order according to a comparison function.

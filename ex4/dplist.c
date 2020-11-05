@@ -384,10 +384,76 @@ dplist_t *dpl_insert_at_reference(dplist_t *list, void *element, dplist_node_t *
     // Insert new node at index
     return dpl_insert_at_index(list, element, index, insert_copy);
 }
+/****** Under construction!!!!*/
 
+dplist_t *dpl_sort_list(dplist_t *list, bool asc){
+    if(list == NULL)    return NULL;
+    if(list->head == NULL)      return NULL;
 
+    dplist_node_t *three = dpl_get_reference_at_index(list, 0);
+    int i;
+    dplist_node_t *dummy;
+    for(i = 0; i<dpl_size(list); i++){
+	int j;
+	for(dummy = list->head, j = 0; j<dpl_size(list)-i, dummy->next != NULL; j++, dummy = dummy->next){
+	    if(!asc){
+		if(list->element_compare(dummy->element,dummy->next->element) == -1){
+		    //printf("Swapping index %d & %d\n", dpl_get_index_of_reference(list, dummy), dpl_get_index_of_reference(list, dummy->next));
+		    dpl_swap(list, dummy, dummy->next);
+		    dummy = dummy->prev;
+		}
+	    }
+	    else{
+                if(list->element_compare(dummy->element,dummy->next->element) == 1){
+                    dpl_swap(list, dummy, dummy->next);
+                    dummy = dummy->prev;
+                }
+	    }
+	}
+    }
+    return list;
+}
 
-/** Debug
+/** 3 possible cases
+ * Case 1: start of list
+ * Case 2: middle of list
+ * Case 3: end of list
+*/
+void dpl_swap(dplist_t *list, dplist_node_t *node1, dplist_node_t *node2){
+    if(list == NULL)    return;
+    if(list->head == NULL)      return;
+    if( node1 == NULL || node2 == NULL) return;
+
+    dplist_node_t *temp = node2->next;
+    if(node1->prev == NULL){		//Case 1
+	//printf("Swap case1\n");
+	list->head = node2;
+	node2->prev = NULL;
+	node2->next->prev = node1;
+	node2->next = node1;
+	node1->prev = node2;
+	node1->next = temp;
+    }
+    else if(node2->next == NULL){	//Case 3
+	//printf("Swap case3\n");
+        node1->prev->next = node2;
+        node2->prev = node1->prev;
+        node2->next = node1;
+        node1->prev = node2;
+        node1->next = temp;
+    }
+    else{				//Case2
+        //printf("Swap case2\n");
+        node1->prev->next = node2;
+        node2->prev = node1->prev;
+	node2->next->prev = node1;
+        node2->next = node1;
+        node1->prev = node2;
+        node1->next = temp;
+    }
+}
+
+/** Debug*/
 typedef struct {
     int id;
     char* name;
@@ -425,7 +491,7 @@ int main(){
     //printf("Inserting...\n");
     my_element_t *element = malloc(sizeof(my_element_t));
     char *name = malloc(sizeof(char));
-    *name = 'v';
+    *name = '1';
     element->id = 1;
     element->name = name;
     dpl_insert_at_index(list, element, 0, false);
@@ -436,32 +502,52 @@ int main(){
 
     my_element_t *element2 = malloc(sizeof(my_element_t));
     char *name2 = malloc(sizeof(char));
-    *name2 = 's';
+    *name2 = '2';
     element2->id = 2;
     element2->name = name2;
-    //dpl_insert_at_index(list, element2, 0, true);
-
-    dplist_node_t *reference = malloc(sizeof(dplist_node_t));
-    dplist_t *result = dpl_insert_at_reference(list, element2, reference, false);
-    printf("Resulting list: %p\n", result);
-    printf("Size of list: %d\n", dpl_size(result));
+    dpl_insert_at_index(list, element2, 0, true);
 
 
-
-    /*my_element_t *element3 = malloc(sizeof(my_element_t));
+    my_element_t *element3 = malloc(sizeof(my_element_t));
     char *name3 = malloc(sizeof(char));
-    *name3 = 'x';
+    *name3 = '3';
     element3->id = 3;
     element3->name = name3;
     dpl_insert_at_index(list, element3, 0, true);
 
-    printf("Size of list: %d\n", dpl_size(list));
+    my_element_t *element4 = malloc(sizeof(my_element_t));
+    char *name4 = malloc(sizeof(char));
+    *name4 = '4';
+    element4->id = 4;
+    element4->name = name4;
+    dpl_insert_at_index(list, element4, 3, true);
+
+    my_element_t *element5 = malloc(sizeof(my_element_t));
+    char *name5 = malloc(sizeof(char));
+    *name5 = '5';
+    element5->id = 5;
+    element5->name = name5;
+    dpl_insert_at_index(list, element5, 1, true);
 
     printf("List: \n");
+    printf("Size of list: %d\n", dpl_size(list));
     printf("Element name at index 0: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 0)) )->name) );
     printf("Element name at index 1: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 1)) )->name) );
+    printf("Element name at index 2: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 2)) )->name) );
+    printf("Element name at index 3: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 3)) )->name) );
+    printf("Element name at index 4: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 4)) )->name) );
 
-    dpl_remove_at_index(list,1, true);
+    dpl_sort_list(list,true);
+
+    printf("List after sort/swap: \n");
+    printf("Size of list: %d\n", dpl_size(list));
+    printf("Element name at index 0: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 0)) )->name) );
+    printf("Element name at index 1: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 1)) )->name) );
+    printf("Element name at index 2: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 2)) )->name) );
+    printf("Element name at index 3: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 3)) )->name) );
+    printf("Element name at index 4: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 4)) )->name) );
+
+/*    dpl_remove_at_index(list,1, true);
     printf("Size of list after remove: %d\n", dpl_size(list));
     printf("List: \n");
     printf("Element name at index 0: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 0)) )->name) );
@@ -479,6 +565,6 @@ int main(){
 
     printf("Free the real element3 as well\n");
     element_free( (void **)(&element3) );
-
-}*/
+*/
+}
 
