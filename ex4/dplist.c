@@ -1,4 +1,4 @@
-/*If you're using an RSA key, substitute accordingly./**
+/**
  * \author Vincent Surkijn
  */
 #define _GNU_SOURCE
@@ -385,6 +385,46 @@ dplist_t *dpl_insert_at_reference(dplist_t *list, void *element, dplist_node_t *
     return dpl_insert_at_index(list, element, index, insert_copy);
 }
 
+/** 3 possible cases
+ * Case 1: start of list
+ * Case 2: middle of list
+ * Case 3: end of list
+*/
+void dpl_swap(dplist_t *list, dplist_node_t *node1, dplist_node_t *node2){
+    if(list == NULL)    return;
+    if(list->head == NULL)      return;
+    if( node1 == NULL || node2 == NULL) return;
+
+    dplist_node_t *temp = node2->next;
+    if(node1->prev == NULL){            //Case 1
+        //printf("Swap case1\n");
+        list->head = node2;
+        node2->prev = NULL;
+        node2->next->prev = node1;
+        node2->next = node1;
+        node1->prev = node2;
+        node1->next = temp;
+    }
+    else if(node2->next == NULL){       //Case 3
+        //printf("Swap case3\n");
+        node1->prev->next = node2;
+        node2->prev = node1->prev;
+        node2->next = node1;
+        node1->prev = node2;
+        node1->next = temp;
+    }
+    else{                               //Case2
+        //printf("Swap case2\n");
+        node1->prev->next = node2;
+        node2->prev = node1->prev;
+        node2->next->prev = node1;
+        node2->next = node1;
+        node1->prev = node2;
+        node1->next = temp;
+    }
+}
+
+
 dplist_t *dpl_sort_list(dplist_t *list, bool asc){
     if(list == NULL)    return NULL;
     if(list->head == NULL)      return NULL;
@@ -393,7 +433,7 @@ dplist_t *dpl_sort_list(dplist_t *list, bool asc){
     dplist_node_t *dummy;
     for(i = 0; i<dpl_size(list); i++){
 	int j;
-	for(dummy = list->head, j = 0; j<dpl_size(list)-i, dummy->next != NULL; j++, dummy = dummy->next){
+	for(dummy = list->head, j = 0; dummy->next != NULL; j++, dummy = dummy->next){
 	    if(!asc){
 		if(list->element_compare(dummy->element,dummy->next->element) == -1){
 		    //printf("Swapping index %d & %d\n", dpl_get_index_of_reference(list, dummy), dpl_get_index_of_reference(list, dummy->next));
@@ -410,45 +450,6 @@ dplist_t *dpl_sort_list(dplist_t *list, bool asc){
 	}
     }
     return list;
-}
-
-/** 3 possible cases
- * Case 1: start of list
- * Case 2: middle of list
- * Case 3: end of list
-*/
-void dpl_swap(dplist_t *list, dplist_node_t *node1, dplist_node_t *node2){
-    if(list == NULL)    return;
-    if(list->head == NULL)      return;
-    if( node1 == NULL || node2 == NULL) return;
-
-    dplist_node_t *temp = node2->next;
-    if(node1->prev == NULL){		//Case 1
-	//printf("Swap case1\n");
-	list->head = node2;
-	node2->prev = NULL;
-	node2->next->prev = node1;
-	node2->next = node1;
-	node1->prev = node2;
-	node1->next = temp;
-    }
-    else if(node2->next == NULL){	//Case 3
-	//printf("Swap case3\n");
-        node1->prev->next = node2;
-        node2->prev = node1->prev;
-        node2->next = node1;
-        node1->prev = node2;
-        node1->next = temp;
-    }
-    else{				//Case2
-        //printf("Swap case2\n");
-        node1->prev->next = node2;
-        node2->prev = node1->prev;
-	node2->next->prev = node1;
-        node2->next = node1;
-        node1->prev = node2;
-        node1->next = temp;
-    }
 }
 
 dplist_t *dpl_insert_sorted(dplist_t *list, void *element, bool insert_copy){
