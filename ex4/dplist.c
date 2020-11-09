@@ -1,4 +1,4 @@
-/**
+/*If you're using an RSA key, substitute accordingly./**
  * \author Vincent Surkijn
  */
 #define _GNU_SOURCE
@@ -181,7 +181,7 @@ dplist_t *dpl_remove_at_index(dplist_t *list, int index, bool free_element) {
     }
     else if(index >= dpl_size(list) - 1){       //covers case 3
         //printf("Rem case 3\n");
-        dplist_node_t *toRem = dpl_get_reference_at_index(list, 99);
+        dplist_node_t *toRem = dpl_get_reference_at_index(list, dpl_size(list));
         if(toRem->prev != NULL){
             dplist_node_t* prev = toRem->prev;
             prev->next = NULL;
@@ -453,7 +453,44 @@ void dpl_swap(dplist_t *list, dplist_node_t *node1, dplist_node_t *node2){
     }
 }
 
-/** Debug*/
+dplist_t *dpl_insert_sorted(dplist_t *list, void *element, bool insert_copy){
+    if(list==NULL)	return NULL;
+    if(list->head == NULL){
+	dpl_insert_at_index(list, element, 0, insert_copy);
+	return list;
+    }
+    if(dpl_size(list) == 1){
+	if(list->element_compare(element, list->head->element) == -1){
+	    dpl_insert_at_index(list, element, 0, insert_copy);
+	    return list;
+	}
+	else{
+	    dpl_insert_at_index(list, element, dpl_size(list), insert_copy);
+            return list;
+	}
+    }
+    if(element==NULL){
+        dpl_insert_at_index(list, element, dpl_size(list), insert_copy);
+        return list;
+    }
+
+    dplist_node_t *dummy;
+    int count;
+
+    for (dummy = list->head, count = 0; dummy->next != NULL; dummy = dummy->next, count++){
+        if (list->element_compare(element, dummy->element) == -1){
+	    dpl_insert_at_index(list, element, count, insert_copy);
+	    return list;
+	}
+    }
+
+    dpl_insert_at_index(list, element, dpl_size(list), insert_copy);
+    return list;
+}
+
+
+
+/** Debug
 typedef struct {
     int id;
     char* name;
@@ -565,6 +602,6 @@ int main(){
 
     printf("Free the real element3 as well\n");
     element_free( (void **)(&element3) );
-*/
-}
 
+}
+*/
