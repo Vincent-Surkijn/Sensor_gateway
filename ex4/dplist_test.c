@@ -2002,6 +2002,181 @@ START_TEST(test_insertSortedListMultipleElements){
 END_TEST
 
 
+START_TEST(test_removeAtReferenceListNothingRemoved){
+    dplist_node_t *ref = malloc(sizeof(dplist_node_t));
+    my_element_t *element = malloc(sizeof(my_element_t));
+    char *name = malloc(sizeof(char));
+    *name = 'v';
+    element->id = 1;
+    element->name = name;
+    my_element_t *element2 = malloc(sizeof(my_element_t));
+    char *name2 = malloc(sizeof(char));
+    *name2 = 'a';
+    element2->id = 2;
+    element2->name = name2;
+    my_element_t *element3 = malloc(sizeof(my_element_t));
+    char *name3 = malloc(sizeof(char));
+    *name3 = 'b';
+    element3->id = 3;
+    element3->name = name3;
+
+    // Test RemoveAtRef when list is NULL
+    dplist_t *result = dpl_remove_at_reference(NULL, ref, false);
+    ck_assert_msg( result == NULL, "Failure: expected result to be NULL");
+
+    // Test RemoveAtRef when ref is NULL
+    dplist_t *list = dpl_create(element_copy, element_free, element_compare);
+    result = dpl_remove_at_reference(list, NULL, false);
+    ck_assert_msg( result == NULL, "Failure: expected result to be NULL");
+
+    // Test RemoveAtRef when list is empty
+    list = dpl_create(element_copy, element_free, element_compare);
+    result = dpl_remove_at_reference(list, ref, false);
+    ck_assert_msg( dpl_size(result) == 0, "Failure: expected size to be 0, but was %d", dpl_size(result));
+    dpl_free(&list,false);
+
+    // Test RemoveAtRef when list has one element & ref is not in list
+    list = dpl_create(element_copy, element_free, element_compare);
+    list = dpl_insert_at_index(list, element, 0, false);
+    result = dpl_remove_at_reference(list, ref, false);
+    ck_assert_msg( dpl_size(result) == 1, "Failure: expected size to be 1, but was %d", dpl_size(result));
+
+    // Test RemoveAtRef when list has multiple elements & ref is not in list
+    list = dpl_insert_at_index(list, element2, 1, false);
+    list = dpl_insert_at_index(list, element3, 2, false);
+    result = dpl_remove_at_reference(list, ref, false);
+    ck_assert_msg( dpl_size(result) == 3, "Failure: expected size to be 3, but was %d", dpl_size(result));
+
+    dpl_free(&list,false);
+
+// Free_element = true
+
+    // Test RemoveAtRef when list is NULL
+    result = dpl_remove_at_reference(NULL, ref, true);
+    ck_assert_msg( result == NULL, "Failure: expected result to be NULL");
+
+    // Test RemoveAtRef when ref is NULL
+    list = dpl_create(element_copy, element_free, element_compare);
+    result = dpl_remove_at_reference(list, NULL, true);
+    ck_assert_msg( result == NULL, "Failure: expected result to be NULL");
+
+    // Test RemoveAtRef when list is empty
+    list = dpl_create(element_copy, element_free, element_compare);
+    result = dpl_remove_at_reference(list, ref, true);
+    ck_assert_msg( dpl_size(result) == 0, "Failure: expected size to be 1, but was %d", dpl_size(result));
+    dpl_free(&list,false);
+
+    // Test RemoveAtRef when list has one element & ref is not in list
+    list = dpl_create(element_copy, element_free, element_compare);
+    list = dpl_insert_at_index(list, element, 0, false);
+    result = dpl_remove_at_reference(list,  ref,true);
+    ck_assert_msg( dpl_size(result) == 1, "Failure: expected size to be 1, but was %d", dpl_size(result));
+
+    // Test RemoveAtRef when list has multiple elements & ref is not in list
+    list = dpl_insert_at_index(list, element2, 1, false);
+    list = dpl_insert_at_index(list, element3, 2, false);
+    result = dpl_remove_at_reference(list, ref, true);
+    ck_assert_msg( dpl_size(result) == 3, "Failure: expected size to be 3, but was %d", dpl_size(result));
+
+}
+END_TEST
+
+
+START_TEST(test_removeAtReferenceListOneElement){
+    my_element_t *element = malloc(sizeof(my_element_t));
+    char *name = malloc(sizeof(char));
+    *name = 'v';
+    element->id = 1;
+    element->name = name;
+
+    dplist_t *list = dpl_create(element_copy, element_free, element_compare);
+    list = dpl_insert_at_index(list, element, 0, false);
+
+    // Test RemoveAtRef when reference is in list (& both first and last element)
+    dplist_node_t *ref = dpl_get_reference_at_index(list,0);
+    dplist_t *result = dpl_remove_at_reference(list, ref, false);
+    ck_assert_msg( dpl_size(result) == 0, "Failure: expected size to be 0, but was %d", dpl_size(result));
+    dpl_free(&list,false);
+
+//Free_element = true
+
+    // Test InsertAtRef when reference is in list (& both first and last element)
+    list = dpl_create(element_copy, element_free, element_compare);
+    list = dpl_insert_at_index(list, element, 0, false);
+    ref = dpl_get_reference_at_index(list,0);
+    result = dpl_remove_at_reference(list, ref, true);
+    ck_assert_msg( dpl_size(result) == 0, "Failure: expected size to be 0, but was %d", dpl_size(result));
+    dpl_free(&list,false);
+}
+END_TEST
+
+
+START_TEST(test_removeAtReferenceListMultipleElements){
+    my_element_t *element = malloc(sizeof(my_element_t));
+    char *name = malloc(sizeof(char));
+    *name = 'v';
+    element->id = 1;
+    element->name = name;
+    my_element_t *element2 = malloc(sizeof(my_element_t));
+    char *name2 = malloc(sizeof(char));
+    *name2 = 'a';
+    element2->id = 2;
+    element2->name = name2;
+    my_element_t *element3 = malloc(sizeof(my_element_t));
+    char *name3 = malloc(sizeof(char));
+    *name3 = 'b';
+    element3->id = 3;
+    element3->name = name3;
+
+
+    dplist_t *list = dpl_create(element_copy, element_free, element_compare);
+    list = dpl_insert_at_index(list, element, 0, false);
+    list = dpl_insert_at_index(list, element2, 0, false);
+
+    // Test RemoveAtRef when reference is first
+    list = dpl_create(element_copy, element_free, element_compare);
+    list = dpl_insert_at_index(list, element, 0, false);
+    list = dpl_insert_at_index(list, element2, 0, false);
+    dplist_node_t *ref = dpl_get_reference_at_index(list,0);
+    dplist_t *result = dpl_remove_at_reference(list, ref, false);
+    ck_assert_msg( dpl_size(result) == 1, "Failure: expected size to be 1, but was %d", dpl_size(result));
+    dpl_free(&list,false);
+
+    // Test RemoveAtRef when reference is last
+    list = dpl_create(element_copy, element_free, element_compare);
+    list = dpl_insert_at_index(list, element, 0, false);
+    list = dpl_insert_at_index(list, element2, 0, false);
+    ref = dpl_get_reference_at_index(list,99);
+    result = dpl_remove_at_reference(list, ref, false);
+    ck_assert_msg( dpl_size(result) == 1, "Failure: expected size to be 1, but was %d", dpl_size(result));
+    dpl_free(&list,false);
+
+
+//Free_element = true
+
+    // Test RemoveAtRef when reference is first element
+    list = dpl_create(element_copy, element_free, element_compare);
+    list = dpl_insert_at_index(list, element, 0, false);
+    list = dpl_insert_at_index(list, element2, 0, false);
+    ref = dpl_get_reference_at_index(list,0);
+    result = dpl_remove_at_reference(list, ref, true);
+    ck_assert_msg( dpl_size(result) == 1, "Failure: expected size to be 1, but was %d", dpl_size(result));
+    dpl_free(&list,false);
+
+    // Test RemoveAtRef when reference is last
+    list = dpl_create(element_copy, element_free, element_compare);
+    list = dpl_insert_at_index(list, element, 0, false);
+    list = dpl_insert_at_index(list, element2, 0, false);
+    ref = dpl_get_reference_at_index(list,1);
+    result = dpl_remove_at_reference(list, ref, true);
+
+    ck_assert_msg( dpl_size(result) == 1, "Failure: expected size to be 1, but was %d", dpl_size(result));
+    dpl_free(&list,false);
+}
+END_TEST
+
+
+
 //START_TEST(test_nameOfYourTest)
 //  Add other testcases here...
 //END_TEST
@@ -2058,6 +2233,9 @@ int main(void) {
     tcase_add_test(tc1_1, test_insertSortedListEmpty);
     tcase_add_test(tc1_1, test_insertSortedListOneElement);
     tcase_add_test(tc1_1, test_insertSortedListMultipleElements);
+    tcase_add_test(tc1_1, test_removeAtReferenceListNothingRemoved);
+    tcase_add_test(tc1_1, test_removeAtReferenceListOneElement);
+    tcase_add_test(tc1_1, test_removeAtReferenceListMultipleElements);
     // Add other tests here...
 
     srunner_run_all(sr, CK_VERBOSE);

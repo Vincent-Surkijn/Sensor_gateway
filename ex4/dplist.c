@@ -384,7 +384,6 @@ dplist_t *dpl_insert_at_reference(dplist_t *list, void *element, dplist_node_t *
     // Insert new node at index
     return dpl_insert_at_index(list, element, index, insert_copy);
 }
-/****** Under construction!!!!*/
 
 dplist_t *dpl_sort_list(dplist_t *list, bool asc){
     if(list == NULL)    return NULL;
@@ -488,6 +487,16 @@ dplist_t *dpl_insert_sorted(dplist_t *list, void *element, bool insert_copy){
     return list;
 }
 
+dplist_t *dpl_remove_at_reference(dplist_t *list, dplist_node_t *reference, bool free_element){
+    if(list == NULL)	return NULL;
+    if(reference == NULL)	return NULL;
+    if(list->head == NULL)	return list;
+
+    int index = dpl_get_index_of_reference(list, reference);
+    if(index == -1)	return list;	// In this case reference is not found
+
+    return dpl_remove_at_index( list, index, free_element);
+}
 
 
 /** Debug
@@ -574,7 +583,7 @@ int main(){
     printf("Element name at index 3: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 3)) )->name) );
     printf("Element name at index 4: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 4)) )->name) );
 
-    dpl_sort_list(list,true);
+/*    dpl_sort_list(list,true);
 
     printf("List after sort/swap: \n");
     printf("Size of list: %d\n", dpl_size(list));
@@ -584,16 +593,22 @@ int main(){
     printf("Element name at index 3: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 3)) )->name) );
     printf("Element name at index 4: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 4)) )->name) );
 
-/*    dpl_remove_at_index(list,1, true);
-    printf("Size of list after remove: %d\n", dpl_size(list));
+
+
+//    dpl_remove_at_index(list, 1, true);
+    dplist_node_t *ref = dpl_get_reference_at_index(list, 1);
+    dplist_t *result = dpl_remove_at_reference(list, ref, true);
+	printf("result: %p\n", result);
+
+    printf("Size of list after remove: %d\n", dpl_size(result));
     printf("List: \n");
     printf("Element name at index 0: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 0)) )->name) );
+    printf("Element name at index 1: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 1)) )->name) );
+    printf("Element name at index 2: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 2)) )->name) );
+    printf("Element name at index 3: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 3)) )->name) );
 
-    dpl_remove_at_index(list,0, true);
-    dpl_remove_at_index(list,0, true);
 
-
-    printf("Freeing...\n");
+/*    printf("Freeing...\n");
     dpl_free(&list, true);      // Free element as well
     printf("Element ptr in node: %p\n",*ptr);
 
