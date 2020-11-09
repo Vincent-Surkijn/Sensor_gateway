@@ -458,6 +458,10 @@ dplist_t *dpl_insert_sorted(dplist_t *list, void *element, bool insert_copy){
 	dpl_insert_at_index(list, element, 0, insert_copy);
 	return list;
     }
+    if(element==NULL){
+        dpl_insert_at_index(list, element, dpl_size(list), insert_copy);
+        return list;
+    }
     if(dpl_size(list) == 1){
 	if(list->element_compare(element, list->head->element) == -1){
 	    dpl_insert_at_index(list, element, 0, insert_copy);
@@ -467,10 +471,6 @@ dplist_t *dpl_insert_sorted(dplist_t *list, void *element, bool insert_copy){
 	    dpl_insert_at_index(list, element, dpl_size(list), insert_copy);
             return list;
 	}
-    }
-    if(element==NULL){
-        dpl_insert_at_index(list, element, dpl_size(list), insert_copy);
-        return list;
     }
 
     dplist_node_t *dummy;
@@ -493,10 +493,23 @@ dplist_t *dpl_remove_at_reference(dplist_t *list, dplist_node_t *reference, bool
     if(list->head == NULL)	return list;
 
     int index = dpl_get_index_of_reference(list, reference);
+
     if(index == -1)	return list;	// In this case reference is not found
 
     return dpl_remove_at_index( list, index, free_element);
 }
+
+dplist_t *dpl_remove_element(dplist_t *list, void *element, bool free_element){
+    if(list == NULL)    return NULL;
+    if(list->head == NULL)      return list;
+
+    int index = dpl_get_index_of_element(list, element);
+
+    if(index == -1)     return list;    // In this case reference is not found
+
+    return dpl_remove_at_index( list, index, free_element);
+}
+
 
 
 /** Debug
@@ -540,7 +553,7 @@ int main(){
     *name = '1';
     element->id = 1;
     element->name = name;
-    dpl_insert_at_index(list, element, 0, false);
+    //dpl_insert_at_index(list, element, 0, false);
     my_element_t **ptr = (my_element_t**)(&(dpl_get_reference_at_index(list, 0)->element));
 
 
@@ -551,7 +564,7 @@ int main(){
     *name2 = '2';
     element2->id = 2;
     element2->name = name2;
-    dpl_insert_at_index(list, element2, 0, true);
+//    dpl_insert_at_index(list, element2, 0, true);
 
 
     my_element_t *element3 = malloc(sizeof(my_element_t));
@@ -559,23 +572,27 @@ int main(){
     *name3 = '3';
     element3->id = 3;
     element3->name = name3;
-    dpl_insert_at_index(list, element3, 0, true);
+  //  dpl_insert_at_index(list, element3, 0, true);
 
     my_element_t *element4 = malloc(sizeof(my_element_t));
     char *name4 = malloc(sizeof(char));
     *name4 = '4';
     element4->id = 4;
     element4->name = name4;
-    dpl_insert_at_index(list, element4, 3, true);
+    //dpl_insert_at_index(list, element4, 3, true);
 
     my_element_t *element5 = malloc(sizeof(my_element_t));
     char *name5 = malloc(sizeof(char));
     *name5 = '5';
     element5->id = 5;
     element5->name = name5;
-    dpl_insert_at_index(list, element5, 1, true);
+    //dpl_insert_at_index(list, element5, 1, true);
 
-    printf("List: \n");
+   dpl_insert_at_index(list, NULL, 0, false);
+   dpl_remove_element(list, NULL, false);
+    printf("Size of list: %d\n", dpl_size(list));
+
+/* printf("List: \n");
     printf("Size of list: %d\n", dpl_size(list));
     printf("Element name at index 0: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 0)) )->name) );
     printf("Element name at index 1: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 1)) )->name) );
@@ -583,7 +600,7 @@ int main(){
     printf("Element name at index 3: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 3)) )->name) );
     printf("Element name at index 4: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 4)) )->name) );
 
-/*    dpl_sort_list(list,true);
+    dpl_sort_list(list,true);
 
     printf("List after sort/swap: \n");
     printf("Size of list: %d\n", dpl_size(list));
@@ -593,10 +610,10 @@ int main(){
     printf("Element name at index 3: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 3)) )->name) );
     printf("Element name at index 4: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 4)) )->name) );
 
-
+	dpl_insert_sorted(list, element2, false);
 
 //    dpl_remove_at_index(list, 1, true);
-    dplist_node_t *ref = dpl_get_reference_at_index(list, 1);
+/*    dplist_node_t *ref = dpl_get_reference_at_index(list, 1);
     dplist_t *result = dpl_remove_at_reference(list, ref, true);
 	printf("result: %p\n", result);
 
@@ -619,4 +636,5 @@ int main(){
     element_free( (void **)(&element3) );
 
 }
+
 */

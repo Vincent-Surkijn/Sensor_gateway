@@ -1832,15 +1832,17 @@ START_TEST(test_insertSortedListNULL){
     ck_assert_msg( result == NULL, "Failure: expected result to be NULL");
 
     // Test InsertSorted when element is null
-    result = dpl_insert_sorted(NULL, element, false);
+    result = dpl_insert_sorted(NULL, NULL, false);
     ck_assert_msg( result == NULL, "Failure: expected result to be NULL");
 
+//Copy is true
+
     // Test InsertSorted when element is not null
-    result = dpl_insert_sorted(NULL, element, false);
+    result = dpl_insert_sorted(NULL, element, true);
     ck_assert_msg( result == NULL, "Failure: expected result to be NULL");
 
     // Test InsertSorted when element is null
-    result = dpl_insert_sorted(NULL, element, false);
+    result = dpl_insert_sorted(NULL, NULL, true);
     ck_assert_msg( result == NULL, "Failure: expected result to be NULL");
 }
 END_TEST
@@ -1862,19 +1864,21 @@ START_TEST(test_insertSortedListEmpty){
 
     // Test InsertSorted when element is null
     list = dpl_create(element_copy, element_free, element_compare);
-    result = dpl_insert_sorted(list, element, false);
+    result = dpl_insert_sorted(list, NULL, false);
     ck_assert_msg( dpl_size(result) == 1, "Failure: expected size to be 1, but was %d", dpl_size(result));
     dpl_free(&list, false);
 
+//Copy is true
+
     // Test InsertSorted when element is not null
     list = dpl_create(element_copy, element_free, element_compare);
-    result = dpl_insert_sorted(list, element, false);
+    result = dpl_insert_sorted(list, element, true);
     ck_assert_msg( dpl_size(result) == 1, "Failure: expected size to be 1, but was %d", dpl_size(result));
     dpl_free(&list, false);
 
     // Test InsertSorted when element is null
     list = dpl_create(element_copy, element_free, element_compare);
-    result = dpl_insert_sorted(list, element, false);
+    result = dpl_insert_sorted(list, NULL, true);
     ck_assert_msg( dpl_size(result) == 1, "Failure: expected size to be 1, but was %d", dpl_size(result));
     dpl_free(&list, false);
 }
@@ -1912,16 +1916,18 @@ START_TEST(test_insertSortedListOneElement){
     // Test InsertSorted when element is null
     list = dpl_create(element_copy, element_free, element_compare);
     list = dpl_insert_at_index(list, element, 0, false);
-    result = dpl_insert_sorted(list, element2, false);
+    result = dpl_insert_sorted(list, NULL, false);
     ck_assert_msg( dpl_size(result) == 2, "Failure: expected size to be 2, but was %d", dpl_size(result));
-    res_idx = dpl_get_index_of_element(list, element2);
+    res_idx = dpl_get_index_of_element(list, NULL);
     ck_assert_msg( res_idx  == 1, "Failure: expected idx to be 1, but was %d", res_idx);
     dpl_free(&list, false);
+
+//Copy is true
 
     // Test InsertSorted when element is not null
     list = dpl_create(element_copy, element_free, element_compare);
     list = dpl_insert_at_index(list, element, 0, false);
-    result = dpl_insert_sorted(list, element2, false);
+    result = dpl_insert_sorted(list, element2, true);
     ck_assert_msg( dpl_size(result) == 2, "Failure: expected size to be 2, but was %d", dpl_size(result));
     res_idx = dpl_get_index_of_element(list, element2);
     ck_assert_msg( res_idx  == 1, "Failure: expected idx to be 1, but was %d", res_idx);
@@ -1930,9 +1936,9 @@ START_TEST(test_insertSortedListOneElement){
     // Test InsertSorted when element is null
     list = dpl_create(element_copy, element_free, element_compare);
     list = dpl_insert_at_index(list, element, 0, false);
-    result = dpl_insert_sorted(list, element2, false);
+    result = dpl_insert_sorted(list, NULL, true);
     ck_assert_msg( dpl_size(result) == 2, "Failure: expected size to be 2, but was %d", dpl_size(result));
-    res_idx = dpl_get_index_of_element(list, element2);
+    res_idx = dpl_get_index_of_element(list, NULL);
     ck_assert_msg( res_idx  == 1, "Failure: expected idx to be 1, but was %d", res_idx);
     dpl_free(&list, false);
 }
@@ -1973,17 +1979,19 @@ START_TEST(test_insertSortedListMultipleElements){
     list = dpl_create(element_copy, element_free, element_compare);
     list = dpl_insert_at_index(list, element, 0, false);
     list = dpl_insert_at_index(list, element2, 0, false);
-    result = dpl_insert_sorted(list, element3, false);
+    result = dpl_insert_sorted(list, NULL, false);
     ck_assert_msg( dpl_size(result) == 3, "Failure: expected size to be 3, but was %d", dpl_size(result));
-    res_idx = dpl_get_index_of_element(list, element3);
+    res_idx = dpl_get_index_of_element(list, NULL);
     ck_assert_msg( res_idx  == 2, "Failure: expected idx to be 2, but was %d", res_idx);
     dpl_free(&list, false);
+
+//Copy is true
 
     // Test InsertSorted when element is not null
     list = dpl_create(element_copy, element_free, element_compare);
     list = dpl_insert_at_index(list, element, 0, false);
     list = dpl_insert_at_index(list, element2, 0, false);
-    result = dpl_insert_sorted(list, element3, false);
+    result = dpl_insert_sorted(list, element3, true);
     ck_assert_msg( dpl_size(result) == 3, "Failure: expected size to be 3, but was %d", dpl_size(result));
     res_idx = dpl_get_index_of_element(list, element3);
     ck_assert_msg( res_idx  == 2, "Failure: expected idx to be 2, but was %d", res_idx);
@@ -1993,9 +2001,9 @@ START_TEST(test_insertSortedListMultipleElements){
     list = dpl_create(element_copy, element_free, element_compare);
     list = dpl_insert_at_index(list, element, 0, false);
     list = dpl_insert_at_index(list, element2, 0, false);
-    result = dpl_insert_sorted(list, element3, false);
+    result = dpl_insert_sorted(list, NULL, true);
     ck_assert_msg( dpl_size(result) == 3, "Failure: expected size to be 3, but was %d", dpl_size(result));
-    res_idx = dpl_get_index_of_element(list, element3);
+    res_idx = dpl_get_index_of_element(list, NULL);
     ck_assert_msg( res_idx  == 2, "Failure: expected idx to be 2, but was %d", res_idx);
     dpl_free(&list, false);
 }
@@ -2176,6 +2184,156 @@ START_TEST(test_removeAtReferenceListMultipleElements){
 END_TEST
 
 
+START_TEST(test_removeElementListNULL){
+    my_element_t *element = malloc(sizeof(my_element_t));
+    char *name = malloc(sizeof(char));
+    *name = 'v';
+    element->id = 1;
+    element->name = name;
+
+    // Test RemoveElement when element is not null
+    dplist_t *result = dpl_remove_element(NULL, element, false);
+    ck_assert_msg( result == NULL, "Failure: expected result to be NULL");
+
+    // Test RemoveElement when element is null
+    result = dpl_insert_sorted(NULL, NULL, false);
+    ck_assert_msg( result == NULL, "Failure: expected result to be NULL");
+
+    // Test InsertSorted when element is not null
+    result = dpl_insert_sorted(NULL, element, true);
+    ck_assert_msg( result == NULL, "Failure: expected result to be NULL");
+
+    // Test InsertSorted when element is null
+    result = dpl_insert_sorted(NULL, NULL, true);
+    ck_assert_msg( result == NULL, "Failure: expected result to be NULL");
+}
+END_TEST
+
+
+START_TEST(test_removeElementListEmpty){
+    my_element_t *element = malloc(sizeof(my_element_t));
+    char *name = malloc(sizeof(char));
+    *name = 'v';
+    element->id = 1;
+    element->name = name;
+
+    dplist_t *list = dpl_create(element_copy, element_free, element_compare);
+
+    // Test RemoveElement when element is not null
+    dplist_t *result = dpl_remove_element(list, element, false);
+    ck_assert_msg( dpl_size(result) == 0, "Failure: expected size to be 0, but was %d", dpl_size(result));
+
+    // Test InsertSorted when element is null
+    list = dpl_create(element_copy, element_free, element_compare);
+    result = dpl_remove_element(list, NULL, false);
+    ck_assert_msg( dpl_size(result) == 0, "Failure: expected size to be 0, but was %d", dpl_size(result));
+
+//Free_element is true
+
+    // Test RemoveElement when element is not null
+    list = dpl_create(element_copy, element_free, element_compare);
+    result = dpl_remove_element(list, element, true);
+    ck_assert_msg( dpl_size(result) == 0, "Failure: expected size to be 0, but was %d", dpl_size(result));
+
+    // Test RemoveElement when element is null
+    list = dpl_create(element_copy, element_free, element_compare);
+    result = dpl_remove_element(list, NULL, true);
+    ck_assert_msg( dpl_size(result) == 0, "Failure: expected size to be 0, but was %d", dpl_size(result));
+
+    dpl_free(&list, false);
+}
+END_TEST
+
+
+START_TEST(test_removeElementListOneElement){
+
+    my_element_t *element = malloc(sizeof(my_element_t));
+    char *name = malloc(sizeof(char));
+    *name = 'v';
+    element->id = 1;
+    element->name = name;
+
+    dplist_t *list = dpl_create(element_copy, element_free, element_compare);
+    list = dpl_insert_at_index(list, element, 0, false);
+
+    // Test RemoveElement when element is not null
+    dplist_t *result = dpl_remove_element(list, element, false);
+    ck_assert_msg( dpl_size(result) == 0, "Failure: expected size to be 0, but was %d", dpl_size(result));
+
+    // Test RemoveElement when element is null
+    list = dpl_insert_at_index(list, NULL, 0, false);
+    result = dpl_remove_element(list, NULL, false);
+    ck_assert_msg( dpl_size(result) == 0, "Failure: expected size to be 0, but was %d", dpl_size(result));
+
+//Free_element is true
+
+    // Test RemoveElement when element is not null
+    list = dpl_insert_at_index(list, element, 0, false);
+    result = dpl_remove_element(list, element, true);
+    ck_assert_msg( dpl_size(result) == 0, "Failure: expected size to be 0, but was %d", dpl_size(result));
+
+/*    // Test RemoveElement when element is null
+    list = dpl_insert_at_index(list, NULL, 0, false);
+    ck_assert_msg( dpl_size(list) == 1, "Failure: expected size to be 1, but was %d", dpl_size(list));
+    result = dpl_remove_element(list, NULL, true);
+    ck_assert_msg( dpl_size(result) == 0, "Failure: expected size to be 0, but was %d", dpl_size(result));
+*/
+    dpl_free(&list, false);
+}
+END_TEST
+
+
+START_TEST(test_removeElementListMultipleElements){
+
+    my_element_t *element = malloc(sizeof(my_element_t));
+    char *name = malloc(sizeof(char));
+    *name = 'v';
+    element->id = 1;
+    element->name = name;
+    my_element_t *element2 = malloc(sizeof(my_element_t));
+    char *name2 = malloc(sizeof(char));
+    *name2 = 'a';
+    element2->id = 2;
+    element2->name = name2;
+
+    dplist_t *list = dpl_create(element_copy, element_free, element_compare);
+    list = dpl_insert_at_index(list, element, 0, false);
+    list = dpl_insert_at_index(list, element2, 0, false);
+
+
+    // Test RemoveElement when element is not null
+    dplist_t *result = dpl_remove_element(list, element, false);
+    ck_assert_msg( dpl_size(result) == 1, "Failure: expected size to be 1, but was %d", dpl_size(result));
+    dpl_free(&list, false);
+
+    // Test InsertSorted when element is null
+    list = dpl_create(element_copy, element_free, element_compare);
+    list = dpl_insert_at_index(list, element, 0, false);
+    list = dpl_insert_at_index(list, NULL, 0, false);
+    result = dpl_remove_element(list, NULL, false);
+    ck_assert_msg( dpl_size(result) == 1, "Failure: expected size to be 1, but was %d", dpl_size(result));
+    dpl_free(&list, false);
+
+//Copy is true
+
+    // Test InsertSorted when element is not null
+    list = dpl_create(element_copy, element_free, element_compare);
+    list = dpl_insert_at_index(list, element, 0, false);
+    list = dpl_insert_at_index(list, element2, 0, false);
+    result = dpl_remove_element(list, element2, true);
+    ck_assert_msg( dpl_size(result) == 1, "Failure: expected size to be 1, but was %d", dpl_size(result));
+    dpl_free(&list, false);
+
+/*    // Test InsertSorted when element is null
+    list = dpl_create(element_copy, element_free, element_compare);
+    list = dpl_insert_at_index(list, element, 0, false);
+    list = dpl_insert_at_index(list, NULL, 0, false);
+    result = dpl_remove_element(list, NULL, true);
+    ck_assert_msg( dpl_size(result) == 1, "Failure: expected size to be 1, but was %d", dpl_size(result));
+  */  dpl_free(&list, false);
+}
+END_TEST
+
 
 //START_TEST(test_nameOfYourTest)
 //  Add other testcases here...
@@ -2236,6 +2394,10 @@ int main(void) {
     tcase_add_test(tc1_1, test_removeAtReferenceListNothingRemoved);
     tcase_add_test(tc1_1, test_removeAtReferenceListOneElement);
     tcase_add_test(tc1_1, test_removeAtReferenceListMultipleElements);
+    tcase_add_test(tc1_1, test_removeElementListNULL);
+    tcase_add_test(tc1_1, test_removeElementListEmpty);
+    tcase_add_test(tc1_1, test_removeElementListOneElement);
+    tcase_add_test(tc1_1, test_removeElementListMultipleElements);
     // Add other tests here...
 
     srunner_run_all(sr, CK_VERBOSE);
