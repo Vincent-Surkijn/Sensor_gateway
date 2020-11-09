@@ -173,7 +173,7 @@ dplist_t *dpl_remove_at_index(dplist_t *list, int index, bool free_element) {
         else{
             list->head = NULL;
         }
-	if(free_element){
+	if(free_element && toRem->element != NULL){
 	    list->element_free(&(toRem->element));
         }
 	free(toRem);
@@ -189,7 +189,7 @@ dplist_t *dpl_remove_at_index(dplist_t *list, int index, bool free_element) {
         else{
             list->head = NULL;
         }
-        if(free_element){
+        if(free_element && toRem->element != NULL){
             list->element_free(&(toRem->element));
         }
         free(toRem);
@@ -200,7 +200,7 @@ dplist_t *dpl_remove_at_index(dplist_t *list, int index, bool free_element) {
         dplist_node_t *toRem = dpl_get_reference_at_index(list, index);
         toRem->next->prev = toRem->prev;
         toRem->prev->next = toRem->next;
-        if(free_element){
+        if(free_element && toRem->element != NULL){
             list->element_free(&(toRem->element));
         }
         free(toRem);
@@ -372,9 +372,9 @@ dplist_t *dpl_insert_at_reference(dplist_t *list, void *element, dplist_node_t *
     if(list == NULL)    return NULL;
     if(reference == NULL)       return NULL;
 
-    int index;
+    int index = 0;
     if(list->head == NULL) {
-	index = 0;	// If the list is empty getIndexOfRef would also return -1
+	;	// If the list is empty getIndexOfRef would also return -1
     }
     else if (dpl_get_index_of_reference(list, reference)  == -1){	// If -1 is returned the reference does not exist
 	printf("Reference not in list");
@@ -389,7 +389,6 @@ dplist_t *dpl_sort_list(dplist_t *list, bool asc){
     if(list == NULL)    return NULL;
     if(list->head == NULL)      return NULL;
 
-    dplist_node_t *three = dpl_get_reference_at_index(list, 0);
     int i;
     dplist_node_t *dummy;
     for(i = 0; i<dpl_size(list); i++){
@@ -553,7 +552,7 @@ int main(){
     *name = '1';
     element->id = 1;
     element->name = name;
-    //dpl_insert_at_index(list, element, 0, false);
+    dpl_insert_at_index(list, element, 0, false);
     my_element_t **ptr = (my_element_t**)(&(dpl_get_reference_at_index(list, 0)->element));
 
 
@@ -572,27 +571,27 @@ int main(){
     *name3 = '3';
     element3->id = 3;
     element3->name = name3;
-  //  dpl_insert_at_index(list, element3, 0, true);
+    dpl_insert_at_index(list, element3, 0, true);
 
     my_element_t *element4 = malloc(sizeof(my_element_t));
     char *name4 = malloc(sizeof(char));
     *name4 = '4';
     element4->id = 4;
     element4->name = name4;
-    //dpl_insert_at_index(list, element4, 3, true);
+    dpl_insert_at_index(list, element4, 3, true);
 
     my_element_t *element5 = malloc(sizeof(my_element_t));
     char *name5 = malloc(sizeof(char));
     *name5 = '5';
     element5->id = 5;
     element5->name = name5;
-    //dpl_insert_at_index(list, element5, 1, true);
+    dpl_insert_at_index(list, element5, 1, true);
 
    dpl_insert_at_index(list, NULL, 0, false);
    dpl_remove_element(list, NULL, false);
     printf("Size of list: %d\n", dpl_size(list));
 
-/* printf("List: \n");
+ printf("List: \n");
     printf("Size of list: %d\n", dpl_size(list));
     printf("Element name at index 0: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 0)) )->name) );
     printf("Element name at index 1: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 1)) )->name) );
@@ -610,10 +609,10 @@ int main(){
     printf("Element name at index 3: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 3)) )->name) );
     printf("Element name at index 4: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 4)) )->name) );
 
-	dpl_insert_sorted(list, element2, false);
+    dpl_insert_sorted(list, element2, false);
 
-//    dpl_remove_at_index(list, 1, true);
-/*    dplist_node_t *ref = dpl_get_reference_at_index(list, 1);
+    dpl_remove_at_index(list, 1, true);
+    dplist_node_t *ref = dpl_get_reference_at_index(list, 1);
     dplist_t *result = dpl_remove_at_reference(list, ref, true);
 	printf("result: %p\n", result);
 
@@ -625,16 +624,19 @@ int main(){
     printf("Element name at index 3: %c\n", *(( (my_element_t *)(dpl_get_element_at_index(list, 3)) )->name) );
 
 
-/*    printf("Freeing...\n");
+    printf("Freeing...\n");
     dpl_free(&list, true);      // Free element as well
     printf("Element ptr in node: %p\n",*ptr);
-
-    printf("Free the real element2 as well\n");
-    element_free( (void **)(&element2) );
 
     printf("Free the real element3 as well\n");
     element_free( (void **)(&element3) );
 
-}
+    printf("Free the real element4 as well\n");
+    element_free( (void **)(&element4) );
 
+    printf("Free the real element5 as well\n");
+    element_free( (void **)(&element5) );
+
+}
 */
+

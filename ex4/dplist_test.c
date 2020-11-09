@@ -2272,12 +2272,12 @@ START_TEST(test_removeElementListOneElement){
     result = dpl_remove_element(list, element, true);
     ck_assert_msg( dpl_size(result) == 0, "Failure: expected size to be 0, but was %d", dpl_size(result));
 
-/*    // Test RemoveElement when element is null
+    // Test RemoveElement when element is null
     list = dpl_insert_at_index(list, NULL, 0, false);
     ck_assert_msg( dpl_size(list) == 1, "Failure: expected size to be 1, but was %d", dpl_size(list));
     result = dpl_remove_element(list, NULL, true);
     ck_assert_msg( dpl_size(result) == 0, "Failure: expected size to be 0, but was %d", dpl_size(result));
-*/
+
     dpl_free(&list, false);
 }
 END_TEST
@@ -2324,13 +2324,13 @@ START_TEST(test_removeElementListMultipleElements){
     ck_assert_msg( dpl_size(result) == 1, "Failure: expected size to be 1, but was %d", dpl_size(result));
     dpl_free(&list, false);
 
-/*    // Test InsertSorted when element is null
+    // Test InsertSorted when element is null
     list = dpl_create(element_copy, element_free, element_compare);
     list = dpl_insert_at_index(list, element, 0, false);
     list = dpl_insert_at_index(list, NULL, 0, false);
     result = dpl_remove_element(list, NULL, true);
     ck_assert_msg( dpl_size(result) == 1, "Failure: expected size to be 1, but was %d", dpl_size(result));
-  */  dpl_free(&list, false);
+    dpl_free(&list, false);
 }
 END_TEST
 
