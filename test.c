@@ -7,4 +7,8 @@ int main(){
 
     printf("Size = %d\n", i);
 
+    void *ptr = dpl_insert_at_index(NULL, NULL, 0, true);
+
+    printf("Ptr: %p\n", ptr);
+
 }
