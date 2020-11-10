@@ -4,10 +4,15 @@
 libtest: lib
 	gcc test.c -L./lib -Wl,-rpath=./lib -ldplist -I./lib
 	./a.out
+
 lib:
 	git show origin/lab4:ex4/dplist.c > ./lib/dplist.c
 	gcc -fPIC -c ./lib/dplist.c -o ./lib/dplist.o
 	gcc -shared -o ./lib/libdplist.so ./lib/dplist.o
+
+datagen:
+	gcc file_creator.c -DDEBUG -o file_creator
+	./file_creator
 
 # the files for ex3 will be ziped and are then ready to
 # be submitted to labtools.groept.be
