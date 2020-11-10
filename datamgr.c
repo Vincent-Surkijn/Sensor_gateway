@@ -52,17 +52,17 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data){
 
     printf("Sensor Data: \n");
     for(i=0; i<size2; i++){	// Read data values --> bin file
-	uint16_t sensor_id_array[size2];
-	fread(&sensor_id_array[i], sizeof(uint16_t),1,fp_sensor_data);
-	printf("Id: %hd -- ", sensor_id_array[i]);
+	uint16_t id;
+	fread(&id, sizeof(uint16_t),1,fp_sensor_data);
+	printf("Id: %hd -- ", id);
 
-        double temp_array[size2];
-        fread(&temp_array[i], sizeof(double),1,fp_sensor_data);
-        printf("Temp: %f -- ", temp_array[i]);
+        double temp;
+        fread(&temp, sizeof(double),1,fp_sensor_data);
+        printf("Temp: %f -- ", temp);
 
-        time_t time_array[size2];
-        fread(&time_array[i], sizeof(time_t),1,fp_sensor_data);
-        printf("Time: %lld\n", (long long)time_array[i]);
+        time_t time;
+        fread(&time, sizeof(time_t),1,fp_sensor_data);
+        printf("Time: %lld\n", (long long)time);
     }
 }
 
