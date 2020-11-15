@@ -8,30 +8,30 @@
 #define DATAMGR_NO_ERROR 0
 #define DATAMGR_MEMORY_ERROR 1 // error due to mem alloc failure
 #define DATAMGR_INVALID_ERROR 2 //error due to a list operation applied on a NULL list
-#define DATAMGR_NO_DEFINE 3 //error due to parameters not defined
+#define DATAMGR_NO_DEFINE_ERROR 3 //error due to parameters not defined
 
 #ifdef DEBUG
-#define DEBUG_PRINTF(...)                                                                                                               \
-        do {                                                                                                                                \
-            fprintf(stderr,"\nIn %s - function %s at line %d: ", __FILE__, __func__, __LINE__);     \
-            fprintf(stderr,__VA_ARGS__);                                                                                            \
-            fflush(stderr);                                                                         \
+#define DEBUG_PRINTF(...)
+        do {
+            fprintf(stderr,"\nIn %s - function %s at line %d: ", __FILE__, __func__, __LINE__);
+            fprintf(stderr,__VA_ARGS__);
+            fflush(stderr);
                 } while(0)
 #else
 #define DEBUG_PRINTF(...) (void)0
 #endif
 
-#define DATAMGR_ERR_HANDLER(condition, err_code)                         \
-    do {                                                                \
-            if ((condition)) DEBUG_PRINTF(#condition " failed\n");      \
-            assert(!(condition));                                       \
+#define DATAMGR_ERR_HANDLER(condition, err_code)
+    do {
+            if ((condition)) DEBUG_PRINTF(#condition " failed\n");
+            assert(!(condition));
         } while(0)
 
 #ifndef SET_MAX_TEMP
- err_code = 3:
+ DATAMGR_ERR_HANDLER(true, DATAMGR_NO_DEFINE_ERROR);
 #endif
 #ifndef SET_MIN_TEMP
- err_code = 3;
+ DATAMGR_ERR_HANDLER(true, DATAMGR_NO_DEFINE_ERROR);
 #endif
 #ifndef RUN_AVG_LENGTH
  #define RUN_AVG_LENGTH 5
