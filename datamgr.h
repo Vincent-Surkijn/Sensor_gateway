@@ -32,6 +32,62 @@
                     } while(0)
 
 /**
+ * This method is needed for the creation of the dplist
+ * It makes a copy of the passed element
+ * \param element pointer to the element to be copied
+ * \return a pointer to the copy
+*/
+void * element_copy(void * element);
+
+/**
+ * This method is needed for the creation of the dplist
+ * It frees the passed element
+ * \param element is a pointer to a pointer to the element to be freed
+*/
+void element_free(void ** element);
+
+/**
+ * This method is needed for the creation of the dplist
+ * It compares two elements based on their sensor_id
+ * \param x is a pointer to the first element
+ * \param y is a pointer to the seconde element
+ * \returns -1 if x<y, 0 if x==y and 1 if x>y
+*/
+int element_compare(void * x, void *y);
+
+/**
+ * This method finds the amount of lines in a file
+ * \param file is a pointer to the file
+ * \returns the amount of lines
+*/
+int findFileSize(FILE *file);
+
+/**
+ * This method finds the amount of entries in a binary file based on the size of 1 entry
+ * \param file is a pointer to the file
+ * \returns the amount of entries
+*/
+int findBinFileSize(FILE *file);
+
+/**
+ * This method creates a sensor_data_t struct from some variables
+ * \param id is the sensor id
+ * \param room_id is the room id
+ * \amount is the amount of temperature values for the sensor
+ * \value is the running avg of the sensor
+ * \ts is the timestamp of the last modification for the sensor
+ * \returns a pointer to the created element
+*/
+sensor_data_t *createElement(sensor_id_t id, room_id_t room_id, sensor_amount_values_t amount, sensor_value_t value, sensor_ts_t ts);
+
+/**
+ * This method gets the index of an id of a sensor in the dplist
+ *\param sensor_id is the id to be searched
+ *\returns index if the id is found, -1 if it's not found
+*/
+int datamgr_get_index_of_sensor_id(sensor_id_t sensor_id);
+
+/**
  *  This method holds the core functionality of your datamgr. It takes in 2 file pointers to the sensor files and parses them. 
  *  When the method finishes all data should be in the internal pointer list and all log messages should be printed to stderr.
  *  \param fp_sensor_map file pointer to the map file

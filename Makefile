@@ -15,9 +15,9 @@ datagen:
 	./file_creator
 
 main:
-	gcc -c datamgr.c
-	gcc -c main.c
-	gcc -o test_main datamgr.o main.o
+	gcc -g -c datamgr.c
+	gcc -g -c main.c
+	gcc -g -o test_main datamgr.o main.o -L./lib -Wl,-rpath=./lib -ldplist -I./lib
 	./test_main
 
 # the files for ex3 will be ziped and are then ready to
