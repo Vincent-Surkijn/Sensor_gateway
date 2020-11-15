@@ -2,8 +2,40 @@
 * author: Vincent Surkijn
 **/
 
-#define SET_MAX_TEMP 50
-#define SET_MIN_TEMP 0
+/*
+ * definition of error codes
+ * */
+#define DATAMGR_NO_ERROR 0
+#define DATAMGR_MEMORY_ERROR 1 // error due to mem alloc failure
+#define DATAMGR_INVALID_ERROR 2 //error due to a list operation applied on a NULL list
+#define DATAMGR_NO_DEFINE 3 //error due to parameters not defined
+
+#ifdef DEBUG
+#define DEBUG_PRINTF(...)                                                                                                               \
+        do {                                                                                                                                \
+            fprintf(stderr,"\nIn %s - function %s at line %d: ", __FILE__, __func__, __LINE__);     \
+            fprintf(stderr,__VA_ARGS__);                                                                                            \
+            fflush(stderr);                                                                         \
+                } while(0)
+#else
+#define DEBUG_PRINTF(...) (void)0
+#endif
+
+#define DATAMGR_ERR_HANDLER(condition, err_code)                         \
+    do {                                                                \
+            if ((condition)) DEBUG_PRINTF(#condition " failed\n");      \
+            assert(!(condition));                                       \
+        } while(0)
+
+#ifndef SET_MAX_TEMP
+ err_code = 3:
+#endif
+#ifndef SET_MIN_TEMP
+ err_code = 3;
+#endif
+#ifndef RUN_AVG_LENGTH
+ #define RUN_AVG_LENGTH 5
+#endif
 
 #include <stdio.h>
 #include <inttypes.h>
@@ -11,6 +43,7 @@
 #include "config.h"
 #include "datamgr.h"
 #include "lib/dplist.h"
+
 
 // Define list as a global variable so it can be used everywhere in datamgr.c
 dplist_t *list;
@@ -135,6 +168,9 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data){
     printf("Element amount at index 6: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 6)) )->amount );
     printf("Element amount at index 7: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 7)) )->amount );
 	datamgr_get_index_of_sensor_id(99);
+	printf("RUN_AVG_LENGTH: %d\n", RUN_AVG_LENGTH);
+	printf("SET_MIN_TEMP: %d\n", SET_MIN_TEMP);
+	printf("SET_MAX_TEMP: %d\n", SET_MAX_TEMP);
 }
 
 /*int main(){
