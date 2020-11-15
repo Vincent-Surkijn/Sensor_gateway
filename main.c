@@ -1,7 +1,6 @@
 /**
 * author: Vincent Surkijn
 **/
-
 #define SET_MAX_TEMP 50
 #define SET_MIN_TEMP 0
 
@@ -22,7 +21,7 @@ int main(){
     }
     if (fp_data == NULL) {
         perror("Data failed: ");
-        return -1;
+	return -1;
     }
 
     datamgr_parse_sensor_files( fp_map, fp_data);

@@ -10,30 +10,13 @@
 #define DATAMGR_INVALID_ERROR 2 //error due to a list operation applied on a NULL list
 #define DATAMGR_NO_DEFINE_ERROR 3 //error due to parameters not defined
 
-#ifdef DEBUG
-#define DEBUG_PRINTF(...)										\
-        do {												\
-            fprintf(stderr,"\nIn %s - function %s at line %d: ", __FILE__, __func__, __LINE__);		\
-            fprintf(stderr,__VA_ARGS__);								\
-            fflush(stderr);										\
-                } while(0)
-#else
-#define DEBUG_PRINTF(...) (void)0
-#endif
-
-#define DATAMGR_ERR_HANDLER(condition, err_code)			\
-    do {								\
-            if ((condition)) DEBUG_PRINTF(#condition " failed\n");	\
-            assert(!(condition));					\
-	    if(err_code == 3) printf("You need to define max and min temp!\n");	\
-        } while(0)
-
 #ifndef SET_MAX_TEMP
- DATAMGR_ERR_HANDLER(true, DATAMGR_NO_DEFINE_ERROR);
+ #error "SET_MAX_TEMP not defined"
 #endif
 #ifndef SET_MIN_TEMP
- DATAMGR_ERR_HANDLER(true, DATAMGR_NO_DEFINE_ERROR);
+ #error "SET_MIN_TEMP not defined"
 #endif
+
 #ifndef RUN_AVG_LENGTH
  #define RUN_AVG_LENGTH 5
 #endif
@@ -66,6 +49,28 @@ void element_free(void ** element){
 
 int element_compare(void * x, void * y){
     return ((((sensor_data_t*)x)->id < ((sensor_data_t*)y)->id) ? -1 : (((sensor_data_t*)x)->id == ((sensor_data_t*)y)->id) ? 0 : 1);
+}
+
+/*
+DATAMGR_NO_ERROR 0
+DATAMGR_MEMORY_ERROR 1 // error due to mem alloc failure
+DATAMGR_INVALID_ERROR 2
+DATAMGR_NO_DEFINE_ERROR 3 //error due to parameters not defined
+*/
+void Err_handler(int err_code){
+    switch(err_code){
+	case 0:
+	    fprintf(stderr, "No datamgr error\n");
+	break;
+	case 1:
+	    fprintf(stderr, "Memory error\n");
+	break;
+	case 2:
+	    fprintf(stderr, "Invalid error\n");
+	break;
+	case 3:
+	    fprintf(stderr, "Parameter not defined error\n");
+    }
 }
 
 int findFileSize(FILE *file){
@@ -160,14 +165,14 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data){
 	( (sensor_data_t *)(dpl_get_element_at_index(list, index)) )->ts = time;
     }
 
-    printf("Element amount at index 0: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 0)) )->amount );
-    printf("Element amount at index 1: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 1)) )->amount );
-    printf("Element amount at index 2: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 2)) )->amount );
-    printf("Element amount at index 3: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 3)) )->amount );
-    printf("Element amount at index 4: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 4)) )->amount );
-    printf("Element amount at index 5: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 5)) )->amount );
-    printf("Element amount at index 6: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 6)) )->amount );
-    printf("Element amount at index 7: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 7)) )->amount );
+    printf("Element value at index 0: %f\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 0)) )->value );
+    printf("Element value at index 1: %f\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 1)) )->value );
+    printf("Element value at index 2: %f\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 2)) )->value );
+    printf("Element value at index 3: %f\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 3)) )->value );
+    printf("Element value at index 4: %f\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 4)) )->value );
+    printf("Element value at index 5: %f\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 5)) )->value );
+    printf("Element value at index 6: %f\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 6)) )->value );
+    printf("Element value at index 7: %f\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 7)) )->value );
 	datamgr_get_index_of_sensor_id(99);
 	printf("RUN_AVG_LENGTH: %d\n", RUN_AVG_LENGTH);
 	printf("SET_MIN_TEMP: %d\n", SET_MIN_TEMP);
