@@ -11,21 +11,21 @@
 #define DATAMGR_NO_DEFINE_ERROR 3 //error due to parameters not defined
 
 #ifdef DEBUG
-#define DEBUG_PRINTF(...)
-        do {
-            fprintf(stderr,"\nIn %s - function %s at line %d: ", __FILE__, __func__, __LINE__);
-            fprintf(stderr,__VA_ARGS__);
-            fflush(stderr);
-                } while(0)
+#define DEBUG_PRINTF(...)	\
+        do {	\
+            fprintf(stderr,"\nIn %s - function %s at line %d: ", __FILE__, __func__, __LINE__);	\
+            fprintf(stderr,__VA_ARGS__);	\
+            fflush(stderr);	\
+                } while(0)	\
 #else
-#define DEBUG_PRINTF(...) (void)0
+#define DEBUG_PRINTF(...) (void)0	\
 #endif
 
-#define DATAMGR_ERR_HANDLER(condition, err_code)
-    do {
-            if ((condition)) DEBUG_PRINTF(#condition " failed\n");
-            assert(!(condition));
-        } while(0)
+#define DATAMGR_ERR_HANDLER(condition, err_code)	\
+    do {	\
+            if ((condition)) DEBUG_PRINTF(#condition " failed\n");	\
+            assert(!(condition));	\
+        } while(0)	\
 
 #ifndef SET_MAX_TEMP
  DATAMGR_ERR_HANDLER(true, DATAMGR_NO_DEFINE_ERROR);
