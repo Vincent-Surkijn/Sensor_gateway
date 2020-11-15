@@ -10,6 +10,7 @@
 #include <time.h>
 #include "config.h"
 #include "datamgr.h"
+#include "dplist.h"
 
 int findFileSize(FILE *file){
     int lines = 0;
@@ -41,6 +42,8 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data){
     int size1 = findFileSize(fp_sensor_map);
     int size2 = findBinFileSize(fp_sensor_data);
 
+    dplist_t *list = dpl_create(element_copy, element_free, element_compare);
+
     printf("Sensor_map: \n");
     int i;
     for(i=0; i<size1; i++){	// Read map values
@@ -64,22 +67,4 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data){
         fread(&time, sizeof(time_t),1,fp_sensor_data);
         printf("Time: %lld\n", (long long)time);
     }
-}
-
-/**Debug*/
-int main(){
-
-    FILE *fp_map = fopen("./room_sensor.map", "r");
-    FILE *fp_data = fopen("./sensor_data", "rb");
-
-    if (fp_map == NULL) {
-	perror("Map failed: ");
-	return -1;
-    }
-    if (fp_data == NULL) {
-        perror("Data failed: ");
-	return -1;
-    }
-
-    datamgr_parse_sensor_files( fp_map, fp_data);
 }

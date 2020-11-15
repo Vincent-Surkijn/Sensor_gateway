@@ -14,6 +14,12 @@ datagen:
 	gcc file_creator.c -DDEBUG -o file_creator
 	./file_creator
 
+main:
+	gcc -c datamgr.c
+	gcc -c main.c
+	gcc -o test_main datamgr.o main.o
+	./test_main
+
 # the files for ex3 will be ziped and are then ready to
 # be submitted to labtools.groept.be
 zip:
