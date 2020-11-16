@@ -26,14 +26,14 @@ int main(){
 
     datamgr_parse_sensor_files( fp_map, fp_data);
 
-    sensor_id_t id = 15;
-    printf("Last modification of id 15: %lld\n", datamgr_get_last_modified(id) );
+    //sensor_id_t id = 1;
+    //printf("Last modification of id 15: %lld\n", (long long)datamgr_get_last_modified(id) );
 
-    printf("Amount of sensors: %d\n", datamgr_get_total_sensors() );
+    //printf("Amount of sensors: %d\n", datamgr_get_total_sensors() );
 
-    printf("Freeing...\n");
+    //printf("Freeing...\n");
     datamgr_free();
-    printf("Freed\n");
+    //printf("Freed\n");
 
    free(fp_map);
    free(fp_data);

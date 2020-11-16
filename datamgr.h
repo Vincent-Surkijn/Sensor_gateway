@@ -22,13 +22,22 @@
 #endif
 
 /*
+ * definition of error codes
+ * */
+#define DATAMGR_NO_ERROR 0
+#define DATAMGR_OUTOFRANGE_ERROR 1 //error due to a temperature being out of range#pragma GCC error
+#define DATAMGR_INVALID_ERROR 2 //error due to e.g. operation on NULL list or invalid ID
+
+/*
  * Use ERROR_HANDLER() for handling memory allocation problems, invalid sensor IDs, non-existing files, etc.
  */
-#define ERROR_HANDLER(condition, ...)    do {                       \
-                      if (condition) {                              \
-                        printf("\nError: in %s - function %s at line %d: %s\n", __FILE__, __func__, __LINE__, __VA_ARGS__); \
-                        exit(EXIT_FAILURE);                         \
-                      }                                             \
+#define ERROR_HANDLER(condition, err_code)    do {                       \
+                      if (err_code==DATAMGR_OUTOFRANGE_ERROR) {                   \
+                        fprintf(stderr, "OUTOFRANGE ERROR: There was a temperature out of range\n");            \
+                      }                                                 \
+                      if (err_code==DATAMGR_INVALID_ERROR) {                   \
+                        fprintf(stderr, "INVALID ERROR: an invalid operation has occured\n");              \
+                      }                                                 \
                     } while(0)
 
 /**
@@ -99,10 +108,11 @@ int datamgr_check_avg_at_index(int index);
  * This method updates the array with values of the sensor at a certain index with a value
  * \param index is the index of the sensor to update
  * \param value is the value that will be added
-void datamgr_update_value_array(int index, double value)
+*/
+void datamgr_update_value_array(int index, double value);
 
 /**
- *  This method holds the core functionality of your datamgr. It takes in 2 file pointers to the sensor files and parses them. 
+ *  This method holds the core functionality of your datamgr. It takes in 2 file pointers to the sensor files and parses them.
  *  When the method finishes all data should be in the internal pointer list and all log messages should be printed to stderr.
  *  \param fp_sensor_map file pointer to the map file
  *  \param fp_sensor_data file pointer to the binary data file

@@ -8,7 +8,7 @@ libtest: lib
 lib:
 	git show origin/lab4:ex4/dplist.c > ./lib/dplist.c
 	gcc -fPIC -c ./lib/dplist.c -o ./lib/dplist.o
-	gcc -shared -o ./lib/libdplist.so ./lib/dplist.o
+	gcc -shared -o ./lib/libdplist.so ./lib/dplist.o -Wall -std=c11 -Werror
 
 datagen:
 	gcc file_creator.c -DDEBUG -o file_creator
@@ -21,7 +21,7 @@ main:
 	./test_main
 
 mainWithDefines:
-	gcc -g -c datamgr.c -DRUN_AVG_LENGTH=5 -DSET_MIN_TEMP=1 -DSET_MAX_TEMP=49
+	gcc -g -c datamgr.c -DRUN_AVG_LENGTH=7 -DSET_MIN_TEMP=15 -DSET_MAX_TEMP=25
 	gcc -g -c main.c
 	gcc -g -o test_main datamgr.o main.o -L./lib -Wl,-rpath=./lib -ldplist -I./lib
 	./test_main
