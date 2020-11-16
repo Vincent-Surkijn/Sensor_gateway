@@ -106,7 +106,7 @@ sensor_value_t datamgr_get_avg(sensor_id_t sensor_id){
     else{
         return 0;
     }
-    return avg/( (float)(RUN_AVG_LENGTH) );
+    return ( (sensor_value_t)(avg/RUN_AVG_LENGTH) );
 }
 
 
