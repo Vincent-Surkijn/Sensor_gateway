@@ -205,7 +205,10 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data){
     sensor_id_t sensor_id;
 
     int size1 = findFileSize(fp_sensor_map);
-    int size2 = findBinFileSize(fp_sensor_data);
+    //int size2 = findBinFileSize(fp_sensor_data);
+
+	//TODO
+	int size2 = 170;
 
     list = dpl_create(element_copy, element_free, element_compare);
 
