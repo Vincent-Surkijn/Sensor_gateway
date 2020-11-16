@@ -92,8 +92,9 @@ int datamgr_get_index_of_sensor_id(sensor_id_t sensor_id){
 }
 
 sensor_value_t datamgr_get_avg(sensor_id_t sensor_id){
+    //printf("Find avg of sensor: %d\n", sensor_id);
     int index = datamgr_get_index_of_sensor_id(sensor_id);
-    if(index == -1)	return 0;	// Invalid return
+    if(index == -1)	return -1;	// Invalid return
     sensor_data_t *sensor = dpl_get_element_at_index(list, index);
     double avg;
     int i;
