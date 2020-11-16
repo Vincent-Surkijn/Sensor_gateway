@@ -96,6 +96,12 @@ int datamgr_get_index_of_sensor_id(sensor_id_t sensor_id);
 int datamgr_check_avg_at_index(int index);
 
 /**
+ * This method updates the array with values of the sensor at a certain index with a value
+ * \param index is the index of the sensor to update
+ * \param value is the value that will be added
+void datamgr_update_value_array(int index, double value)
+
+/**
  *  This method holds the core functionality of your datamgr. It takes in 2 file pointers to the sensor files and parses them. 
  *  When the method finishes all data should be in the internal pointer list and all log messages should be printed to stderr.
  *  \param fp_sensor_map file pointer to the map file
