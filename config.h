@@ -28,7 +28,7 @@ typedef struct {
     sensor_amount_values_t amount;		/** < amount of values, only has meaning for seeing if it's larger than RUN_AVG_LENGTH */
     sensor_value_t value;			/** < running avg of the sensor values */
     sensor_values_t values;		   	/** < last RUN_AVG_LENGTH sensor values */
-    sensor_ts_t ts;         			/** < sensor timestamp */
+    sensor_ts_t ts;         			/** < last sensor timestamp */
 } sensor_data_t;
 
 
