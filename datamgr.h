@@ -88,6 +88,14 @@ sensor_data_t *createElement(sensor_id_t id, room_id_t room_id, sensor_amount_va
 int datamgr_get_index_of_sensor_id(sensor_id_t sensor_id);
 
 /**
+ * This method checks if the avg of the sensor at a certain index doesn't exceed borders
+ * It prints a message containing sensor Id, room Id, timestamp and whether it was too hot or cold
+ * \param index is the index of the sensor in the list that will be checked
+ * \returns 1 if too hot, -1 if too cold and 0 if neither
+*/
+int datamgr_check_avg_at_index(int index);
+
+/**
  *  This method holds the core functionality of your datamgr. It takes in 2 file pointers to the sensor files and parses them. 
  *  When the method finishes all data should be in the internal pointer list and all log messages should be printed to stderr.
  *  \param fp_sensor_map file pointer to the map file
