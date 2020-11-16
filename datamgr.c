@@ -105,7 +105,7 @@ sensor_value_t datamgr_get_avg(sensor_id_t sensor_id){
     else{
         return 0;
     }
-    return avg/( (double)(RUN_AVG_LENGTH) );
+    return avg/( (float)(RUN_AVG_LENGTH) );
 }
 
 
@@ -286,12 +286,9 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data){
     printf("Element amount at index 6: %d\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 6)) )->amount );
     printf("Element amount at index 7: %d\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 7)) )->amount );
 
-
-	datamgr_get_index_of_sensor_id(99);
 	printf("RUN_AVG_LENGTH: %d\n", RUN_AVG_LENGTH);
-	printf("SET_MIN_TEMP: %d\n", SET_MIN_TEMP);
-	printf("SET_MAX_TEMP: %d\n", SET_MAX_TEMP);
-
+	printf("SET_MIN_TEMP: %f\n", SET_MIN_TEMP);
+	printf("SET_MAX_TEMP: %f\n", SET_MAX_TEMP);
 }
 
 /*int main(){

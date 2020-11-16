@@ -21,7 +21,7 @@ main:
 	./test_main
 
 mainWithDefines:
-	gcc -g -c datamgr.c -DRUN_AVG_LENGTH=7 -DSET_MIN_TEMP=15 -DSET_MAX_TEMP=25
+	gcc -g -c datamgr.c -DRUN_AVG_LENGTH=4 -DSET_MIN_TEMP=14.01 -DSET_MAX_TEMP=27.96
 	gcc -g -c main.c
 	gcc -g -o test_main datamgr.o main.o -L./lib -Wl,-rpath=./lib -ldplist -I./lib
 	./test_main

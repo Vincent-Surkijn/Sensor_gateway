@@ -26,6 +26,8 @@ int main(){
 
     datamgr_parse_sensor_files( fp_map, fp_data);
 
+    printf("Avg from main.c : %f\n", datamgr_get_avg(21) );
+
     //sensor_id_t id = 1;
     //printf("Last modification of id 15: %lld\n", (long long)datamgr_get_last_modified(id) );
 
