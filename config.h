@@ -25,7 +25,7 @@ typedef time_t sensor_ts_t;         // UTC timestamp as returned by time() - not
 typedef struct {
     sensor_id_t id;         			/** < sensor id */
     room_id_t room_id;				/** < room id */
-    sensor_amount_values_t amount;		/** < amount of values, only has meaning for seeing if it's larger than RUN_AVG_LENGTH */
+    sensor_amount_values_t amount;		/** < amount of values */
     sensor_value_t value;			/** < running avg of the sensor values */
     sensor_values_t values;		   	/** < last RUN_AVG_LENGTH sensor values */
     sensor_ts_t ts;         			/** < last sensor timestamp */

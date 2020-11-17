@@ -52,9 +52,9 @@ int findFileSize(FILE *file){
 }
 
 int findBinFileSize(FILE *file){
-    fseek(file, 0L, SEEK_END);
+    fseek(file, 0, SEEK_END);
     int size = ftell(file);
-    size = size/(sizeof(uint16_t) + sizeof(double) + sizeof(time_t));
+    size = size/(sizeof(sensor_id_t) + sizeof(sensor_value_t) + sizeof(sensor_ts_t));
     fseek(file, 0, SEEK_SET);
     //printf("Size: %d\n", size);
     return size;
@@ -181,14 +181,10 @@ void datamgr_free(){
 
 void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data){
 
-    room_id_t room_id;
-    sensor_id_t sensor_id;
+  int size1 = findFileSize(fp_sensor_map);
+  int size2 = findBinFileSize(fp_sensor_data);	// TODO This size is wrong in the labtools test!!!!!
 
-    int size1 = findFileSize(fp_sensor_map);
-    int size2 = findBinFileSize(fp_sensor_data);
-
-	//TODO
-	//int size2 = 20;
+	printf("Size bin file: %d\n", size2);
 
     list = dpl_create(element_copy, element_free, element_compare);
 
@@ -196,6 +192,9 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data){
     //printf("Sensor_map: \n");
     int i;
     for(i=0; i<size1; i++){	// Read map values
+	room_id_t room_id;
+	sensor_id_t sensor_id;
+
 	fscanf(fp_sensor_map, "%hd", &room_id);
 	fscanf(fp_sensor_map, "%hd", &sensor_id);
 
@@ -269,6 +268,7 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data){
     printf("Element amount at index 6: %d\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 6)) )->amount );
     printf("Element amount at index 7: %d\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 7)) )->amount );
 
+	printf("Size of list: %d\n", datamgr_get_total_sensors());
 	printf("RUN_AVG_LENGTH: %d\n", RUN_AVG_LENGTH);
 	printf("SET_MIN_TEMP: %f\n", SET_MIN_TEMP);
 	printf("SET_MAX_TEMP: %f\n", SET_MAX_TEMP);
