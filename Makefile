@@ -16,14 +16,14 @@ datagen:
 
 main:
 	gcc -g -c datamgr.c
-	gcc -g -c main.c
-	gcc -g -o test_main datamgr.o main.o -L./lib -Wl,-rpath=./lib -ldplist -I./lib
+	gcc -g -c -lm main.c
+	gcc -lm -g -o test_main datamgr.o main.o -L./lib -Wl,-rpath=./lib -ldplist -I./lib
 	./test_main
 
 mainWithDefines:
-	gcc -g -c datamgr.c -DRUN_AVG_LENGTH=4 -DSET_MIN_TEMP=14.01 -DSET_MAX_TEMP=27.96
-	gcc -g -c main.c
-	gcc -g -o test_main datamgr.o main.o -L./lib -Wl,-rpath=./lib -ldplist -I./lib
+	gcc -lm -g -c datamgr.c -DRUN_AVG_LENGTH=5 -DSET_MIN_TEMP=14.01 -DSET_MAX_TEMP=27.96
+	gcc -lm -g -c main.c
+	gcc -lm -g -o test_main datamgr.o main.o -L./lib -Wl,-rpath=./lib -ldplist -I./lib
 	./test_main
 
 # the files for ex3 will be ziped and are then ready to

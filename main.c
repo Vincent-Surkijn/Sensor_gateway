@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <inttypes.h>
 #include <time.h>
+#include <math.h>
 
 int main(){
 
@@ -26,8 +27,14 @@ int main(){
 
     datamgr_parse_sensor_files( fp_map, fp_data);
 
-   // printf("Avg from main.c : %f\n", datamgr_get_avg(21) );
+    //datamgr_update_value_array(1, 69.420);
+/*	int i;
+	int j = datamgr_get_total_sensors();
+	for(i=0;i<j;i++)    datamgr_print(i);;
 
+    double avg = (double)(datamgr_get_avg(21));
+    printf("Avg id 21 from main.c : %f\n", avg );
+*/
     //sensor_id_t id = 1;
     //printf("Last modification of id 15: %lld\n", (long long)datamgr_get_last_modified(id) );
 

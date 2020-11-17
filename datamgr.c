@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <inttypes.h>
 #include <time.h>
+#include <math.h>
 #include "config.h"
 #include "datamgr.h"
 #include "lib/dplist.h"
@@ -139,29 +140,7 @@ void datamgr_update_value_array(int index, double value){
 	ERROR_HANDLER(true, DATAMGR_INVALID_ERROR);
         return;
     }
-    if( (sensor->amount)<RUN_AVG_LENGTH ){			//amount<5
-        //printf("Accessing if of update\n");
-        //printf("Amount is: %d\n", sensor->amount);
-	sensor->values[sensor->amount] = value;
-	return;
-    }
-    else if( (sensor->amount)<(2*RUN_AVG_LENGTH) ){		//5<amount<=10
-        //printf("Accessing else if of update\n");
-        //printf("Amount is: %d\n", sensor->amount);
-	int index = sensor->amount - RUN_AVG_LENGTH;
-        //printf("Used index is: %d\n", index);
-	sensor->values[index] = value;
-	return;
-    }
-    else{							//10<amount
-	//printf("Still Accessing else of update!!!!\n");
-	//printf("Amount is: %d\n", sensor->amount);
-        sensor->amount -= RUN_AVG_LENGTH;
-        int index = sensor->amount - RUN_AVG_LENGTH;
-        //printf("Used index is: %d\n", index);
-        sensor->values[index] = value;
-        return;
-    }
+    sensor->values[(sensor->amount)%(RUN_AVG_LENGTH)] = value;
 }
 
 uint16_t datamgr_get_room_id(sensor_id_t sensor_id){
@@ -208,6 +187,9 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data){
     int size1 = findFileSize(fp_sensor_map);
     int size2 = findBinFileSize(fp_sensor_data);
 
+	//TODO
+	//int size2 = 20;
+
     list = dpl_create(element_copy, element_free, element_compare);
 
 // Read map data
@@ -236,11 +218,10 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data){
 	if(index != -1){       // Valid index
             double temp;
             fread(&temp, sizeof(double),1,fp_sensor_data);
-            //printf("Temp: %f -- ", temp);
+            //printf("Temp: %f -- \n", temp);
 
             datamgr_update_value_array(index, temp);
             (( (sensor_data_t*)(dpl_get_element_at_index(list, index)) )->amount)++;
-            //int amount = (( (sensor_data_t *)(dpl_get_element_at_index(list, index)) )->amount);
 
             time_t time;
             fread(&time, sizeof(time_t),1,fp_sensor_data);
@@ -276,6 +257,7 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data){
     printf("Element value7 at index 1: %f\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 1)) )->values[6] );
     printf("Element value at index 7: %f\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 7)) )->values[1] );
 
+    printf("Run avg of index 0: %f\n", datamgr_get_avg((  (sensor_data_t *)(dpl_get_element_at_index(list, 0)) )->id));
     printf("Run avg of index 1: %f\n", datamgr_get_avg((  (sensor_data_t *)(dpl_get_element_at_index(list, 1)) )->id));
 
     printf("Element amount at index 0: %d\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 0)) )->amount );
@@ -292,6 +274,14 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data){
 	printf("SET_MAX_TEMP: %f\n", SET_MAX_TEMP);
 }
 
+void datamgr_print(int i){
+    printf("Element value1 at index %d: %f\n", i,( (sensor_data_t *)(dpl_get_element_at_index(list, i)) )->values[0] );
+    printf("Element value2 at index %d: %f\n", i,( (sensor_data_t *)(dpl_get_element_at_index(list, i)) )->values[1] );
+    printf("Element value3 at index %d: %f\n", i,( (sensor_data_t *)(dpl_get_element_at_index(list, i)) )->values[2] );
+    printf("Element value4 at index %d: %f\n", i,( (sensor_data_t *)(dpl_get_element_at_index(list, i)) )->values[3] );
+    printf("Element value5 at index %d: %f\n", i,( (sensor_data_t *)(dpl_get_element_at_index(list, i)) )->values[4] );
+    printf("Element amount at index 1: %d\n\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 1)) )->amount );
+}
 /*int main(){
 
     FILE *fp_map = fopen("./room_sensor.map", "r");
