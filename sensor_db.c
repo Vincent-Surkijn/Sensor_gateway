@@ -47,7 +47,7 @@ DBCONN *init_connection(char clear_up_flag){
     char *sql = q;
     // Impossible to give table name as a parameter in an sqlite query
     if(clear_up_flag == 1){
-	printf("flag = 1\n");
+	//printf("flag = 1\n");
 	char a[30] = "DROP TABLE IF EXISTS ";
 	char b[100] = TO_STRING(TABLE_NAME);
 	char c[20] = ";CREATE TABLE ";
@@ -65,7 +65,7 @@ DBCONN *init_connection(char clear_up_flag){
 	  //	"sensor_value DECIMAL(4,2), timestamp TIMESTAMP);";
     }
     else{
-	printf("flag != 1\n");
+	//printf("flag != 1\n");
 	char a[30] = "CREATE TABLE IF NOT EXISTS ";
 	char b[100] = TO_STRING(TABLE_NAME);
 	char c[100] = "(Id INTEGER PRIMARY KEY, sensor_id INTEGER, sensor_value DECIMAL(4,2), timestamp TIMESTAMP);";
@@ -108,7 +108,7 @@ int insert_sensor(DBCONN *conn, sensor_id_t id, sensor_value_t value, sensor_ts_
     int rc = sqlite3_prepare_v2(conn, sql, -1, &res, 0);
 
     if (rc == SQLITE_OK) {
-        printf("Insert query succesfully parsed\n");
+        //printf("Insert query succesfully parsed\n");
 	int idx = sqlite3_bind_parameter_index(res, "@id");
         sqlite3_bind_int(res, idx, id);
 
@@ -137,7 +137,7 @@ int sensor_findBinFileSize(FILE *file){
     int size = ftell(file);
     size = size/(sizeof(sensor_id_t) + sizeof(sensor_value_t) + sizeof(sensor_ts_t));
     fseek(file, 0, SEEK_SET);
-    //printf("Size: %d\n", size);
+    printf("Bin file size: %d\n", size);
     return size;
 }
 

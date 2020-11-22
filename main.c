@@ -53,12 +53,13 @@ int main(){
 
     datamgr_parse_sensor_files( fp_map, fp_data);
 
+    printf("Database part: \n");
     DBCONN *db = init_connection(1);
 
     insert_sensor_from_file(db, fp_data);
 
     //find_sensor_all(db, callback);
-    find_sensor_after_timestamp(db, 1606043649, callback);
+    //find_sensor_after_timestamp(db, 1606043649, callback);
 
     disconnect(db);
 
