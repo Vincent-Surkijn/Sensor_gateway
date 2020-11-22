@@ -57,7 +57,8 @@ int main(){
 
     insert_sensor_from_file(db, fp_data);
 
-    find_sensor_all(db, callback);
+    //find_sensor_all(db, callback);
+    find_sensor_by_value(db, 17, callback);
 
     disconnect(db);
 

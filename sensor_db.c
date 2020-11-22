@@ -167,7 +167,7 @@ int insert_sensor_from_file(DBCONN *conn, FILE *sensor_data){
 
 int find_sensor_all(DBCONN *conn, callback_t f){
     char *err_msg;
-    char q[250] = "";
+    char q[150] = "";
     char *sql = q;
     char a[20] = "SELECT * FROM ";
     char b[100] = TO_STRING(TABLE_NAME);
@@ -186,4 +186,35 @@ int find_sensor_all(DBCONN *conn, callback_t f){
         fprintf(stderr, "Failed to execute connect statement: %s\n", sqlite3_errmsg(conn));
         return -1;
     }
+}
+
+
+int find_sensor_by_value(DBCONN *conn, sensor_value_t value, callback_t f){
+    char *err_msg;
+    char q[200] = "";
+    char *sql = q;
+    char a[20] = "SELECT * FROM ";
+    char b[100] = TO_STRING(TABLE_NAME);
+    char c[30] = " where sensor_value = ";
+    char d[10];
+    sprintf(d, "%f", value);
+   printf("double as char: %s\n",d);
+
+    strcat(q, a);
+    strcat(q, b);
+    strcat(q, c);
+    strcat(q, d);
+    printf("Query = %s\n", sql);
+
+    int rc = sqlite3_exec(conn, sql, f, 0, &err_msg);
+
+    if (rc == SQLITE_OK) {
+        printf("Select * query succesfully executed\n");
+        return 0;
+    }
+    else {
+        fprintf(stderr, "Failed to execute connect statement: %s\n", sqlite3_errmsg(conn));
+        return -1;
+    }
+
 }
