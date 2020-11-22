@@ -40,6 +40,10 @@ int main(){
 
     DBCONN *db = init_connection(0);
 
+    insert_sensor(db, 15, 20, 1650001);
+
+
+
     disconnect(db);
 
     // Free everything
