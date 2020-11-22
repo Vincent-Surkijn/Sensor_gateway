@@ -1,8 +1,6 @@
 /**
 * author: Vincent Surkijn
 **/
-#define SET_MAX_TEMP 50
-#define SET_MIN_TEMP 0
 #ifndef DB_NAME
 #define DB_NAME Sensor.db
 #endif
@@ -13,13 +11,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <inttypes.h>
 #include <time.h>
-#include <math.h>
 #include <sqlite3.h>
 #include <string.h>
 #include "config.h"
-#include "datamgr.h"
 #include "sensor_db.h"
 
 int callback(void *NotUsed, int argc, char **argv,
@@ -51,9 +46,6 @@ int main(){
 	return -1;
     }
 
-    datamgr_parse_sensor_files( fp_map, fp_data);
-
-    printf("Database part: \n");
     DBCONN *db = init_connection(1);
 
     insert_sensor_from_file(db, fp_data);
@@ -64,7 +56,6 @@ int main(){
     disconnect(db);
 
     // Free everything
-    datamgr_free();
     free(fp_map);
     free(fp_data);
 }
