@@ -198,7 +198,36 @@ int find_sensor_by_value(DBCONN *conn, sensor_value_t value, callback_t f){
     char c[30] = " where sensor_value = ";
     char d[10];
     sprintf(d, "%f", value);
-   printf("double as char: %s\n",d);
+    //printf("double as char: %s\n",d);
+
+    strcat(q, a);
+    strcat(q, b);
+    strcat(q, c);
+    strcat(q, d);
+    //printf("Query = %s\n", sql);
+
+    int rc = sqlite3_exec(conn, sql, f, 0, &err_msg);
+
+    if (rc == SQLITE_OK) {
+        printf("Select by value query succesfully executed\n");
+        return 0;
+    }
+    else {
+        fprintf(stderr, "Failed to execute select value statement: %s\n", sqlite3_errmsg(conn));
+        return -1;
+    }
+}
+
+
+int find_sensor_exceed_value(DBCONN *conn, sensor_value_t value, callback_t f){
+    char *err_msg;
+    char q[200] = "";
+    char *sql = q;
+    char a[20] = "SELECT * FROM ";
+    char b[100] = TO_STRING(TABLE_NAME);
+    char c[30] = " where sensor_value > ";
+    char d[10];
+    sprintf(d, "%f", value);
 
     strcat(q, a);
     strcat(q, b);
@@ -209,12 +238,69 @@ int find_sensor_by_value(DBCONN *conn, sensor_value_t value, callback_t f){
     int rc = sqlite3_exec(conn, sql, f, 0, &err_msg);
 
     if (rc == SQLITE_OK) {
-        printf("Select * query succesfully executed\n");
+        printf("Select by exceed value query succesfully executed\n");
         return 0;
     }
     else {
-        fprintf(stderr, "Failed to execute connect statement: %s\n", sqlite3_errmsg(conn));
+        fprintf(stderr, "Failed to execute exceed value statement: %s\n", sqlite3_errmsg(conn));
         return -1;
     }
+}
 
+
+int find_sensor_by_timestamp(DBCONN *conn, sensor_ts_t ts, callback_t f){
+    char *err_msg;
+    char q[250] = "";
+    char *sql = q;
+    char a[20] = "SELECT * FROM ";
+    strcat(q, a);
+    char b[100] = TO_STRING(TABLE_NAME);
+    char c[30] = " where timestamp = ";
+    char d[10];
+    sprintf(d, "%ld", (long)ts);	// After this a is NULL so concat before
+
+    strcat(q, b);
+    strcat(q, c);
+    strcat(q, d);
+    //printf("Query = %s\n", sql);
+
+    int rc = sqlite3_exec(conn, sql, f, 0, &err_msg);
+
+    if (rc == SQLITE_OK) {
+        printf("Select by timestamp query succesfully executed\n");
+        return 0;
+    }
+    else {
+        fprintf(stderr, "Failed to execute timestamp statement: %s\n", sqlite3_errmsg(conn));
+        return -1;
+    }
+}
+
+
+int find_sensor_after_timestamp(DBCONN *conn, sensor_ts_t ts, callback_t f){
+    char *err_msg;
+    char q[250] = "";
+    char *sql = q;
+    char a[20] = "SELECT * FROM ";
+    strcat(q, a);
+    char b[100] = TO_STRING(TABLE_NAME);
+    char c[30] = " where timestamp > ";
+    char d[10];
+    sprintf(d, "%ld", (long)ts);        // After this a is NULL so concat before
+
+    strcat(q, b);
+    strcat(q, c);
+    strcat(q, d);
+    printf("Query = %s\n", sql);
+
+    int rc = sqlite3_exec(conn, sql, f, 0, &err_msg);
+
+    if (rc == SQLITE_OK) {
+        printf("Select by timestamp query succesfully executed\n");
+        return 0;
+    }
+    else {
+        fprintf(stderr, "Failed to execute timestamp statement: %s\n", sqlite3_errmsg(conn));
+        return -1;
+    }
 }
