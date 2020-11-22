@@ -19,9 +19,9 @@ main:
 	./test_main
 
 mainWithDefines:
-	gcc -lm -g -c datamgr.c -DRUN_AVG_LENGTH=5 -DSET_MIN_TEMP=14.01 -DSET_MAX_TEMP=27.96
-	gcc -c -Wall sensor_db.c -lsqlite3
-	gcc -lm -g -c main.c
+	gcc -lm -g -c -Wall datamgr.c -DRUN_AVG_LENGTH=5 -DSET_MIN_TEMP=14.01 -DSET_MAX_TEMP=27.96
+	gcc -lm -c -Wall sensor_db.c -lsqlite3
+	gcc -lm -g -c -Wall main.c
 	gcc -lm -g -o test_main datamgr.o sensor_db.o main.o -lsqlite3 -L./lib -Wl,-rpath=./lib -ldplist -I./lib
 	./test_main
 

@@ -22,6 +22,21 @@
 #include "datamgr.h"
 #include "sensor_db.h"
 
+int callback(void *NotUsed, int argc, char **argv,
+                    char **azColName) {
+
+    NotUsed = 0;
+
+    for (int i = 0; i < argc; i++) {
+
+        printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+    }
+
+    printf("\n");
+
+    return 0;
+}
+
 int main(){
 
     FILE *fp_map = fopen("./room_sensor.map", "r");
@@ -38,11 +53,11 @@ int main(){
 
     datamgr_parse_sensor_files( fp_map, fp_data);
 
-    DBCONN *db = init_connection(0);
-
-    insert_sensor(db, 15, 20, 1650001);
+    DBCONN *db = init_connection(1);
 
     insert_sensor_from_file(db, fp_data);
+
+    find_sensor_all(db, callback);
 
     disconnect(db);
 

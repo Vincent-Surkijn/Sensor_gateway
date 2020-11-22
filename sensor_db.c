@@ -95,10 +95,10 @@ DBCONN *init_connection(char clear_up_flag){
 
 
 void disconnect(DBCONN *conn){
-    int res = sqlite3_close(conn);
-    if(res!=0){
-	fprintf(stderr, "Failed to close database: %s\n", sqlite3_errmsg(res));
-    }
+    sqlite3_close(conn);
+    /*if(sqlite3_close(conn) != 0){
+	fprintf(stderr, "Failed to close database: %s\n", sqlite3_errmsg(sqlite3_close(conn)));
+    }*/
 }
 
 
@@ -143,24 +143,47 @@ int sensor_findBinFileSize(FILE *file){
 
 
 int insert_sensor_from_file(DBCONN *conn, FILE *sensor_data){
-
     int size = sensor_findBinFileSize(sensor_data);
     int i;
     for(i=0; i<size; i++){     // Read data values --> bin file
         sensor_id_t id;
         fread(&id, sizeof(sensor_id_t),1,sensor_data);
-	printf("Id: %d -- ", id);
+	//printf("Id: %d -- ", id);
 
         sensor_value_t  temp;
         fread(&temp, sizeof(sensor_value_t),1,sensor_data);
-        printf("Temp: %f -- ", temp);
+        //printf("Temp: %f -- ", temp);
 
         time_t time;
         fread(&time, sizeof(time_t),1,sensor_data);
-        printf("Time: %lld\n", (long long)time);
+        //printf("Time: %lld\n", (long long)time);
 
-	insert_sensor(conn, id, temp, time);
+	int res = insert_sensor(conn, id, temp, time);
+	if(res!=0)	return -1;
     }
     return 0;
+}
 
+
+int find_sensor_all(DBCONN *conn, callback_t f){
+    char *err_msg;
+    char q[250] = "";
+    char *sql = q;
+    char a[20] = "SELECT * FROM ";
+    char b[100] = TO_STRING(TABLE_NAME);
+
+    strcat(q, a);
+    strcat(q, b);
+    printf("Query = %s\n", sql);
+
+    int rc = sqlite3_exec(conn, sql, f, 0, &err_msg);
+
+    if (rc == SQLITE_OK) {
+        printf("Select * query succesfully executed\n");
+	return 0;
+    }
+    else {
+        fprintf(stderr, "Failed to execute connect statement: %s\n", sqlite3_errmsg(conn));
+        return -1;
+    }
 }
