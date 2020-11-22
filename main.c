@@ -38,7 +38,7 @@ int main(){
 
     datamgr_parse_sensor_files( fp_map, fp_data);
 
-    DBCONN *db = init_connection(1);
+    DBCONN *db = init_connection(0);
 
     disconnect(db);
     // Free everything
