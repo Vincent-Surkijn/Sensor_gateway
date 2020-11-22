@@ -42,7 +42,7 @@ int main(){
 
     insert_sensor(db, 15, 20, 1650001);
 
-
+    insert_sensor_from_file(db, fp_data);
 
     disconnect(db);
 

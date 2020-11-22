@@ -85,7 +85,7 @@ DBCONN *init_connection(char clear_up_flag){
 	printf("Create query succesfully parsed\n");
     }
     else {
-        fprintf(stderr, "Failed to execute statement: %s\n", sqlite3_errmsg(db));
+        fprintf(stderr, "Failed to execute connect statement: %s\n", sqlite3_errmsg(db));
 
 	return NULL;
     }
@@ -120,12 +120,47 @@ int insert_sensor(DBCONN *conn, sensor_id_t id, sensor_value_t value, sensor_ts_
 	sqlite3_bind_int64(res, idx, val_ts);
     }
     else {
-        fprintf(stderr, "Failed to execute statement: %s\n", sqlite3_errmsg(conn));
+        fprintf(stderr, "Failed to execute insert statement: %s\n", sqlite3_errmsg(conn));
 	return -1;
     }
 
-    int step = sqlite3_step(res);
+    sqlite3_step(res);
+
     sqlite3_finalize(res);
 
     return 0;
+}
+
+
+int sensor_findBinFileSize(FILE *file){
+    fseek(file, 0, SEEK_END);
+    int size = ftell(file);
+    size = size/(sizeof(sensor_id_t) + sizeof(sensor_value_t) + sizeof(sensor_ts_t));
+    fseek(file, 0, SEEK_SET);
+    //printf("Size: %d\n", size);
+    return size;
+}
+
+
+int insert_sensor_from_file(DBCONN *conn, FILE *sensor_data){
+
+    int size = sensor_findBinFileSize(sensor_data);
+    int i;
+    for(i=0; i<size; i++){     // Read data values --> bin file
+        sensor_id_t id;
+        fread(&id, sizeof(sensor_id_t),1,sensor_data);
+	printf("Id: %d -- ", id);
+
+        sensor_value_t  temp;
+        fread(&temp, sizeof(sensor_value_t),1,sensor_data);
+        printf("Temp: %f -- ", temp);
+
+        time_t time;
+        fread(&time, sizeof(time_t),1,sensor_data);
+        printf("Time: %lld\n", (long long)time);
+
+	insert_sensor(conn, id, temp, time);
+    }
+    return 0;
+
 }
