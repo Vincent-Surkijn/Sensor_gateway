@@ -41,6 +41,7 @@ int main(){
     DBCONN *db = init_connection(0);
 
     disconnect(db);
+
     // Free everything
     datamgr_free();
     free(fp_map);

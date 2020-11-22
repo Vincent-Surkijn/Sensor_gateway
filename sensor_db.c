@@ -33,7 +33,6 @@ typedef int (*callback_t)(void *, int, char **, char **);
 DBCONN *init_connection(char clear_up_flag){
     sqlite3 *db;
     char *err_msg = 0;
-    sqlite3_stmt *res;
 
     int rc = sqlite3_open(TO_STRING(DB_NAME), &db);
 
@@ -78,7 +77,6 @@ DBCONN *init_connection(char clear_up_flag){
           //      "sensor_value DECIMAL(4,2), timestamp TIMESTAMP);";
     }
 
-    //rc = sqlite3_prepare_v2(db, sql, -1, &res, 0);	// Converts query to bin code, syntax error when table name = parameter
     rc = sqlite3_exec(db, sql, 0, 0, &err_msg);
 
     if (rc == SQLITE_OK) {
@@ -90,23 +88,15 @@ DBCONN *init_connection(char clear_up_flag){
 	return NULL;
     }
 
-/*    int step = sqlite3_step(res);
-
-    if (step == SQLITE_ROW) {
-
-        printf("%s: ", sqlite3_column_text(res, 0));
-        printf("%s\n", sqlite3_column_text(res, 1));
-
-    }
-
-    sqlite3_finalize(res);
-*/
     return db;
 }
 
 
 void disconnect(DBCONN *conn){
-    sqlite3_close(conn);
+    int res = sqlite3_close(conn);
+    if(res!=0){
+	fprintf(stderr, "Failed to close database: %s\n", sqlite3_errmsg(res));
+    }
 }
 
 
