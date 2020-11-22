@@ -3,13 +3,24 @@
 **/
 #define SET_MAX_TEMP 50
 #define SET_MIN_TEMP 0
+#ifndef DB_NAME
+#define DB_NAME Sensor.db
+#endif
+#ifndef TABLE_NAME
+#define TABLE_NAME SensorData
+#endif
+#define DBCONN sqlite3
 
-#include "config.h"
-#include "datamgr.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <inttypes.h>
 #include <time.h>
 #include <math.h>
+#include <sqlite3.h>
+#include <string.h>
+#include "config.h"
+#include "datamgr.h"
+#include "sensor_db.h"
 
 int main(){
 
@@ -27,7 +38,9 @@ int main(){
 
     datamgr_parse_sensor_files( fp_map, fp_data);
 
+    DBCONN *db = init_connection(1);
 
+    disconnect(db);
     // Free everything
     datamgr_free();
     free(fp_map);

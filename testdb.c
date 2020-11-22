@@ -239,11 +239,11 @@ int main(void) {
 
 
 /** SQL statements with named parameters **/
-/*
+
 int main(void) {
 
     sqlite3 *db;
-    char *err_msg = 0;
+//    char *err_msg = 0;
     sqlite3_stmt *res;
 
     int rc = sqlite3_open("test.db", &db);
@@ -256,15 +256,15 @@ int main(void) {
         return 1;
     }
 
-    char *sql = "SELECT Id, Name FROM Cars WHERE Id = @id";
+    char *sql = "SELECT Id, Name FROM Cars WHERE Name = @name";
 
     rc = sqlite3_prepare_v2(db, sql, -1, &res, 0);
 
     if (rc == SQLITE_OK) {
 
-        int idx = sqlite3_bind_parameter_index(res, "@id");
-        int value = 4;
-        sqlite3_bind_int(res, idx, value);
+        int idx = sqlite3_bind_parameter_index(res, "@name");
+        char* value = "Skoda";
+        sqlite3_bind_text(res, idx, value, -1, 0);
 
     } else {
 
@@ -284,7 +284,7 @@ int main(void) {
     sqlite3_close(db);
 
     return 0;
-}*/
+}
 
 
 /** Metadata **/
@@ -344,7 +344,7 @@ int callback(void *NotUsed, int argc, char **argv,
 
 
 /** List tables from database **/
-
+/*
 int callback(void *, int, char **, char **);
 
 
@@ -395,4 +395,4 @@ int callback(void *NotUsed, int argc, char **argv,
     }
 
     return 0;
-}
+}*/
