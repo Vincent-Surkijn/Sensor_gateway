@@ -214,26 +214,25 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data){
 
 	int index = datamgr_get_index_of_sensor_id(id);
 
-	if(index != -1){       // Valid index
-            double temp;
-            fread(&temp, sizeof(double),1,fp_sensor_data);
-            //printf("Temp: %f -- \n", temp);
+        double temp;
+        fread(&temp, sizeof(double),1,fp_sensor_data);
+        //printf("Temp: %f -- \n", temp);
 
-            datamgr_update_value_array(index, temp);
-            (( (sensor_data_t*)(dpl_get_element_at_index(list, index)) )->amount)++;
+        time_t time;
+        fread(&time, sizeof(time_t),1,fp_sensor_data);
+        //printf("Time: %lld\n", (long long)time);
 
-            time_t time;
-            fread(&time, sizeof(time_t),1,fp_sensor_data);
-            //printf("Time: %lld\n", (long long)time);
+        if((( (sensor_data_t *)(dpl_get_element_at_index(list, index)) )->amount)>=RUN_AVG_LENGTH){      // If enough values present in the sensor, the avg can be calculated
+	    datamgr_check_avg_at_index(index);
+        }
 
-            ( (sensor_data_t*)(dpl_get_element_at_index(list, index)) )->ts = time;
-
-            if((( (sensor_data_t *)(dpl_get_element_at_index(list, index)) )->amount)>=RUN_AVG_LENGTH){      // If enough values present in the sensor, the avg can be calculated
-		datamgr_check_avg_at_index(index);
-            }
+	if(index==-1){	//Invalid index -> id not found
+	    fprintf(stderr, "Tried to add data of non existing sensor id\n");
 	}
 	else{
-	    fprintf(stderr, "Tried to add data of non existing sensor id\n");
+            datamgr_update_value_array(index, temp);
+            (( (sensor_data_t*)(dpl_get_element_at_index(list, index)) )->amount)++;
+	    ( (sensor_data_t*)(dpl_get_element_at_index(list, index)) )->ts = time;
 	}
     }
 
