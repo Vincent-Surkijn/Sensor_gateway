@@ -12,13 +12,18 @@ libtest: lib	dplib
 	gcc libtest.c -L./lib -Wl,-rpath=./lib -ldplist -ltcpsock -I./lib
 	./a.out
 
-testsetup: lib	dplib
+testsetup: lib
 	gcc -o ./sensor sensor_node.c -L./lib -Wl,-rpath=./lib -ltcpsock -I./lib
 	gcc -o ./server test_server.c -L./lib -Wl,-rpath=./lib -ltcpsock -I./lib
 
 sensor:
 	./sensor 111 2 127.0.0.1 5678
 
+build:	lib
+	gcc -c -g connmgr.c -L./lib -Wl,-rpath=./lib -ldplist -ltcpsock -I./lib
+	gcc -c -g connmgr.c main.c -L./lib -Wl,-rpath=./lib -ldplist -ltcpsock -I./lib
+	gcc -g -o connmgr main.o connmgr.o
+	./connmgr 1234	# pass port number as a parameter
 # the files for ex2 will be ziped and are then ready to
 # be submitted to labtools.groept.be
 zip:
