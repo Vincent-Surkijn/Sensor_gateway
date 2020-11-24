@@ -8,6 +8,10 @@ lib:
 	gcc -fPIC -c ./lib/tcpsock.c -o ./lib/tcpsock.o
 	gcc -shared -o ./lib/libtcpsock.so ./lib/tcpsock.o -Wall -std=c11 -Werror
 
+libtest: lib	dplib
+	gcc libtest.c -L./lib -Wl,-rpath=./lib -ldplist -ltcpsock -I./lib
+	./a.out
+
 # the files for ex2 will be ziped and are then ready to
 # be submitted to labtools.groept.be
 zip:
