@@ -12,6 +12,13 @@ libtest: lib	dplib
 	gcc libtest.c -L./lib -Wl,-rpath=./lib -ldplist -ltcpsock -I./lib
 	./a.out
 
+testsetup: lib	dplib
+	gcc -o ./sensor sensor_node.c -L./lib -Wl,-rpath=./lib -ltcpsock -I./lib
+	gcc -o ./server test_server.c -L./lib -Wl,-rpath=./lib -ltcpsock -I./lib
+
+sensor:
+	./sensor 111 2 127.0.0.1 5678
+
 # the files for ex2 will be ziped and are then ready to
 # be submitted to labtools.groept.be
 zip:
