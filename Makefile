@@ -9,7 +9,7 @@ lib:
 	gcc -shared -o ./lib/libtcpsock.so ./lib/tcpsock.o -Wall -std=c11 -Werror
 
 libtest: lib	dplib
-	gcc libtest.c -L./lib -Wl,-rpath=./lib -ldplist -ltcpsock -I./lib
+	gcc libtest.c -L./lib -Wl,-rpath=./lib -ldplist -ltcpsock
 	./a.out
 
 testsetup: lib
@@ -20,10 +20,10 @@ sensor:
 	./sensor 111 2 127.0.0.1 5678
 
 build:	lib
-	gcc -c -g connmgr.c -L./lib -Wl,-rpath=./lib -ldplist -ltcpsock -I./lib
-	gcc -c -g connmgr.c main.c -L./lib -Wl,-rpath=./lib -ldplist -ltcpsock -I./lib
-	gcc -g -o connmgr main.o connmgr.o
-	./connmgr 1234	# pass port number as a parameter
+	gcc -c -g connmgr.c
+	gcc -c -g main.c
+	gcc -g -o connmgr main.o connmgr.o -L./lib -Wl,-rpath=./lib -ltcpsock -ldplist -I./lib
+	./connmgr 5678	# pass port number as a parameter
 # the files for ex2 will be ziped and are then ready to
 # be submitted to labtools.groept.be
 zip:
