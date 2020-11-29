@@ -59,6 +59,13 @@ void connmgr_listen(int port_number){
     tcpsock_t *server, *client;
     int serversd, clientsd;
 
+    FILE *fp_bindata;
+    fp_bindata = fopen("sensor_data_recv", "w");
+    if (fp_bindata == NULL) {
+        perror("Opening fp_bindata failed: ");
+	return;
+    }
+
     conn_list = dpl_create(element_copy, element_free, element_compare);
     poll_fd = malloc(sizeof(struct pollfd));
 
@@ -120,6 +127,11 @@ void connmgr_listen(int port_number){
                 	if ((result == TCP_NO_ERROR) && bytes) {
                 	    printf("sensor id = %" PRIu16 " - temperature = %g - timestamp = %ld\n", data.id, data.value,
                        	    (long int) data.ts);
+
+			    // write data to bin file
+			    fwrite(&(data.id), bytes, 1, fp_bindata);
+			    fwrite(&(data.value), bytes, 1, fp_bindata);
+			    fwrite(&(data.ts), bytes, 1 , fp_bindata);
                 	}
             	    }while(result == TCP_NO_ERROR && (((dummy->ts) - now) < TIMEOUT));
             	    if (result == TCP_CONNECTION_CLOSED){
@@ -142,6 +154,8 @@ void connmgr_listen(int port_number){
     }
     printf("Closed server at %ld\n", time(NULL));
     tcp_close(&server);
+    // close bin file as well
+    fclose(fp_bindata);
 }
 
 void connmgr_free(){	// not yet tested!!

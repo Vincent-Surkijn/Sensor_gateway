@@ -5,6 +5,10 @@
 #ifndef _CONNMGR_H_
 #define _CONNMGR_H_
 
+#ifndef TIMEOUT
+#error TIMEOUT not set
+#endif
+
 #include "config.h"
 
 /* This method holds the core functionality of your connmgr.

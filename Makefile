@@ -25,7 +25,7 @@ sensor2:
 
 build:	lib
 	gcc -c -g connmgr.c
-	gcc -c -g main.c
+	gcc -c -g main.c -DTIMEOUT=10
 	gcc -g -o connmgr main.o connmgr.o -L./lib -Wl,-rpath=./lib -ltcpsock -ldplist -I./lib
 	./connmgr 5678	# pass port number as a parameter
 # the files for ex2 will be ziped and are then ready to
