@@ -167,8 +167,18 @@ void connmgr_listen(int port_number){
     fclose(fp_bindata);
 }
 
-void connmgr_free(){	// not yet tested!!
+void connmgr_free(){
     printf("Freeing..\n");
+//printf("Size of list: %d\n", dpl_size(conn_list));
+    int size = dpl_size(conn_list);
+    if(size > 0){	// check if list is empty
+	int i;
+	for(i=0;i<size;i++){	// if not empty, all connections need to be closed
+	    connection_t *dummy = dpl_get_element_at_index(conn_list,i);
+	    tcpsock_t *dummy_sock = dummy->sock;
+	    tcp_close(&dummy_sock);
+	}
+    }
     dpl_free(&conn_list, true);
     free(poll_fd);
 }

@@ -22,6 +22,10 @@ sensor:
 sensor2:
 	./sensor 200 3 127.0.0.1 5678
 
+sensors:
+	./sensor 51 1 127.0.0.1 5678 &
+	./sensor 53 2 127.0.0.1 5678 &
+	./sensor 55 3 127.0.0.1 5678 &
 
 build:	lib
 	gcc -c -g connmgr.c
