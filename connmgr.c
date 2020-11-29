@@ -70,9 +70,10 @@ void connmgr_listen(int port_number){
     poll_fd[0].events = POLLIN;
 
     //printf("Before while\n");
-    while(1){
+    bool loop = true;
+    while(loop){
 	//printf("poll");
-    	int result = poll(poll_fd, dpl_size(conn_list) + 1, -1);	// pos -> amount of elements with non-zero revents fields, neg -> err, 0 -> timeout
+    	int result = poll(poll_fd, dpl_size(conn_list) + 1, TIMEOUT);	// pos -> amount of elements with non-zero revents fields, neg -> err, 0 -> timeout
         sensor_data_t data;
         int bytes;
     	if(result<0){
@@ -80,7 +81,7 @@ void connmgr_listen(int port_number){
     	}
     	else if(result==0){
             printf("Timeout reached\n");
-	    return;
+	    loop = false;
     	}
 	else{
 	    if(poll_fd[0].revents & POLLIN){	// If it's the server then a new sensor will be added to the poll list
@@ -99,8 +100,8 @@ void connmgr_listen(int port_number){
 		//printf("For loop\n");
 		if(poll_fd[i+1].revents & POLLIN){
 		printf("Sensor %d sending data\n", i+1);
-		    time_t now;
 		    connection_t *dummy;
+		    time_t now;
 		    do{
 			// retrieve conn_list element from this sensor
 			dummy = dpl_get_element_at_index(conn_list, i);
@@ -120,7 +121,6 @@ void connmgr_listen(int port_number){
                 	    printf("sensor id = %" PRIu16 " - temperature = %g - timestamp = %ld\n", data.id, data.value,
                        	    (long int) data.ts);
                 	}
-printf("difference: %ld\n", ( (dummy->ts) - now));
             	    }while(result == TCP_NO_ERROR && (((dummy->ts) - now) < TIMEOUT));
             	    if (result == TCP_CONNECTION_CLOSED){
                 	printf("Peer has closed connection\n");
@@ -137,6 +137,8 @@ printf("difference: %ld\n", ( (dummy->ts) - now));
 	    }
 	}
     }
+    printf("Close server\n");
+    tcp_close(&server);
 }
 
 void connmgr_free(){	// not yet tested!!

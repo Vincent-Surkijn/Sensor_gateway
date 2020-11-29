@@ -13,11 +13,6 @@
 int main(int argc, char **argv){
     int port;
 
-   time_t seconds;
-
-   seconds = time(NULL);
-   printf("Seconds since January 1, 1970 = %ld\n", seconds);
-
     if( argc == 2){
         char *a = argv[1];
         port = atoi(a);         // Take port number from command line
