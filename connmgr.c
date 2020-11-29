@@ -43,7 +43,7 @@ void connmgr_add_conn(int sd){
     new_conn->ts = 0;	// No ts yet
     int index = dpl_size(conn_list);
     conn_list = dpl_insert_at_index(conn_list, new_conn, index, false);	// insert new connection at end of list
-    realloc(poll_fd,sizeof(struct pollfd)*(index+2));	// +2 because new connection and server need to be included
+    poll_fd = realloc(poll_fd,sizeof(struct pollfd)*(index+2));	// +2 because new connection and server need to be included
     poll_fd[index+1].fd = sd;	// index+1 because this list also contains the server
     poll_fd[index+1].events = POLLIN;
 }
@@ -59,7 +59,7 @@ void connmgr_listen(int port_number){
     if(tcp_passive_open(&server,port_number) != TCP_NO_ERROR) exit(EXIT_FAILURE);
     tcp_get_sd(server, &serversd);
     printf("OG sd=%d\n",serversd);
-    printf("Poll_fd init size: %ld\n", sizeof(poll_fd));
+	printf("OG size of poll_fd: %ld\n", sizeof(poll_fd)/sizeof(poll_fd[0]));
     poll_fd[0].fd = serversd;
     poll_fd[0].events = POLLIN;
 
@@ -83,7 +83,11 @@ void connmgr_listen(int port_number){
 	    	printf("client sd=%d\n",clientsd);
 	    	// Add new connection to the poll list
 	    	connmgr_add_conn(clientsd);
-		printf("Poll_fd size: %ld\n", sizeof(poll_fd));
+	printf("New size of poll_fd: %ld\n", sizeof(poll_fd)/sizeof(poll_fd[0]));
+	printf("indexO: %d\n", poll_fd[0].fd);
+	printf("index1: %d\n", poll_fd[1].fd);
+	printf("index2: %d\n", poll_fd[2].fd);
+	printf("size list: %d\n", dpl_size(conn_list));
 	    }
 	}
     }
