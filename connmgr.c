@@ -55,7 +55,7 @@ void connmgr_add_conn(tcpsock_t *sock, int sd){
 }
 
 void connmgr_listen(int port_number){
-	printf("Timeout = %d\n", TIMEOUT);
+    printf("Timeout = %d\n", TIMEOUT);
     tcpsock_t *server, *client;
     int serversd, clientsd;
 
@@ -65,7 +65,7 @@ void connmgr_listen(int port_number){
     // Add server port to the polling list
     if(tcp_passive_open(&server,port_number) != TCP_NO_ERROR) exit(EXIT_FAILURE);
     tcp_get_sd(server, &serversd);
-    printf("OG sd=%d\n",serversd);
+    printf("Server sd = %d\n",serversd);
     poll_fd[0].fd = serversd;
     poll_fd[0].events = POLLIN;
 
@@ -73,7 +73,7 @@ void connmgr_listen(int port_number){
     bool loop = true;
     while(loop){
 	//printf("poll");
-    	int result = poll(poll_fd, dpl_size(conn_list) + 1, TIMEOUT);	// pos -> amount of elements with non-zero revents fields, neg -> err, 0 -> timeout
+    	int result = poll(poll_fd, dpl_size(conn_list) + 1, TIMEOUT*1000);	// pos -> amount of elements with non-zero revents fields, neg -> err, 0 -> timeout(in ms)
         sensor_data_t data;
         int bytes;
     	if(result<0){
@@ -125,6 +125,9 @@ void connmgr_listen(int port_number){
             	    if (result == TCP_CONNECTION_CLOSED){
                 	printf("Peer has closed connection\n");
 			poll_fd[i+1].fd = -1;	// stop listening to this one
+			conn_list = dpl_remove_at_index(conn_list, i, true);	// can be removed from list as well
+			printf("Size of list now: %d\n", dpl_size(conn_list));
+			printf("Time: %ld\n", time(NULL));
                     }
 		    else if(( (dummy->ts) - now) >= TIMEOUT){
 			printf("Timeout reached for sensor %d\n", i+1);
@@ -137,7 +140,7 @@ void connmgr_listen(int port_number){
 	    }
 	}
     }
-    printf("Close server\n");
+    printf("Closed server at %ld\n", time(NULL));
     tcp_close(&server);
 }
 
