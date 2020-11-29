@@ -28,7 +28,7 @@ for(i=0; i<size2; i++){	// Read data values --> bin file
 
         double temp;
         fread(&temp, sizeof(double),1,fp_bin);
-        printf("Temp: %f -- \n", temp);
+        printf("Temp: %f -- ", temp);
 
         time_t time;
         fread(&time, sizeof(time_t),1,fp_bin);

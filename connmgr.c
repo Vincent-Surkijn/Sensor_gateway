@@ -22,9 +22,10 @@ typedef struct {
 } connection_t;
 
 void * element_copy(void * element){
-    connection_t* copy = malloc(sizeof(connection_t));
-    int new_conn_sd = ( (connection_t*)(element) )->conn_sd;
-    sensor_ts_t new_ts = ( (connection_t*)(element) )->ts;
+    connection_t *copy = malloc(sizeof(connection_t));
+    copy->conn_sd = ( (connection_t*)(element) )->conn_sd;
+    copy->ts = ( (connection_t*)(element) )->ts;
+    return copy;
 }
 
 void element_free(void ** element){
@@ -49,7 +50,15 @@ void connmgr_add_conn(tcpsock_t *sock, int sd){
     new_conn->ts = 0;	// No ts yet
     int index = dpl_size(conn_list);
     conn_list = dpl_insert_at_index(conn_list, new_conn, index, false);	// insert new connection at end of list
-    poll_fd = realloc(poll_fd,sizeof(struct pollfd)*(index+2));	// +2 because new connection and server need to be included
+    struct pollfd *tmp = realloc(poll_fd,sizeof(struct pollfd)*(index+2));	// +2 because new connection and server need to be included
+    if (NULL == tmp){
+	fprintf(stderr, "Failed realloc\n");
+    }
+    else
+    {
+	poll_fd = tmp;
+	tmp = NULL;
+    }
     poll_fd[index+1].fd = sd;	// index+1 because this list also contains the server
     poll_fd[index+1].events = POLLIN;
 }
@@ -129,9 +138,9 @@ void connmgr_listen(int port_number){
                        	    (long int) data.ts);
 
 			    // write data to bin file
-			    fwrite(&(data.id), bytes, 1, fp_bindata);
-			    fwrite(&(data.value), bytes, 1, fp_bindata);
-			    fwrite(&(data.ts), bytes, 1 , fp_bindata);
+			    fwrite(&(data.id), sizeof(data.id), 1, fp_bindata);
+			    fwrite(&(data.value), sizeof(data.value), 1, fp_bindata);
+			    fwrite(&(data.ts), sizeof(data.ts), 1 , fp_bindata);
                 	}
             	    }while(result == TCP_NO_ERROR && (((dummy->ts) - now) < TIMEOUT));
             	    if (result == TCP_CONNECTION_CLOSED){
