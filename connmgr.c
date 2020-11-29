@@ -2,6 +2,10 @@
  * \author Vincent Surkijn
  */
 
+#ifndef TIMEOUT
+#define TIMEOUT 5
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <poll.h>
@@ -12,6 +16,7 @@
 #include "lib/tcpsock.h"
 
 typedef struct {
+    tcpsock_t *sock;
     int conn_sd;
     sensor_ts_t ts;
 } connection_t;
@@ -37,8 +42,9 @@ dplist_t *conn_list;
 struct pollfd *poll_fd;
 
 
-void connmgr_add_conn(int sd){
+void connmgr_add_conn(tcpsock_t *sock, int sd){
     connection_t * new_conn = malloc(sizeof(connection_t));
+    new_conn->sock = sock;
     new_conn->conn_sd = sd;
     new_conn->ts = 0;	// No ts yet
     int index = dpl_size(conn_list);
@@ -49,6 +55,7 @@ void connmgr_add_conn(int sd){
 }
 
 void connmgr_listen(int port_number){
+	printf("Timeout = %d\n", TIMEOUT);
     tcpsock_t *server, *client;
     int serversd, clientsd;
 
@@ -59,14 +66,13 @@ void connmgr_listen(int port_number){
     if(tcp_passive_open(&server,port_number) != TCP_NO_ERROR) exit(EXIT_FAILURE);
     tcp_get_sd(server, &serversd);
     printf("OG sd=%d\n",serversd);
-	printf("OG size of poll_fd: %ld\n", sizeof(poll_fd)/sizeof(poll_fd[0]));
     poll_fd[0].fd = serversd;
     poll_fd[0].events = POLLIN;
 
-    printf("Before while\n");
+    //printf("Before while\n");
     while(1){
 	//printf("poll");
-    	int result = poll(poll_fd, 1, -1);	// pos -> amount of elements with non-zero revents fields, neg -> err, 0 -> timeout
+    	int result = poll(poll_fd, dpl_size(conn_list) + 1, -1);	// pos -> amount of elements with non-zero revents fields, neg -> err, 0 -> timeout
         sensor_data_t data;
         int bytes;
     	if(result<0){
@@ -82,17 +88,59 @@ void connmgr_listen(int port_number){
 	    	tcp_get_sd(client, &clientsd);
 	    	printf("client sd=%d\n",clientsd);
 	    	// Add new connection to the poll list
-	    	connmgr_add_conn(clientsd);
-	printf("New size of poll_fd: %ld\n", sizeof(poll_fd)/sizeof(poll_fd[0]));
+	    	connmgr_add_conn(client,clientsd);
 	printf("indexO: %d\n", poll_fd[0].fd);
 	printf("index1: %d\n", poll_fd[1].fd);
 	printf("index2: %d\n", poll_fd[2].fd);
 	printf("size list: %d\n", dpl_size(conn_list));
 	    }
+	    int i;
+	    for(i=0;i<dpl_size(conn_list);i++){
+		//printf("For loop\n");
+		if(poll_fd[i+1].revents & POLLIN){
+		printf("Sensor %d sending data\n", i+1);
+		    time_t now;
+		    connection_t *dummy;
+		    do{
+			// retrieve conn_list element from this sensor
+			dummy = dpl_get_element_at_index(conn_list, i);
+                	client = dummy->sock;
+			now = time(NULL);
+			// read sensor ID
+                	bytes = sizeof(data.id);
+                	result = tcp_receive(client, (void *) &data.id, &bytes);
+                	// read temperature
+                	bytes = sizeof(data.value);
+                	result = tcp_receive(client, (void *) &data.value, &bytes);
+                	// read timestamp
+                	bytes = sizeof(data.ts);
+                	result = tcp_receive(client, (void *) &data.ts, &bytes);
+			dummy->ts = data.ts;
+                	if ((result == TCP_NO_ERROR) && bytes) {
+                	    printf("sensor id = %" PRIu16 " - temperature = %g - timestamp = %ld\n", data.id, data.value,
+                       	    (long int) data.ts);
+                	}
+printf("difference: %ld\n", ( (dummy->ts) - now));
+            	    }while(result == TCP_NO_ERROR && (((dummy->ts) - now) < TIMEOUT));
+            	    if (result == TCP_CONNECTION_CLOSED){
+                	printf("Peer has closed connection\n");
+			poll_fd[i+1].fd = -1;	// stop listening to this one
+                    }
+		    else if(( (dummy->ts) - now) >= TIMEOUT){
+			printf("Timeout reached for sensor %d\n", i+1);
+		    }
+            	    else{
+                	printf("Error occured on connection to peer\n");
+            	    }
+            	    tcp_close(&client);
+		}
+	    }
 	}
     }
 }
 
-void connmgr_free(){
-	printf("connmgr.c\n");
+void connmgr_free(){	// not yet tested!!
+    printf("Freeing..\n");
+    dpl_free(&conn_list, true);
+    free(poll_fd);
 }
