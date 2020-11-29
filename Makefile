@@ -19,6 +19,10 @@ testsetup: lib
 sensor:
 	./sensor 111 2 127.0.0.1 5678
 
+sensor2:
+	./sensor 200 3 127.0.0.1 5678
+
+
 build:	lib
 	gcc -c -g connmgr.c
 	gcc -c -g main.c

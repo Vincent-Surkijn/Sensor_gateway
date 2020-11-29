@@ -31,17 +31,35 @@ int element_compare(void * x, void * y) {
     return ((((connection_t*)x)->ts < ((connection_t*)y)->ts) ? -1 : (((connection_t*)x)->ts == ((connection_t*)y)->ts) ? 0 : 1);
 }
 
-dplist_t *conn_list = dpl_create(element_copy, element_free, element_compare);
+// conn_list is initialized as a global variable so it can be accessed from each function
+dplist_t *conn_list;
+// Init the poll_fd array as a global variable so it can be accessed from each function
+struct pollfd *poll_fd;
+
+
+void connmgr_add_conn(int sd){
+    connection_t * new_conn = malloc(sizeof(connection_t));
+    new_conn->conn_sd = sd;
+    new_conn->ts = 0;	// No ts yet
+    int index = dpl_size(conn_list);
+    conn_list = dpl_insert_at_index(conn_list, new_conn, index, false);	// insert new connection at end of list
+    realloc(poll_fd,sizeof(struct pollfd)*(index+2));	// +2 because new connection and server need to be included
+    poll_fd[index+1].fd = sd;	// index+1 because this list also contains the server
+    poll_fd[index+1].events = POLLIN;
+}
 
 void connmgr_listen(int port_number){
-    struct pollfd poll_fd[1];   // Init the poll_fd array
     tcpsock_t *server, *client;
-    int serversd;
+    int serversd, clientsd;
 
-    // Add port to the polling list
+    conn_list = dpl_create(element_copy, element_free, element_compare);
+    poll_fd = malloc(sizeof(struct pollfd));
+
+    // Add server port to the polling list
     if(tcp_passive_open(&server,port_number) != TCP_NO_ERROR) exit(EXIT_FAILURE);
     tcp_get_sd(server, &serversd);
-    printf("sd=%d\n",serversd);
+    printf("OG sd=%d\n",serversd);
+    printf("Poll_fd init size: %ld\n", sizeof(poll_fd));
     poll_fd[0].fd = serversd;
     poll_fd[0].events = POLLIN;
 
@@ -59,34 +77,16 @@ void connmgr_listen(int port_number){
 	    return;
     	}
 	else{
-	    if (tcp_wait_for_connection(server, &client) != TCP_NO_ERROR) exit(EXIT_FAILURE);
-	    do{
-//            while(poll_fd[0].revents & POLLIN){
-    	        //printf("received data!\n");
-                // read sensor ID
-                bytes = sizeof(data.id);
-                result = tcp_receive(client, (void *) &data.id, &bytes);
-                // read temperature
-                bytes = sizeof(data.value);
-                result = tcp_receive(client, (void *) &data.value, &bytes);
-                // read timestamp
-            	bytes = sizeof(data.ts);
-            	result = tcp_receive(client, (void *) &data.ts, &bytes);
-            	if ((result == TCP_NO_ERROR) && bytes) {
-                    printf("sensor id = %" PRIu16 " - temperature = %g - timestamp = %ld\n", data.id, data.value,
-                       (long int) data.ts);
-            	}
-            }while(result == TCP_NO_ERROR);
-            if (result == TCP_CONNECTION_CLOSED){
-                printf("Peer has closed connection\n");
+	    if(poll_fd[0].revents & POLLIN){	// If it's the server then a new sensor will be added to the poll list
+	    	if (tcp_wait_for_connection(server, &client) != TCP_NO_ERROR) exit(EXIT_FAILURE);
+	    	tcp_get_sd(client, &clientsd);
+	    	printf("client sd=%d\n",clientsd);
+	    	// Add new connection to the poll list
+	    	connmgr_add_conn(clientsd);
+		printf("Poll_fd size: %ld\n", sizeof(poll_fd));
 	    }
-    	    else{
-                printf("Error occured on connection to peer\n");
-	    }
-            tcp_close(&client);
 	}
     }
-    printf("After while");
 }
 
 void connmgr_free(){
