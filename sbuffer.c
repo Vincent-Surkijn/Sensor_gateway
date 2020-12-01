@@ -46,10 +46,13 @@ int sbuffer_free(sbuffer_t **buffer) {		// TODO make thread safe
 }
 
 int sbuffer_remove(sbuffer_t *buffer, sensor_data_t *data) {		// TODO make thread safe
+printf("In sbuff remove\n");
     sbuffer_node_t *dummy;
     if (buffer == NULL) return SBUFFER_FAILURE;
     if (buffer->head == NULL) return SBUFFER_NO_DATA;
+printf("About to assign data\n");
     *data = buffer->head->data;
+printf("Assigned data\n");
     dummy = buffer->head;
     if (buffer->head == buffer->tail) // buffer has only one node
     {

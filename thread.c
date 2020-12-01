@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdbool.h>
 #include "config.h"
 #include "sbuffer.h"
 
@@ -25,6 +26,8 @@ void *func2(){
 
 FILE *fp_data;
 sbuffer_t *buffer;
+pthread_mutex_t data_mutex = PTHREAD_MUTEX_INITIALIZER;
+volatile bool empty;
 
 int thread_findBinFileSize(FILE *file){
     fseek(file, 0, SEEK_END);
@@ -38,31 +41,37 @@ int thread_findBinFileSize(FILE *file){
 void *reader1(){
     int res;
     do{
+	pthread_mutex_lock( &data_mutex );	// lock thread
 	sensor_data_t *data;
-	res = sbuffer_remove(buffer, data);
+	res = sbuffer_remove(buffer, data);	// geeft segmentation fault, zelfs zonder threads, maar niet als er ene print statement tss staat(zie main)?
 	printf("Reader 1 read:\n");
 	printf("Id: %hd -- ", data->id);
         printf("Temp: %f -- ", data->value);
         printf("Time: %lld\n", (long long)(data->ts) );
-    }while(res == SBUFFER_SUCCESS);
+	pthread_mutex_unlock( &data_mutex );	// unlock thread
+    }while(res == SBUFFER_SUCCESS && !empty);
 }
 
 void *reader2(){
     int res;
     do{
+        pthread_mutex_lock( &data_mutex );      // lock thread
         sensor_data_t *data;
         res = sbuffer_remove(buffer, data);
         printf("Reader 2 read:\n");
         printf("Id: %hd -- ", data->id);
         printf("Temp: %f -- ", data->value);
         printf("Time: %lld\n", (long long)(data->ts) );
-    }while(res == SBUFFER_SUCCESS);
+        pthread_mutex_unlock( &data_mutex );    // unlock thread
+    }while(res == SBUFFER_SUCCESS && !empty);
 }
 
 void *writer(){
+    pthread_mutex_lock( &data_mutex );      // lock thread
     int size = thread_findBinFileSize(fp_data);
     int i;
     for(i=0; i<size; i++){	// Read data values --> bin file
+//        pthread_mutex_lock( &data_mutex );      // lock thread
 	printf("Writer writes: \n");
 
 	sensor_id_t id;
@@ -83,7 +92,10 @@ void *writer(){
 	data->value = temp;
 	data->ts = time;
 	sbuffer_insert(buffer, data);
+	empty = false;
+  //      pthread_mutex_unlock( &data_mutex );    // unlock thread
     }
+    pthread_mutex_unlock( &data_mutex );    // unlock thread
 }
 
 int main(){
@@ -105,15 +117,26 @@ int main(){
     }
 
     int res = sbuffer_init(&buffer);
+    empty = true;
     if(res != SBUFFER_SUCCESS){
 	fprintf(stderr, "Failure: couldn't create sbuffer!\n");
 	return -1;
     }
 
-    pthread_create( &thread1, NULL, &reader1, NULL );
+writer();
+printf("About to read\n");	// deze print statement voorkomt een segmentation fault??
+//fflush(fp_data);
+reader1();
+
+/*    pthread_create( &thread1, NULL, &reader1, NULL );
     pthread_create( &thread2, NULL, &reader2, NULL );
     pthread_create( &thread3, NULL, &writer, NULL );
 
     pthread_exit(NULL);
+*/
+
+// This doesn't give a segmentation fault
+//        sensor_data_t *data;
+  //      res = sbuffer_remove(buffer, data);
 
 }
