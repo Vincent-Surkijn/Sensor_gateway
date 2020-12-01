@@ -22,7 +22,7 @@ struct sbuffer {
     sbuffer_node_t *tail;       /**< a pointer to the last node in the buffer */
 };
 
-int sbuffer_init(sbuffer_t **buffer) {
+int sbuffer_init(sbuffer_t **buffer) {		// TODO make thread safe
     *buffer = malloc(sizeof(sbuffer_t));
     if (*buffer == NULL) return SBUFFER_FAILURE;
     (*buffer)->head = NULL;
@@ -30,7 +30,7 @@ int sbuffer_init(sbuffer_t **buffer) {
     return SBUFFER_SUCCESS;
 }
 
-int sbuffer_free(sbuffer_t **buffer) {
+int sbuffer_free(sbuffer_t **buffer) {		// TODO make thread safe
     sbuffer_node_t *dummy;
     if ((buffer == NULL) || (*buffer == NULL)) {
         return SBUFFER_FAILURE;
@@ -45,7 +45,7 @@ int sbuffer_free(sbuffer_t **buffer) {
     return SBUFFER_SUCCESS;
 }
 
-int sbuffer_remove(sbuffer_t *buffer, sensor_data_t *data) {
+int sbuffer_remove(sbuffer_t *buffer, sensor_data_t *data) {		// TODO make thread safe
     sbuffer_node_t *dummy;
     if (buffer == NULL) return SBUFFER_FAILURE;
     if (buffer->head == NULL) return SBUFFER_NO_DATA;
@@ -62,7 +62,7 @@ int sbuffer_remove(sbuffer_t *buffer, sensor_data_t *data) {
     return SBUFFER_SUCCESS;
 }
 
-int sbuffer_insert(sbuffer_t *buffer, sensor_data_t *data) {
+int sbuffer_insert(sbuffer_t *buffer, sensor_data_t *data) {		// TODO make thread safe
     sbuffer_node_t *dummy;
     if (buffer == NULL) return SBUFFER_FAILURE;
     dummy = malloc(sizeof(sbuffer_node_t));
