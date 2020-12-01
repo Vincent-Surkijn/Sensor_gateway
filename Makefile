@@ -9,3 +9,7 @@ libtest: lib
 datagen:
 	gcc file_creator.c -DDEBUG -o file_creator
 	./file_creator
+
+thread:
+	gcc -o threading thread.c -lpthread
+	./threading
