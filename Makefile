@@ -6,3 +6,6 @@ libtest: lib
 	gcc test.c -L. -Wl,-rpath=. -lsbuffer -I.
 	./a.out
 
+datagen:
+	gcc file_creator.c -DDEBUG -o file_creator
+	./file_creator
