@@ -27,7 +27,12 @@ void *func2(){
 FILE *fp_data;
 sbuffer_t *buffer;
 pthread_mutex_t data_mutex = PTHREAD_MUTEX_INITIALIZER;
-volatile bool empty;
+pthread_mutex_t cond_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t cond1 = PTHREAD_COND_INITIALIZER;
+volatile bool empty = true;
+volatile bool writerQuit = false;
+volatile int counts1;
+volatile int counts2;
 
 int thread_findBinFileSize(FILE *file){
     fseek(file, 0, SEEK_END);
@@ -40,18 +45,31 @@ int thread_findBinFileSize(FILE *file){
 
 void *reader1(){
     int res;
-    do{
+/*    pthread_mutex_lock( &cond_mutex );
+    while(1){
+        if(empty){
+            pthread_cond_wait(&cond1 , &cond_mutex ) ;
+            pthread_mutex_unlock( &data_mutex );
+        }
+	else break;
+    }
+    pthread_mutex_unlock( &cond_mutex );
+  */  do{
 	pthread_mutex_lock( &data_mutex );	// lock thread
 	sensor_data_t *data = malloc(sizeof(sensor_data_t));
-	res = sbuffer_remove(buffer, data);	// geeft segmentation fault, zelfs zonder threads, maar niet als er ene print statement tss staat(zie main)?
+	res = sbuffer_read(buffer, data, 1);
+/*        if(res == SBUFFER_NO_DATA){
+	    empty = true;
+	}*/
 	printf("Reader 1 read:\n");
 	printf("Id: %hd -- ", data->id);
         printf("Temp: %f -- ", data->value);
         printf("Time: %lld\n", (long long)(data->ts) );
+	counts1++;
 	free(data);
 	pthread_mutex_unlock( &data_mutex );	// unlock thread
     }while(res == SBUFFER_SUCCESS && !empty);
-    pthread_exit(NULL);
+    if(writerQuit)    pthread_exit(NULL);
 }
 
 void *reader2(){
@@ -59,15 +77,21 @@ void *reader2(){
     do{
         pthread_mutex_lock( &data_mutex );      // lock thread
         sensor_data_t *data = malloc(sizeof(sensor_data_t));
-        res = sbuffer_remove(buffer, data);
+        res = sbuffer_read(buffer, data, 2);
+ /*       if(res == SBUFFER_NO_DATA){
+            empty = true;
+            pthread_cond_wait(&cond1 , &cond_mutex ) ;
+	    pthread_mutex_unlock( &data_mutex );
+        }*/
         printf("Reader 2 read:\n");
         printf("Id: %hd -- ", data->id);
         printf("Temp: %f -- ", data->value);
         printf("Time: %lld\n", (long long)(data->ts) );
+	counts2++;
 	free(data);
         pthread_mutex_unlock( &data_mutex );    // unlock thread
     }while(res == SBUFFER_SUCCESS && !empty);
-    pthread_exit(NULL);
+    if(writerQuit)    pthread_exit(NULL);
 }
 
 void *writer(){
@@ -102,6 +126,7 @@ void *writer(){
     }
     fclose(fp_data);
     pthread_mutex_unlock( &data_mutex );    // unlock thread
+    writerQuit = true;
     pthread_exit(NULL);
 }
 
@@ -135,8 +160,13 @@ int main(){
     pthread_create( &thread3, NULL, &writer, NULL );
 
     if(pthread_join(thread3, NULL) !=0) printf("can't join write thread\n\n");
+//    pthread_create( &thread2, NULL, &reader2, NULL );
+  //  pthread_create( &thread3, NULL, &writer, NULL );
     if(pthread_join(thread1, NULL) !=0) printf("can't join read1 thread\n\n");
     if(pthread_join(thread2, NULL) !=0) printf("can't join read2 thread\n\n");
+
+printf("Reader 1 read %d values\n",counts1);
+printf("Reader 2 read %d values\n",counts2);
 
 printf("Freeing...\n");
     sbuffer_free(&buffer);

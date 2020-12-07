@@ -44,4 +44,11 @@ int sbuffer_remove(sbuffer_t *buffer, sensor_data_t *data);
 */
 int sbuffer_insert(sbuffer_t *buffer, sensor_data_t *data);
 
+/**
+ * Reads the first value of the buffer
+ * \param buffer a pointer to the buffer that is used
+ * \param data a pointer to sensor_data_t data, that will be copied into the buffer
+ * \return SBUFFER_SUCCESS on success and SBUFFER_FAILURE if an error occured
+*/
+int sbuffer_read(sbuffer_t *buffer, sensor_data_t *data, int reader);
 #endif  //_SBUFFER_H_
