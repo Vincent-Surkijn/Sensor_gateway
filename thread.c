@@ -124,20 +124,11 @@ int main(){
 	return -1;
     }
 
-writer();
-//printf("About to read\n");	// deze print statement voorkomt een segmentation fault??
-//fflush(fp_data);
-reader1();
-
-/*    pthread_create( &thread1, NULL, &reader1, NULL );
+    pthread_create( &thread1, NULL, &reader1, NULL );
     pthread_create( &thread2, NULL, &reader2, NULL );
     pthread_create( &thread3, NULL, &writer, NULL );
 
     pthread_exit(NULL);
-*/
 
-// This doesn't give a segmentation fault
-//        sensor_data_t *data;
-  //      res = sbuffer_remove(buffer, data);
 
 }

@@ -1,5 +1,5 @@
 lib:
-	gcc -g -fPIC -c sbuffer.c -o sbuffer.o
+	gcc -g -fPIC -c sbuffer.c -o sbuffer.o -lphtread
 	gcc -shared -o libsbuffer.so sbuffer.o -Wall -std=c11 -Werror
 
 libtest: lib

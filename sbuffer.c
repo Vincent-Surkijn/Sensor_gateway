@@ -4,7 +4,10 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <pthread.h>
 #include "sbuffer.h"
+
+pthread_mutex_t list_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /**
  * basic node for the buffer, these nodes are linked together to create the buffer
@@ -65,13 +68,14 @@ printf("Assigned data\n");
     return SBUFFER_SUCCESS;
 }
 
-int sbuffer_insert(sbuffer_t *buffer, sensor_data_t *data) {		// TODO make thread safe
+int sbuffer_insert(sbuffer_t *buffer, sensor_data_t *data) {		// Thread safe
     sbuffer_node_t *dummy;
     if (buffer == NULL) return SBUFFER_FAILURE;
     dummy = malloc(sizeof(sbuffer_node_t));
     if (dummy == NULL) return SBUFFER_FAILURE;
     dummy->data = *data;
     dummy->next = NULL;
+    pthread_mutex_lock(&list_mutex);	// grab Mutex: while reading size of list it can't change
     if (buffer->tail == NULL) // buffer empty (buffer->head should also be NULL)
     {
         buffer->head = buffer->tail = dummy;
@@ -80,5 +84,6 @@ int sbuffer_insert(sbuffer_t *buffer, sensor_data_t *data) {		// TODO make threa
         buffer->tail->next = dummy;
         buffer->tail = buffer->tail->next;
     }
+    pthread_mutex_unlock(&list_mutex);	// unlock after operations based on size of list are done
     return SBUFFER_SUCCESS;
 }
