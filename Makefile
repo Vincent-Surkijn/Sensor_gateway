@@ -1,5 +1,5 @@
 lib:
-	gcc -fPIC -c sbuffer.c -o sbuffer.o
+	gcc -g -fPIC -c sbuffer.c -o sbuffer.o
 	gcc -shared -o libsbuffer.so sbuffer.o -Wall -std=c11 -Werror
 
 libtest: lib
@@ -11,5 +11,5 @@ datagen:
 	./file_creator
 
 thread: lib
-	gcc -o threading thread.c -lpthread -L. -Wl,-rpath=. -lsbuffer -I.
+	gcc -g -o threading thread.c -lpthread -L. -Wl,-rpath=. -lsbuffer -I.
 	./threading

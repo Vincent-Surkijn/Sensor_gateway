@@ -95,6 +95,7 @@ void *writer(){
 	empty = false;
   //      pthread_mutex_unlock( &data_mutex );    // unlock thread
     }
+    fclose(fp_data);
     pthread_mutex_unlock( &data_mutex );    // unlock thread
 }
 

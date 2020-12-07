@@ -22,7 +22,7 @@ struct sbuffer {
     sbuffer_node_t *tail;       /**< a pointer to the last node in the buffer */
 };
 
-int sbuffer_init(sbuffer_t **buffer) {		// TODO make thread safe
+int sbuffer_init(sbuffer_t **buffer) {		// Thread safe
     *buffer = malloc(sizeof(sbuffer_t));
     if (*buffer == NULL) return SBUFFER_FAILURE;
     (*buffer)->head = NULL;
@@ -30,7 +30,7 @@ int sbuffer_init(sbuffer_t **buffer) {		// TODO make thread safe
     return SBUFFER_SUCCESS;
 }
 
-int sbuffer_free(sbuffer_t **buffer) {		// TODO make thread safe
+int sbuffer_free(sbuffer_t **buffer) {		// Thread safe
     sbuffer_node_t *dummy;
     if ((buffer == NULL) || (*buffer == NULL)) {
         return SBUFFER_FAILURE;
@@ -72,7 +72,7 @@ int sbuffer_insert(sbuffer_t *buffer, sensor_data_t *data) {		// TODO make threa
     if (dummy == NULL) return SBUFFER_FAILURE;
     dummy->data = *data;
     dummy->next = NULL;
-    if (buffer->tail == NULL) // buffer empty (buffer->head should also be NULL
+    if (buffer->tail == NULL) // buffer empty (buffer->head should also be NULL)
     {
         buffer->head = buffer->tail = dummy;
     } else // buffer not empty
