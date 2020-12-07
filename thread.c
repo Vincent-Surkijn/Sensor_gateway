@@ -48,8 +48,10 @@ void *reader1(){
 	printf("Id: %hd -- ", data->id);
         printf("Temp: %f -- ", data->value);
         printf("Time: %lld\n", (long long)(data->ts) );
+	free(data);
 	pthread_mutex_unlock( &data_mutex );	// unlock thread
     }while(res == SBUFFER_SUCCESS && !empty);
+    pthread_exit(NULL);
 }
 
 void *reader2(){
@@ -62,8 +64,10 @@ void *reader2(){
         printf("Id: %hd -- ", data->id);
         printf("Temp: %f -- ", data->value);
         printf("Time: %lld\n", (long long)(data->ts) );
+	free(data);
         pthread_mutex_unlock( &data_mutex );    // unlock thread
     }while(res == SBUFFER_SUCCESS && !empty);
+    pthread_exit(NULL);
 }
 
 void *writer(){
@@ -93,10 +97,12 @@ void *writer(){
 	data->ts = time;
 	sbuffer_insert(buffer, data);
 	empty = false;
+	free(data);
   //      pthread_mutex_unlock( &data_mutex );    // unlock thread
     }
     fclose(fp_data);
     pthread_mutex_unlock( &data_mutex );    // unlock thread
+    pthread_exit(NULL);
 }
 
 int main(){
@@ -128,7 +134,13 @@ int main(){
     pthread_create( &thread2, NULL, &reader2, NULL );
     pthread_create( &thread3, NULL, &writer, NULL );
 
+    if(pthread_join(thread3, NULL) !=0) printf("can't join write thread\n\n");
+    if(pthread_join(thread1, NULL) !=0) printf("can't join read1 thread\n\n");
+    if(pthread_join(thread2, NULL) !=0) printf("can't join read2 thread\n\n");
+
+printf("Freeing...\n");
+    sbuffer_free(&buffer);
+    free(buffer);
+
     pthread_exit(NULL);
-
-
 }
