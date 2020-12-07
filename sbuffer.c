@@ -51,11 +51,10 @@ int sbuffer_free(sbuffer_t **buffer) {		// Thread safe
     return SBUFFER_SUCCESS;
 }
 
-int sbuffer_remove(sbuffer_t *buffer, sensor_data_t *data) {		// Thread safe: only gets called from within Mutex(see sbuffer_read)
+int sbuffer_remove(sbuffer_t *buffer) {		// Thread safe: only gets called from within Mutex(see sbuffer_read)
     sbuffer_node_t *dummy;
     if (buffer == NULL) return SBUFFER_FAILURE;
     if (buffer->head == NULL) return SBUFFER_NO_DATA;
-    *data = buffer->head->data;
     dummy = buffer->head;
     if (buffer->head == buffer->tail) // buffer has only one node
     {
@@ -102,7 +101,7 @@ int sbuffer_read(sbuffer_t *buffer, sensor_data_t *data, int reader){		// Thread
 	}
         if(dummy->readby1 == true && dummy->next == NULL){      // This means that reader 1 has read all values already
             data = NULL;
-            return SBUFFER_NO_DATA;
+            return SBUFFER_FINISHED;
         }
     }
     else if(reader == 2){
@@ -111,18 +110,16 @@ int sbuffer_read(sbuffer_t *buffer, sensor_data_t *data, int reader){		// Thread
         }
 	if(dummy->readby2 == true && dummy->next == NULL){	// This means that reader 2 has read all values already
 	    data = NULL;
-	    return SBUFFER_NO_DATA;
+	    return SBUFFER_FINISHED;
 	}
     }
 
     pthread_mutex_lock(&list_mutex);    // grab Mutex: while reading state of node it can't change
-    if(dummy->readby1 && dummy->readby2){	// If value was already read by both readers, it can be removed
-	sbuffer_remove(buffer,data);
-    }
-    else{			// Else it can only be read, not removed
-	*data = dummy->data;
-	if( reader == 1)	dummy->readby1 = true;	// Now it has been read
-	else if( reader == 2)        dummy->readby2 = true;   // Now it has been read
+    *data = dummy->data;
+    if( reader == 1)	dummy->readby1 = true;	// Now it has been read
+    else if( reader == 2)        dummy->readby2 = true;   // Now it has been read
+    if(dummy->readby1 && dummy->readby2){       // If value was already read by both readers, it can be removed
+        sbuffer_remove(buffer);
     }
     pthread_mutex_unlock(&list_mutex);  // unlock after operations based on state of node are done
     return SBUFFER_SUCCESS;

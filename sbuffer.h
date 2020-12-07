@@ -10,6 +10,7 @@
 #define SBUFFER_FAILURE -1
 #define SBUFFER_SUCCESS 0
 #define SBUFFER_NO_DATA 1
+#define SBUFFER_FINISHED 2
 
 typedef struct sbuffer sbuffer_t;
 
@@ -31,10 +32,9 @@ int sbuffer_free(sbuffer_t **buffer);
  * Removes the first sensor data in 'buffer' (at the 'head') and returns this sensor data as '*data'
  * If 'buffer' is empty, the function doesn't block until new sensor data becomes available but returns SBUFFER_NO_DATA
  * \param buffer a pointer to the buffer that is used
- * \param data a pointer to pre-allocated sensor_data_t space, the data will be copied into this structure. No new memory is allocated for 'data' in this function.
  * \return SBUFFER_SUCCESS on success and SBUFFER_FAILURE if an error occurred
  */
-int sbuffer_remove(sbuffer_t *buffer, sensor_data_t *data);
+int sbuffer_remove(sbuffer_t *buffer);
 
 /**
  * Inserts the sensor data in 'data' at the end of 'buffer' (at the 'tail')

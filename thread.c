@@ -43,6 +43,16 @@ int thread_findBinFileSize(FILE *file){
 }
 
 void *reader1(){
+    pthread_mutex_lock( &cond_mutex );
+    while(true){
+	sensor_data_t *temp = malloc(sizeof(sensor_data_t));
+	if(sbuffer_read(buffer, temp, 0) == SBUFFER_NO_DATA){	// check if list is not empty with dummy reader 0
+	    pthread_cond_wait(&cond1, &cond_mutex);
+	}
+	else break;
+    }
+    pthread_mutex_unlock( &cond_mutex );
+
     int res;
     do{
 	pthread_mutex_lock( &data_mutex );	// lock thread
@@ -56,10 +66,26 @@ void *reader1(){
 	free(data);
 	pthread_mutex_unlock( &data_mutex );	// unlock thread
     }while(res == SBUFFER_SUCCESS);
-    if(writerQuit && res == SBUFFER_NO_DATA)    pthread_exit(NULL);
+    if(writerQuit && res == SBUFFER_FINISHED){
+	pthread_exit(NULL);
+	printf("Reader1 is finished");
+    }
+    else{
+
+    }
 }
 
 void *reader2(){
+    pthread_mutex_lock( &cond_mutex );
+    while(true){
+        sensor_data_t *temp = malloc(sizeof(sensor_data_t));
+        if(sbuffer_read(buffer, temp, 0) == SBUFFER_NO_DATA){   // check if list is not empty with dummy reader 0
+            pthread_cond_wait(&cond1, &cond_mutex);
+        }
+        else break;
+    }
+    pthread_mutex_unlock( &cond_mutex );
+
     int res;
     do{
         pthread_mutex_lock( &data_mutex );      // lock thread
@@ -73,7 +99,10 @@ void *reader2(){
 	free(data);
         pthread_mutex_unlock( &data_mutex );    // unlock thread
     }while(res == SBUFFER_SUCCESS);
-    if(writerQuit && res == SBUFFER_NO_DATA)    pthread_exit(NULL);
+    if(writerQuit && res == SBUFFER_FINISHED){
+        pthread_exit(NULL);
+        printf("Reader2 is finished");
+    }
 }
 
 void *writer(){
@@ -102,6 +131,7 @@ void *writer(){
 	data->value = temp;
 	data->ts = time;
 	sbuffer_insert(buffer, data);
+	pthread_cond_signal(&cond1);
 	free(data);
   //      pthread_mutex_unlock( &data_mutex );    // unlock thread
     }
