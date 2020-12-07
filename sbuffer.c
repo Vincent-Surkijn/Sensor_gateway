@@ -95,15 +95,24 @@ int sbuffer_read(sbuffer_t *buffer, sensor_data_t *data, int reader){		// Thread
     if (buffer == NULL) return SBUFFER_FAILURE;
     if (buffer->head == NULL) return SBUFFER_NO_DATA;
 
+    dummy = buffer->head;
     if(reader == 1){
 	if( (buffer->head->readby1) == true){
 	    while( dummy->readby1 == true && dummy->next != NULL)	dummy = dummy->next;
 	}
+        if(dummy->readby1 == true && dummy->next == NULL){      // This means that reader 1 has read all values already
+            data = NULL;
+            return SBUFFER_NO_DATA;
+        }
     }
     else if(reader == 2){
         if( (buffer->head->readby2) == true){
             while( dummy->readby2 == true && dummy->next != NULL)       dummy = dummy->next;
         }
+	if(dummy->readby2 == true && dummy->next == NULL){	// This means that reader 2 has read all values already
+	    data = NULL;
+	    return SBUFFER_NO_DATA;
+	}
     }
 
     pthread_mutex_lock(&list_mutex);    // grab Mutex: while reading state of node it can't change
@@ -111,9 +120,9 @@ int sbuffer_read(sbuffer_t *buffer, sensor_data_t *data, int reader){		// Thread
 	sbuffer_remove(buffer,data);
     }
     else{			// Else it can only be read, not removed
-	*data = buffer->head->data;
-	if( reader == 1)	buffer->head->readby1 = true;	// Now it has been read
-	else if( reader == 2)        buffer->head->readby2 = true;   // Now it has been read
+	*data = dummy->data;
+	if( reader == 1)	dummy->readby1 = true;	// Now it has been read
+	else if( reader == 2)        dummy->readby2 = true;   // Now it has been read
     }
     pthread_mutex_unlock(&list_mutex);  // unlock after operations based on state of node are done
     return SBUFFER_SUCCESS;
