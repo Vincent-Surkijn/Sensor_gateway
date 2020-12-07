@@ -42,7 +42,7 @@ void *reader1(){
     int res;
     do{
 	pthread_mutex_lock( &data_mutex );	// lock thread
-	sensor_data_t *data;
+	sensor_data_t *data = malloc(sizeof(sensor_data_t));
 	res = sbuffer_remove(buffer, data);	// geeft segmentation fault, zelfs zonder threads, maar niet als er ene print statement tss staat(zie main)?
 	printf("Reader 1 read:\n");
 	printf("Id: %hd -- ", data->id);
@@ -56,7 +56,7 @@ void *reader2(){
     int res;
     do{
         pthread_mutex_lock( &data_mutex );      // lock thread
-        sensor_data_t *data;
+        sensor_data_t *data = malloc(sizeof(sensor_data_t));
         res = sbuffer_remove(buffer, data);
         printf("Reader 2 read:\n");
         printf("Id: %hd -- ", data->id);
@@ -125,7 +125,7 @@ int main(){
     }
 
 writer();
-printf("About to read\n");	// deze print statement voorkomt een segmentation fault??
+//printf("About to read\n");	// deze print statement voorkomt een segmentation fault??
 //fflush(fp_data);
 reader1();
 
