@@ -29,6 +29,7 @@ sbuffer_t *buffer;
 pthread_mutex_t data_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t cond_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t cond1 = PTHREAD_COND_INITIALIZER;
+//pthread_cond_t cond2 = PTHREAD_COND_INITIALIZER;
 volatile bool writerQuit = false;
 // Debug:
 volatile int counts1;
@@ -45,10 +46,14 @@ int thread_findBinFileSize(FILE *file){
 }
 
 void *reader1(){
+int res;
+do{
     pthread_mutex_lock( &cond_mutex );
     sensor_data_t *temp = malloc(sizeof(sensor_data_t));
     while(true){
-	if(sbuffer_read(buffer, temp, 0) == SBUFFER_NO_DATA){	// check if list is not empty with dummy reader 0
+	res = sbuffer_read(buffer, temp, 0);
+	if(res == SBUFFER_NO_DATA){	// check if list is not empty with dummy reader 0
+	    //printf("Reader1 Waiting for data\n");
 	    pthread_cond_wait(&cond1, &cond_mutex);
 	}
 	else break;
@@ -56,28 +61,33 @@ void *reader1(){
     pthread_mutex_unlock( &cond_mutex );
     free(temp);
 
-    int res;
     do{
 	pthread_mutex_lock( &data_mutex );	// lock thread
 	sensor_data_t *data = malloc(sizeof(sensor_data_t));
 	res = sbuffer_read(buffer, data, 1);
 	if(res == SBUFFER_SUCCESS){
-/*	    printf("Reader 1 read:\n");
+	    printf("Reader 1 read:\n");
 	    printf("Id: %hd -- ", data->id);
             printf("Temp: %f -- ", data->value);
             printf("Time: %lld\n", (long long)(data->ts) );
-*/	    counts1++;
+	    counts1++;
 	}
 	free(data);
 	pthread_mutex_unlock( &data_mutex );	// unlock thread
     }while(res == SBUFFER_SUCCESS);
+}while(!(writerQuit && res == SBUFFER_NO_DATA));
+printf("Exiting reader1\n");
 }
 
 void *reader2(){
+int res;
+do{
     pthread_mutex_lock( &cond_mutex );
     sensor_data_t *temp = malloc(sizeof(sensor_data_t));
     while(true){
-        if(sbuffer_read(buffer, temp, 0) == SBUFFER_NO_DATA){   // check if list is not empty with dummy reader 0
+        res = sbuffer_read(buffer, temp, 0);
+	if(res == SBUFFER_NO_DATA){   // check if list is not empty with dummy reader 0
+            //printf("Reader2 Waiting for data\n");
             pthread_cond_wait(&cond1, &cond_mutex);
         }
         else break;
@@ -85,30 +95,31 @@ void *reader2(){
     pthread_mutex_unlock( &cond_mutex );
     free(temp);
 
-    int res;
     do{
         pthread_mutex_lock( &data_mutex );      // lock thread
         sensor_data_t *data = malloc(sizeof(sensor_data_t));
         res = sbuffer_read(buffer, data, 2);
         if(res == SBUFFER_SUCCESS){
-/*	    printf("Reader 2 read:\n");
+	    printf("Reader 2 read:\n");
             printf("Id: %hd -- ", data->id);
             printf("Temp: %f -- ", data->value);
             printf("Time: %lld\n", (long long)(data->ts) );
-	  */  counts2++;
+	    counts2++;
 	}
 	free(data);
         pthread_mutex_unlock( &data_mutex );    // unlock thread
     }while(res == SBUFFER_SUCCESS);
+}while(!(writerQuit && res == SBUFFER_NO_DATA));
+printf("Exiting reader2\n");
 }
 
 void *writer(){
-    pthread_mutex_lock( &data_mutex );      // lock thread
+//    pthread_mutex_lock( &data_mutex );      // lock thread
     int size = thread_findBinFileSize(fp_data);
     int i;
     for(i=0; i<size; i++){	// Read data values --> bin file
-  //      pthread_mutex_lock( &data_mutex );      // lock thread
-	//printf("Writer writes: \n");
+        pthread_mutex_lock( &data_mutex );      // lock thread
+	printf("Writer writes: \n");
 
 	sensor_id_t id;
 	fread(&id, sizeof(sensor_id_t),1,fp_data);
@@ -129,13 +140,14 @@ void *writer(){
 	data->ts = time;
 	sbuffer_insert(buffer, data);
 	counts3++;
-	pthread_cond_signal(&cond1);
+	pthread_cond_broadcast(&cond1);	// Signal that new data is added
 	free(data);
-//        pthread_mutex_unlock( &data_mutex );    // unlock thread
+        pthread_mutex_unlock( &data_mutex );    // unlock thread
     }
     fclose(fp_data);
-    pthread_mutex_unlock( &data_mutex );    // unlock thread
+//    pthread_mutex_unlock( &data_mutex );    // unlock thread
     writerQuit = true;
+  //  pthread_cond_signal(&cond2);
     pthread_exit(NULL);
 }
 
