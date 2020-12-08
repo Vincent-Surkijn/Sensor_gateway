@@ -26,6 +26,7 @@ typedef struct sbuffer_node {
 struct sbuffer {
     sbuffer_node_t *head;       /**< a pointer to the first node in the buffer */
     sbuffer_node_t *tail;       /**< a pointer to the last node in the buffer */
+    pthread_rwlock_t rw_lock;	// a read/write lock to be used for the list
 };
 
 int sbuffer_init(sbuffer_t **buffer) {		// Thread safe
@@ -33,6 +34,7 @@ int sbuffer_init(sbuffer_t **buffer) {		// Thread safe
     if (*buffer == NULL) return SBUFFER_FAILURE;
     (*buffer)->head = NULL;
     (*buffer)->tail = NULL;
+    if (pthread_rwlock_init(&(*buffer)->rw_lock, NULL) != 0)	printf("Couldn't create rw_lock\n");
     return SBUFFER_SUCCESS;
 }
 
@@ -51,7 +53,7 @@ int sbuffer_free(sbuffer_t **buffer) {		// Thread safe
     return SBUFFER_SUCCESS;
 }
 
-int sbuffer_remove(sbuffer_t *buffer) {		// Thread safe: only gets called from within Mutex(see sbuffer_read)
+int sbuffer_remove(sbuffer_t *buffer) {		// Thread safe: only gets called from within rw_lock(see sbuffer_read)
     sbuffer_node_t *dummy;
     if (buffer == NULL) return SBUFFER_FAILURE;
     if (buffer->head == NULL) return SBUFFER_NO_DATA;
@@ -69,14 +71,20 @@ int sbuffer_remove(sbuffer_t *buffer) {		// Thread safe: only gets called from w
 
 int sbuffer_insert(sbuffer_t *buffer, sensor_data_t *data) {		// Thread safe
     sbuffer_node_t *dummy;
-    if (buffer == NULL) return SBUFFER_FAILURE;
+    pthread_rwlock_wrlock(&buffer->rw_lock);
+    if (buffer == NULL){
+	pthread_rwlock_unlock(&buffer->rw_lock);
+	return SBUFFER_FAILURE;
+    }
     dummy = malloc(sizeof(sbuffer_node_t));
-    if (dummy == NULL) return SBUFFER_FAILURE;
+    if (dummy == NULL){
+	pthread_rwlock_unlock(&buffer->rw_lock);
+	return SBUFFER_FAILURE;
+    }
     dummy->data = *data;
     dummy->next = NULL;
     dummy->readby1 = false;
     dummy->readby2 = false;
-    pthread_mutex_lock(&list_mutex);	// grab Mutex: while reading size of list it can't change
     if (buffer->tail == NULL) // buffer empty (buffer->head should also be NULL)
     {
         buffer->head = buffer->tail = dummy;
@@ -85,14 +93,22 @@ int sbuffer_insert(sbuffer_t *buffer, sensor_data_t *data) {		// Thread safe
         buffer->tail->next = dummy;
         buffer->tail = buffer->tail->next;
     }
-    pthread_mutex_unlock(&list_mutex);	// unlock after operations based on size of list are done
+    pthread_rwlock_unlock(&buffer->rw_lock);
     return SBUFFER_SUCCESS;
 }
 
 int sbuffer_read(sbuffer_t *buffer, sensor_data_t *data, int reader){		// Thread safe
     sbuffer_node_t *dummy;
-    if (buffer == NULL) return SBUFFER_FAILURE;
-    if (buffer->head == NULL) return SBUFFER_NO_DATA;
+    pthread_rwlock_rdlock(&buffer->rw_lock);
+    if (buffer == NULL){
+        pthread_rwlock_unlock(&buffer->rw_lock);
+        return SBUFFER_FAILURE;
+    }
+    dummy = malloc(sizeof(sbuffer_node_t));
+    if (buffer->head == NULL){
+        pthread_rwlock_unlock(&buffer->rw_lock);
+        return SBUFFER_NO_DATA;
+    }
 
     dummy = buffer->head;
     if(reader == 1){
@@ -113,14 +129,14 @@ int sbuffer_read(sbuffer_t *buffer, sensor_data_t *data, int reader){		// Thread
 	    return SBUFFER_FINISHED;
 	}
     }
-
-    pthread_mutex_lock(&list_mutex);    // grab Mutex: while reading state of node it can't change
+    pthread_rwlock_unlock(&buffer->rw_lock);
+    pthread_rwlock_wrlock(&buffer->rw_lock);	// Change to a write lock
     *data = dummy->data;
     if( reader == 1)	dummy->readby1 = true;	// Now it has been read
     else if( reader == 2)        dummy->readby2 = true;   // Now it has been read
     if(dummy->readby1 && dummy->readby2){       // If value was already read by both readers, it can be removed
         sbuffer_remove(buffer);
     }
-    pthread_mutex_unlock(&list_mutex);  // unlock after operations based on state of node are done
+    pthread_rwlock_unlock(&buffer->rw_lock);
     return SBUFFER_SUCCESS;
 }
