@@ -9,6 +9,8 @@
 #include "sbuffer.h"
 
 pthread_mutex_t list_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_rwlock_t lock = PTHREAD_RWLOCK_INITIALIZER;
+pthread_cond_t cond1 = PTHREAD_COND_INITIALIZER;
 
 /**
  * basic node for the buffer, these nodes are linked together to create the buffer
@@ -27,6 +29,7 @@ struct sbuffer {
     sbuffer_node_t *head;       /**< a pointer to the first node in the buffer */
     sbuffer_node_t *tail;       /**< a pointer to the last node in the buffer */
     pthread_rwlock_t rw_lock;	// a read/write lock to be used for the list
+    pthread_cond_t empty;	// a condition variable to wait for when the buffer is empty
 };
 
 int sbuffer_init(sbuffer_t **buffer) {		// Thread safe
@@ -34,7 +37,7 @@ int sbuffer_init(sbuffer_t **buffer) {		// Thread safe
     if (*buffer == NULL) return SBUFFER_FAILURE;
     (*buffer)->head = NULL;
     (*buffer)->tail = NULL;
-    if (pthread_rwlock_init(&(*buffer)->rw_lock, NULL) != 0)	printf("Couldn't create rw_lock\n");
+    (*buffer)->rw_lock = lock;
     return SBUFFER_SUCCESS;
 }
 
@@ -117,6 +120,7 @@ int sbuffer_read(sbuffer_t *buffer, sensor_data_t *data, int reader){		// Thread
 	}
         if(dummy->readby1 == true && dummy->next == NULL){      // This means that reader 1 has read all values already
             data = NULL;
+	    pthread_rwlock_unlock(&buffer->rw_lock);
             return SBUFFER_FINISHED;
         }
     }
@@ -126,6 +130,7 @@ int sbuffer_read(sbuffer_t *buffer, sensor_data_t *data, int reader){		// Thread
         }
 	if(dummy->readby2 == true && dummy->next == NULL){	// This means that reader 2 has read all values already
 	    data = NULL;
+	    pthread_rwlock_unlock(&buffer->rw_lock);
 	    return SBUFFER_FINISHED;
 	}
     }

@@ -26,9 +26,9 @@ void *func2(){
 
 FILE *fp_data;
 sbuffer_t *buffer;
-pthread_mutex_t data_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t cond_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t cond1 = PTHREAD_COND_INITIALIZER;
+//pthread_mutex_t data_mutex = PTHREAD_MUTEX_INITIALIZER;
+//pthread_mutex_t cond_mutex = PTHREAD_MUTEX_INITIALIZER;
+//pthread_cond_t cond1 = PTHREAD_COND_INITIALIZER;
 volatile bool writerQuit = false;
 // Debug:
 volatile int counts1;
@@ -60,7 +60,7 @@ do{
     pthread_mutex_unlock( &cond_mutex );
     free(temp);
 */
-    do{
+//    do{
 //	pthread_mutex_lock( &data_mutex );	// lock thread
 	sensor_data_t *data = malloc(sizeof(sensor_data_t));
 	res = sbuffer_read(buffer, data, 1);
@@ -71,9 +71,10 @@ do{
             printf("Time: %lld\n", (long long)(data->ts) );
 	    counts1++;
 	}
+	else	continue;//usleep(1);	// if no data: sleep for 1ms
 	free(data);
 //	pthread_mutex_unlock( &data_mutex );	// unlock thread
-    }while(res == SBUFFER_SUCCESS);
+  //  }while(res == SBUFFER_SUCCESS);
 }while(!(writerQuit && res == SBUFFER_NO_DATA));
 printf("Exiting reader1\n");
 }
@@ -94,7 +95,7 @@ do{
     pthread_mutex_unlock( &cond_mutex );
     free(temp);
 */
-    do{
+   // do{
   //      pthread_mutex_lock( &data_mutex );      // lock thread
         sensor_data_t *data = malloc(sizeof(sensor_data_t));
         res = sbuffer_read(buffer, data, 2);
@@ -105,9 +106,10 @@ do{
             printf("Time: %lld\n", (long long)(data->ts) );
 	    counts2++;
 	}
+	else continue;//usleep(1);	// if no data: sleep for 1ms
 	free(data);
     //    pthread_mutex_unlock( &data_mutex );    // unlock thread
-    }while(res == SBUFFER_SUCCESS);
+ //   }while(res == SBUFFER_SUCCESS);
 }while(!(writerQuit && res == SBUFFER_NO_DATA));
 printf("Exiting reader2\n");
 }
