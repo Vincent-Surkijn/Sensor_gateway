@@ -63,3 +63,9 @@ run : sensor_gateway sensor_node
 
 zip:
 	zip lab_final.zip main.c connmgr.c connmgr.h datamgr.c datamgr.h sbuffer.c sbuffer.h sensor_db.c sensor_db.h config.h lib/dplist.c lib/dplist.h lib/tcpsock.c lib/tcpsock.h
+
+datamgr: libdplist
+	gcc -c -L./lib -Wl,-rpath=./lib -ldplist datamgr.c -DSET_MIN_TEMP=5.0 -DSET_MAX_TEMP=30.0
+
+connmgr: libsbuff
+	gcc -g -c connmgr.c -lsbuffer

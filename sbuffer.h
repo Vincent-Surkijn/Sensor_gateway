@@ -12,6 +12,8 @@
 #define SBUFFER_NO_DATA 1
 #define SBUFFER_FINISHED 2
 
+#define SBUFFER_DATAMGR 1
+#define SBUFFER_SENSORDB 2
 typedef struct sbuffer sbuffer_t;
 
 /**

@@ -91,7 +91,7 @@ void connmgr_listen(int port_number, sbuffer_t **buffer){
     while(loop){
 	//printf("poll");
     	int result = poll(poll_fd, dpl_size(conn_list) + 1, TIMEOUT*1000);	// pos -> amount of elements with non-zero revents fields, neg -> err, 0 -> timeout(in ms)
-        sensor_data_t *data;
+        sensor_data_t *data = malloc(sizeof(sensor_data_t));
         int bytes;
     	if(result<0){
 	    fprintf(stderr, "Failure: an error occurred during polling\n");

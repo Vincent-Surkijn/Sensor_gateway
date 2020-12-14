@@ -12,6 +12,7 @@
 #include <math.h>
 #include "config.h"
 #include "datamgr.h"
+#include "sbuffer.h"
 #include "lib/dplist.h"
 
 
@@ -205,34 +206,34 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, sbuffer_t **buffer){
 
 // Read sensor data
     //printf("Sensor Data: \n");
-    for(i=0; i<size2; i++){	// Read data values --> bin file
-	uint16_t id;
-	fread(&id, sizeof(uint16_t),1,fp_sensor_data);
-	//printf("Id: %hd -- ", id);
+    int res;
+    do{	// Read data values --> sbuffer
+	sensor_data_t *data = malloc(sizeof(sensor_data_t));
 
-	int index = datamgr_get_index_of_sensor_id(id);
+	res = sbuffer_read(*buffer,data,SBUFFER_DATAMGR);
+	//printf("Id: %hd -- ", data->id);
 
-        double temp;
-        fread(&temp, sizeof(double),1,fp_sensor_data);
-        //printf("Temp: %f -- \n", temp);
+	if(res == SBUFFER_NO_DATA) continue;
 
-        time_t time;
-        fread(&time, sizeof(time_t),1,fp_sensor_data);
-        //printf("Time: %lld\n", (long long)time);
+	int index = datamgr_get_index_of_sensor_id(data->id);
 
-        if((( (sensor_data_t *)(dpl_get_element_at_index(list, index)) )->amount)>=RUN_AVG_LENGTH){      // If enough values present in the sensor, the avg can be calculated
-	    datamgr_check_avg_at_index(index);
-        }
+        //printf("Temp: %f -- \n", data->value);
+
+        //printf("Time: %lld\n", (long long)(data->ts) );
 
 	if(index==-1){	//Invalid index -> id not found
 	    fprintf(stderr, "Tried to add data of non existing sensor id\n");
 	}
 	else{
-            datamgr_update_value_array(index, temp);
+            datamgr_update_value_array(index, data->value);
             (( (sensor_data_t*)(dpl_get_element_at_index(list, index)) )->amount)++;
-	    ( (sensor_data_t*)(dpl_get_element_at_index(list, index)) )->ts = time;
+	    ( (sensor_data_t*)(dpl_get_element_at_index(list, index)) )->ts = data->ts;
+
+            if((( (sensor_data_t *)(dpl_get_element_at_index(list, index)) )->amount)>=RUN_AVG_LENGTH){      // If enough values present in the sensor, the avg can be calculated
+    	        datamgr_check_avg_at_index(index);
+            }
 	}
-    }
+    }while(res = SBUFFER_SUCCESS);
 
 
 
