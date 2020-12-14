@@ -179,12 +179,10 @@ void datamgr_free(){
     dpl_free(&list, true);
 }
 
-void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data){
+void datamgr_parse_sensor_files(FILE *fp_sensor_map, sbuffer_t **buffer){
 
   int size1 = findFileSize(fp_sensor_map);
-  int size2 = findBinFileSize(fp_sensor_data);	// TODO This size is wrong in the labtools test!!!!!
-
-	printf("Size bin file: %d\n", size2);
+//  int size2 = findBinFileSize(fp_sensor_data);
 
     list = dpl_create(element_copy, element_free, element_compare);
 
@@ -236,7 +234,10 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data){
 	}
     }
 
-    printf("Element id at index 0: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 0)) )->id );
+
+
+
+/**    printf("Element id at index 0: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 0)) )->id );
     printf("Element id at index 1: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 1)) )->id );
     printf("Element id at index 2: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 2)) )->id );
     printf("Element id at index 3: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 3)) )->id );
@@ -265,7 +266,7 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, FILE *fp_sensor_data){
     printf("Element amount at index 4: %d\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 4)) )->amount );
     printf("Element amount at index 5: %d\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 5)) )->amount );
     printf("Element amount at index 6: %d\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 6)) )->amount );
-    printf("Element amount at index 7: %d\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 7)) )->amount );
+    printf("Element amount at index 7: %d\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 7)) )->amount );*/
 
 	printf("Size of list: %d\n", datamgr_get_total_sensors());
 	printf("RUN_AVG_LENGTH: %d\n", RUN_AVG_LENGTH);

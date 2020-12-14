@@ -44,6 +44,11 @@ lib/libtcpsock.so : lib/tcpsock.c
 	@echo "$(TITLE_COLOR)\n***** LINKING LIB tcpsock *****$(NO_COLOR)"
 	gcc lib/tcpsock.o -o lib/libtcpsock.so -Wall -shared -lm -fdiagnostics-color=auto
 
+libsbuff:
+	gcc -g -fPIC -c sbuffer.c -o sbuffer.o -lphtread
+	gcc -g -shared -o libsbuffer.so sbuffer.o -Wall -std=c11 -Werror
+
+
 # do not look for files called clean, clean-all or this will be always a target
 .PHONY : clean clean-all run zip
 

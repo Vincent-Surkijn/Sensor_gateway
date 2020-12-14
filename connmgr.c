@@ -12,6 +12,7 @@
 #include <inttypes.h>
 #include "config.h"
 #include "connmgr.h"
+#include "sbuffer.h"
 #include "lib/dplist.h"
 #include "lib/tcpsock.h"
 
@@ -63,7 +64,7 @@ void connmgr_add_conn(tcpsock_t *sock, int sd){
     poll_fd[index+1].events = POLLIN;
 }
 
-void connmgr_listen(int port_number){
+void connmgr_listen(int port_number, sbuffer_t **buffer){
     printf("Timeout = %d\n", TIMEOUT);
     tcpsock_t *server, *client;
     int serversd, clientsd;
@@ -90,7 +91,7 @@ void connmgr_listen(int port_number){
     while(loop){
 	//printf("poll");
     	int result = poll(poll_fd, dpl_size(conn_list) + 1, TIMEOUT*1000);	// pos -> amount of elements with non-zero revents fields, neg -> err, 0 -> timeout(in ms)
-        sensor_data_t data;
+        sensor_data_t *data;
         int bytes;
     	if(result<0){
 	    fprintf(stderr, "Failure: an error occurred during polling\n");
@@ -106,10 +107,10 @@ void connmgr_listen(int port_number){
 	    	printf("client sd=%d\n",clientsd);
 	    	// Add new connection to the poll list
 	    	connmgr_add_conn(client,clientsd);
-	printf("indexO: %d\n", poll_fd[0].fd);
+/*	printf("indexO: %d\n", poll_fd[0].fd);
 	printf("index1: %d\n", poll_fd[1].fd);
 	printf("index2: %d\n", poll_fd[2].fd);
-	printf("size list: %d\n", dpl_size(conn_list));
+	printf("size list: %d\n", dpl_size(conn_list));*/
 	    }
 	    int i;
 	    for(i=0;i<dpl_size(conn_list);i++){
@@ -118,29 +119,31 @@ void connmgr_listen(int port_number){
 		printf("Sensor %d sending data\n", i+1);
 		    connection_t *dummy;
 		    time_t now;
-		    do{
+		    do{	// TODO: changed data from sensor_data_t to sensor_data_t*(not tested yet)
 			// retrieve conn_list element from this sensor
 			dummy = dpl_get_element_at_index(conn_list, i);
                 	client = dummy->sock;
 			now = time(NULL);
 			// read sensor ID
-                	bytes = sizeof(data.id);
-                	result = tcp_receive(client, (void *) &data.id, &bytes);
+                	bytes = sizeof(data->id);
+                	result = tcp_receive(client, (void *) &(data->id), &bytes);
                 	// read temperature
-                	bytes = sizeof(data.value);
-                	result = tcp_receive(client, (void *) &data.value, &bytes);
+                	bytes = sizeof(data->value);
+                	result = tcp_receive(client, (void *) &(data->value), &bytes);
                 	// read timestamp
-                	bytes = sizeof(data.ts);
-                	result = tcp_receive(client, (void *) &data.ts, &bytes);
-			dummy->ts = data.ts;
+                	bytes = sizeof(data->ts);
+                	result = tcp_receive(client, (void *) &(data->ts), &bytes);
+			dummy->ts = data->ts;
                 	if ((result == TCP_NO_ERROR) && bytes) {
-                	    printf("sensor id = %" PRIu16 " - temperature = %g - timestamp = %ld\n", data.id, data.value,
-                       	    (long int) data.ts);
+                	    printf("sensor id = %" PRIu16 " - temperature = %g - timestamp = %ld\n", data->id, data->value, (long int)(data->ts) );
 
+			/*** Now write to sbuffer instead ***
 			    // write data to bin file
 			    fwrite(&(data.id), sizeof(data.id), 1, fp_bindata);
 			    fwrite(&(data.value), sizeof(data.value), 1, fp_bindata);
-			    fwrite(&(data.ts), sizeof(data.ts), 1 , fp_bindata);
+			    fwrite(&(data.ts), sizeof(data.ts), 1 , fp_bindata);*/
+
+			sbuffer_insert(*buffer,data);	//TODO test this
                 	}
             	    }while(result == TCP_NO_ERROR && (((dummy->ts) - now) < TIMEOUT));
             	    if (result == TCP_CONNECTION_CLOSED){
