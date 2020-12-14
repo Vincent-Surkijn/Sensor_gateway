@@ -22,19 +22,19 @@ typedef struct {
     sensor_ts_t ts;
 } connection_t;
 
-void * element_copy(void * element){
+void * connmgr_element_copy(void * element){
     connection_t *copy = malloc(sizeof(connection_t));
     copy->conn_sd = ( (connection_t*)(element) )->conn_sd;
     copy->ts = ( (connection_t*)(element) )->ts;
     return copy;
 }
 
-void element_free(void ** element){
+void connmgr_element_free(void ** element){
     free(*element);
     *element = NULL;
 }
 
-int element_compare(void * x, void * y) {
+int connmgr_element_compare(void * x, void * y) {
     return ((((connection_t*)x)->ts < ((connection_t*)y)->ts) ? -1 : (((connection_t*)x)->ts == ((connection_t*)y)->ts) ? 0 : 1);
 }
 
@@ -76,7 +76,7 @@ void connmgr_listen(int port_number, sbuffer_t **buffer){
 	return;
     }
 
-    conn_list = dpl_create(element_copy, element_free, element_compare);
+    conn_list = dpl_create(connmgr_element_copy, connmgr_element_free, connmgr_element_compare);
     poll_fd = malloc(sizeof(struct pollfd));
 
     // Add server port to the polling list

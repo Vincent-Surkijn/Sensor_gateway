@@ -19,7 +19,7 @@
 // Define list as a global variable so it can be used everywhere in datamgr.c
 dplist_t *list;
 
-void * element_copy(void * element){
+void * datamgr_element_copy(void * element){
     sensor_data_t* copy = malloc(sizeof(sensor_data_t));
     copy->id = ( (sensor_data_t*)element  )->id;
     copy->room_id = ( (sensor_data_t*)element  )->room_id;
@@ -29,17 +29,17 @@ void * element_copy(void * element){
     return (void *) copy;
 }
 
-void element_free(void ** element){
+void datamgr_element_free(void ** element){
     //printf("In element_free\n");
     free(*element);
     *element = NULL;
 }
 
-int element_compare(void * x, void * y){
+int datamgr_element_compare(void * x, void * y){
     return ((((sensor_data_t*)x)->id < ((sensor_data_t*)y)->id) ? -1 : (((sensor_data_t*)x)->id == ((sensor_data_t*)y)->id) ? 0 : 1);
 }
 
-int findFileSize(FILE *file){
+int datamgr_findFileSize(FILE *file){
     int lines = 0;
     char c;
     for (c = getc(file); c != EOF; c = getc(file)){
@@ -52,7 +52,7 @@ int findFileSize(FILE *file){
     return lines;
 }
 
-int findBinFileSize(FILE *file){
+int datamgr_findBinFileSize(FILE *file){
     fseek(file, 0, SEEK_END);
     int size = ftell(file);
     size = size/(sizeof(sensor_id_t) + sizeof(sensor_value_t) + sizeof(sensor_ts_t));
@@ -182,10 +182,10 @@ void datamgr_free(){
 
 void datamgr_parse_sensor_files(FILE *fp_sensor_map, sbuffer_t **buffer){
 
-  int size1 = findFileSize(fp_sensor_map);
+  int size1 = datamgr_findFileSize(fp_sensor_map);
 //  int size2 = findBinFileSize(fp_sensor_data);
 
-    list = dpl_create(element_copy, element_free, element_compare);
+    list = dpl_create(datamgr_element_copy, datamgr_element_free, datamgr_element_compare);
 
 // Read map data
     //printf("Sensor_map: \n");
@@ -233,7 +233,7 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, sbuffer_t **buffer){
     	        datamgr_check_avg_at_index(index);
             }
 	}
-    }while(res = SBUFFER_SUCCESS);
+    }while(res == SBUFFER_SUCCESS);
 
 
 

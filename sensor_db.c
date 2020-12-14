@@ -156,7 +156,9 @@ int insert_sensor_from_sbuffer(DBCONN *conn, sbuffer_t **buffer){	// TODO: test
         //printf("Temp: %f -- \n", data->value);
         //printf("Time: %lld\n", (long long)(data->ts) );
 
-    }while(res = SBUFFER_SUCCESS);
+    }while(res == SBUFFER_SUCCESS);
+    if(res == SBUFFER_FAILURE) return 0;
+    return 0;
 }
 
 

@@ -47,14 +47,14 @@
  * \param element pointer to the element to be copied
  * \return a pointer to the copy
 */
-void * element_copy(void * element);
+void * datamgr_element_copy(void * element);
 
 /**
  * This method is needed for the creation of the dplist
  * It frees the passed element
  * \param element is a pointer to a pointer to the element to be freed
 */
-void element_free(void ** element);
+void datamgr_element_free(void ** element);
 
 /**
  * This method is needed for the creation of the dplist
@@ -63,21 +63,21 @@ void element_free(void ** element);
  * \param y is a pointer to the seconde element
  * \returns -1 if x<y, 0 if x==y and 1 if x>y
 */
-int element_compare(void * x, void *y);
+int datamgr_element_compare(void * x, void *y);
 
 /**
  * This method finds the amount of lines in a file
  * \param file is a pointer to the file
  * \returns the amount of lines
 */
-int findFileSize(FILE *file);
+int datamgr_findFileSize(FILE *file);
 
 /**
  * This method finds the amount of entries in a binary file based on the size of 1 entry
  * \param file is a pointer to the file
  * \returns the amount of entries
 */
-int findBinFileSize(FILE *file);
+int datamgr_findBinFileSize(FILE *file);
 
 /**
  * This method creates a sensor_data_t struct from some variables

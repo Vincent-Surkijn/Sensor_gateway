@@ -31,6 +31,7 @@ void *datamgr(){
     datamgr_free();
     fclose(fp_map);
     printf("Exiting datamgr thread\n");
+    return NULL;
 }
 
 
@@ -47,6 +48,7 @@ void *sensordb(){
     if(res != 0) printf("Error while inserting sensor into sqlite db\n");
     disconnect(conn);
     printf("Exiting sensordb thread\n");
+    return NULL;
 }
 
 
@@ -54,6 +56,7 @@ void *connmgr(){
     connmgr_listen(port,&buffer);
     connmgr_free();
     printf("Exiting connmgr thread\n");
+    return NULL;
 }
 
 
