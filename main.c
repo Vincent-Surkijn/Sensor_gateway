@@ -43,6 +43,7 @@ void *sensordb(){
 	if(conn==NULL){
 	    attempts++;
 	}
+	else break;
     }
     int res = insert_sensor_from_sbuffer(conn,&buffer);
     if(res != 0) printf("Error while inserting sensor into sqlite db\n");
