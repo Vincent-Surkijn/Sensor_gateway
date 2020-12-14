@@ -69,13 +69,6 @@ void connmgr_listen(int port_number, sbuffer_t **buffer){
     tcpsock_t *server, *client;
     int serversd, clientsd;
 
-    FILE *fp_bindata;
-    fp_bindata = fopen("sensor_data_recv", "w");
-    if (fp_bindata == NULL) {
-        perror("Opening fp_bindata failed: ");
-	return;
-    }
-
     conn_list = dpl_create(connmgr_element_copy, connmgr_element_free, connmgr_element_compare);
     poll_fd = malloc(sizeof(struct pollfd));
 
@@ -166,8 +159,6 @@ void connmgr_listen(int port_number, sbuffer_t **buffer){
     }
     printf("Closed server at %ld\n", time(NULL));
     tcp_close(&server);
-    // close bin file as well
-    fclose(fp_bindata);
 }
 
 void connmgr_free(){
