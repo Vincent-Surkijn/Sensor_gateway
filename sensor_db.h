@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "config.h"
+#include "sbuffer.h"
 #include <sqlite3.h>
 
 // stringify preprocessor directives using 2-level preprocessor magic
@@ -58,6 +59,14 @@ int insert_sensor(DBCONN *conn, sensor_id_t id, sensor_value_t value, sensor_ts_
  * \return zero for success, and non-zero if an error occurs
  */
 int insert_sensor_from_file(DBCONN *conn, FILE *sensor_data);
+
+/**
+ * Write an INSERT query to insert all sensor measurements available in the sbuffer
+ * \param conn pointer to the current connection
+ * \param buffer pointer to a pointer to the sbuffer containing sensor data
+ * \return zero for success, and non-zero if an error occurs
+ */
+int insert_sensor_from_sbuffer(DBCONN *conn, sbuffer_t **buffer);
 
 /**
   * Write a SELECT query to select all sensor measurements in the table 

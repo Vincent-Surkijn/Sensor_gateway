@@ -69,3 +69,10 @@ datamgr: libdplist
 
 connmgr: libsbuff
 	gcc -g -c connmgr.c -lsbuffer
+
+sensor_db: libsbuff sqlite
+	gcc -c sensor_db.c -lsqlite3 -lsbuffer
+
+sqlite:
+	sudo apt install sqlite3
+	sudo apt install libsqlite3-dev

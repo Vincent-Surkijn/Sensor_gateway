@@ -9,6 +9,7 @@
 #include <string.h>
 #include "config.h"
 #include "sensor_db.h"
+#include "sbuffer.h"
 
 // stringify preprocessor directives using 2-level preprocessor magic
 // this avoids using directives like -DDB_NAME=\"some_db_name\"
@@ -138,6 +139,24 @@ int sensor_findBinFileSize(FILE *file){
     fseek(file, 0, SEEK_SET);
     printf("Bin file size: %d\n", size);
     return size;
+}
+
+
+int insert_sensor_from_sbuffer(DBCONN *conn, sbuffer_t **buffer){	// TODO: test
+    int res;
+    do{ // Read data values --> sbuffer
+        sensor_data_t *data = malloc(sizeof(sensor_data_t));
+
+        res = sbuffer_read(*buffer,data,SBUFFER_DATAMGR);
+        if(res == SBUFFER_NO_DATA) continue;
+
+	res = insert_sensor(conn, data->id, data->value, data->ts);
+
+	//printf("Id: %hd -- ", data->id);
+        //printf("Temp: %f -- \n", data->value);
+        //printf("Time: %lld\n", (long long)(data->ts) );
+
+    }while(res = SBUFFER_SUCCESS);
 }
 
 
