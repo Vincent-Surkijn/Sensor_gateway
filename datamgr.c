@@ -7,9 +7,11 @@
 #endif
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <inttypes.h>
 #include <time.h>
 #include <math.h>
+#include <unistd.h>
 #include "config.h"
 #include "datamgr.h"
 #include "sbuffer.h"
@@ -197,12 +199,12 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, sbuffer_t **buffer){
 	fscanf(fp_sensor_map, "%hd", &room_id);
 	fscanf(fp_sensor_map, "%hd", &sensor_id);
 
-	//printf("Room: %hd -- Sensor: %hd\n", room_id, sensor_id);
+	printf("Room: %hd -- Sensor: %hd\n", room_id, sensor_id);
 
 	sensor_data_t *sensor = createElement(sensor_id, room_id, 0, 0, 0);
 	list = dpl_insert_at_index(list, sensor, i, false);
     }
-    //printf("List size after inserts: %d\n", dpl_size(list));
+    printf("List size after inserts: %d\n", dpl_size(list));
 
 // Read sensor data
     //printf("Sensor Data: \n");
@@ -213,7 +215,10 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, sbuffer_t **buffer){
 	res = sbuffer_read(*buffer,data,SBUFFER_DATAMGR);
 	//printf("Id: %hd -- ", data->id);
 
-	if(res == SBUFFER_NO_DATA) continue;
+	if(res == SBUFFER_NO_DATA || res == SBUFFER_FINISHED){
+	    sleep(1);
+	    continue;
+	}
 
 	int index = datamgr_get_index_of_sensor_id(data->id);
 
@@ -223,6 +228,8 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, sbuffer_t **buffer){
 
 	if(index==-1){	//Invalid index -> id not found
 	    fprintf(stderr, "Tried to add data of non existing sensor id\n");
+printf("Res: %d\n", res);
+exit(0);//TODO delete this
 	}
 	else{
             datamgr_update_value_array(index, data->value);
@@ -233,8 +240,8 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, sbuffer_t **buffer){
     	        datamgr_check_avg_at_index(index);
             }
 	}
-    }while(res == SBUFFER_SUCCESS);
-
+//    }while(res == SBUFFER_SUCCESS);
+    }while(res != SBUFFER_FAILURE);
 
 
 

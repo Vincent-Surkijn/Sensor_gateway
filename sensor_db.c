@@ -7,6 +7,7 @@
 #include <sqlite3.h>
 #include <time.h>
 #include <string.h>
+#include <unistd.h>
 #include "config.h"
 #include "sensor_db.h"
 #include "sbuffer.h"
@@ -108,7 +109,7 @@ int insert_sensor(DBCONN *conn, sensor_id_t id, sensor_value_t value, sensor_ts_
     int rc = sqlite3_prepare_v2(conn, sql, -1, &res, 0);
 
     if (rc == SQLITE_OK) {
-        //printf("Insert query succesfully parsed\n");
+        printf("Insert query succesfully parsed\n");
 	int idx = sqlite3_bind_parameter_index(res, "@id");
         sqlite3_bind_int(res, idx, id);
 
@@ -147,8 +148,11 @@ int insert_sensor_from_sbuffer(DBCONN *conn, sbuffer_t **buffer){	// TODO: test
     do{ // Read data values --> sbuffer
         sensor_data_t *data = malloc(sizeof(sensor_data_t));
 
-        res = sbuffer_read(*buffer,data,SBUFFER_DATAMGR);
-        if(res == SBUFFER_NO_DATA) continue;
+        res = sbuffer_read(*buffer,data,SBUFFER_SENSORDB);
+        if(res == SBUFFER_NO_DATA || res == SBUFFER_FINISHED){
+	    sleep(1);
+	    continue;
+	}
 
 	res = insert_sensor(conn, data->id, data->value, data->ts);
 
@@ -156,8 +160,9 @@ int insert_sensor_from_sbuffer(DBCONN *conn, sbuffer_t **buffer){	// TODO: test
         //printf("Temp: %f -- \n", data->value);
         //printf("Time: %lld\n", (long long)(data->ts) );
 
-    }while(res == SBUFFER_SUCCESS);
-    if(res == SBUFFER_FAILURE) return 0;
+//    }while(res == SBUFFER_SUCCESS);
+    }while(res != SBUFFER_FAILURE);
+
     return 0;
 }
 

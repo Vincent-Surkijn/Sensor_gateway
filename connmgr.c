@@ -128,7 +128,7 @@ void connmgr_listen(int port_number, sbuffer_t **buffer){
                 	result = tcp_receive(client, (void *) &(data->ts), &bytes);
 			dummy->ts = data->ts;
                 	if ((result == TCP_NO_ERROR) && bytes) {
-                	    printf("sensor id = %" PRIu16 " - temperature = %g - timestamp = %ld\n", data->id, data->value, (long int)(data->ts) );
+                	    printf("Connmgr: sensor id = %" PRIu16 " - temperature = %g - timestamp = %ld\n", data->id, data->value, (long int)(data->ts) );
 
 			/*** Now write to sbuffer instead ***
 			    // write data to bin file
