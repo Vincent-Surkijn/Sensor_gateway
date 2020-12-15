@@ -216,18 +216,13 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, sbuffer_t **buffer){
 	res = sbuffer_read(*buffer,data,SBUFFER_DATAMGR);
 	//printf("Id: %hd -- ", data->id);
 
-	if(res == SBUFFER_NO_DATA){
-	    //usleep(1);
-	    continue;
-	}
-        else if(res == SBUFFER_FINISHED){	// Everything read
+	if(res == SBUFFER_NO_DATA || res == SBUFFER_FINISHED){
             if(sbuffer_alive(*buffer)){       // If buffer is still being updated, wait for new value
-                printf("Datamgr going to sleep\n");
                 sleep(1);
                 continue;
             }
-            else break;                 // If connmgr stopped & everything read -> stop reading
-        }
+            else break;
+	}
 
 	int index = datamgr_get_index_of_sensor_id(data->id);
 

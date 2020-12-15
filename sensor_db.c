@@ -151,17 +151,12 @@ int insert_sensor_from_sbuffer(DBCONN *conn, sbuffer_t **buffer){
         sensor_data_t *data = malloc(sizeof(sensor_data_t));
 
         res = sbuffer_read(*buffer,data,SBUFFER_SENSORDB);
-        if(res == SBUFFER_NO_DATA){
-//	    sleep(1);
-	    continue;
-	}
-	else if(res == SBUFFER_FINISHED){
-	    if(sbuffer_alive(*buffer)){	// If buffer is still being updated, wait for new value
-		printf("Sensordb going to sleep\n");
-		usleep(1);
-		continue;
-	    }
-	    else break;			// If connmgr stopped & everything read -> stop reading
+        if(res == SBUFFER_NO_DATA || res == SBUFFER_FINISHED){
+            if(sbuffer_alive(*buffer)){ // If buffer is still being updated, wait for new value
+                usleep(1);
+                continue;
+            }
+            else break;
 	}
 
 	res = insert_sensor(conn, data->id, data->value, data->ts);
