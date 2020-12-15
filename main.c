@@ -17,7 +17,6 @@
 
 int port;
 sbuffer_t *buffer;
-volatile bool alive = true;
 
 void *datamgr(){
     FILE *fp_map = fopen("./room_sensor.map", "r");
@@ -25,7 +24,7 @@ void *datamgr(){
 	perror("Opening map failed: ");
         return NULL;
     }
-    while(alive){
+    while(sbuffer_alive(buffer)){
         datamgr_parse_sensor_files(fp_map,&buffer);
     }
     datamgr_free();
@@ -47,7 +46,7 @@ void *sensordb(){
 	else break;
     }
     printf("Connected to db!\n");
-    while(alive){
+    while(sbuffer_alive(buffer)){
     	int res = insert_sensor_from_sbuffer(conn,&buffer);
 	//printf("Main sensor res = %d\n",res);
     	if(res != 0) printf("Error while inserting sensor into sqlite db\n");
@@ -61,8 +60,8 @@ void *sensordb(){
 void *connmgr(){
     connmgr_listen(port,&buffer);
     connmgr_free();
-    printf("Exiting connmgr thread\n");
-    alive = false;
+    sbuffer_died(buffer);
+    printf("Exiting connmgr thread with %d\n", sbuffer_alive(buffer));
     return NULL;
 }
 

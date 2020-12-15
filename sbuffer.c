@@ -12,7 +12,7 @@
 
 pthread_mutex_t list_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_rwlock_t lock = PTHREAD_RWLOCK_INITIALIZER;
-pthread_cond_t cond1 = PTHREAD_COND_INITIALIZER;
+//pthread_cond_t cond1 = PTHREAD_COND_INITIALIZER;
 
 /**
  * basic node for the buffer, these nodes are linked together to create the buffer
@@ -30,8 +30,9 @@ typedef struct sbuffer_node {
 struct sbuffer {
     sbuffer_node_t *head;       /**< a pointer to the first node in the buffer */
     sbuffer_node_t *tail;       /**< a pointer to the last node in the buffer */
-    pthread_rwlock_t rw_lock;	// a read/write lock to be used for the list
-    pthread_cond_t empty;	// a condition variable to wait for when the buffer is empty
+    pthread_rwlock_t rw_lock;	/**< a read/write lock to be used for the list */
+//    pthread_cond_t empty;	/**< a condition variable to wait for when the buffer is empty */
+    bool alive;			/**< a boolean to indicate whether the buffer is still being written to */
 };
 
 int sbuffer_init(sbuffer_t **buffer) {		// Thread safe
@@ -40,6 +41,7 @@ int sbuffer_init(sbuffer_t **buffer) {		// Thread safe
     (*buffer)->head = NULL;
     (*buffer)->tail = NULL;
     (*buffer)->rw_lock = lock;
+    (*buffer)->alive = true;
     return SBUFFER_SUCCESS;
 }
 
@@ -146,4 +148,12 @@ int sbuffer_read(sbuffer_t *buffer, sensor_data_t *data, int reader){		// Thread
     }
     pthread_rwlock_unlock(&buffer->rw_lock);
     return SBUFFER_SUCCESS;
+}
+
+bool sbuffer_alive(sbuffer_t *buffer){
+    return buffer->alive;
+}
+
+void sbuffer_died(sbuffer_t *buffer){
+    buffer->alive = false;
 }

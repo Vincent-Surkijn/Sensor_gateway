@@ -5,6 +5,7 @@
 #ifndef _SBUFFER_H_
 #define _SBUFFER_H_
 
+#include <stdbool.h>
 #include "config.h"
 
 #define SBUFFER_FAILURE -1
@@ -43,7 +44,7 @@ int sbuffer_remove(sbuffer_t *buffer);
  * \param buffer a pointer to the buffer that is used
  * \param data a pointer to sensor_data_t data, that will be copied into the buffer
  * \return SBUFFER_SUCCESS on success and SBUFFER_FAILURE if an error occured
-*/
+ */
 int sbuffer_insert(sbuffer_t *buffer, sensor_data_t *data);
 
 /**
@@ -51,6 +52,20 @@ int sbuffer_insert(sbuffer_t *buffer, sensor_data_t *data);
  * \param buffer a pointer to the buffer that is used
  * \param data a pointer to sensor_data_t data, that will be copied into the buffer
  * \return SBUFFER_SUCCESS on success and SBUFFER_FAILURE if an error occured
-*/
+ */
 int sbuffer_read(sbuffer_t *buffer, sensor_data_t *data, int reader);
+
+/**
+ * Returns the value of alive
+ * \param buffer a pointer to the buffer that is used
+ * \return value of alive
+ */
+bool sbuffer_alive(sbuffer_t *buffer);
+
+/**
+ * Sets the value of alive to false
+ * \param buffer a pointer to the buffer that is used
+ */
+void sbuffer_died(sbuffer_t *buffer);
+
 #endif  //_SBUFFER_H_
