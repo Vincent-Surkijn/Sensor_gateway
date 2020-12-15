@@ -61,9 +61,11 @@ clean-all: clean
 run : sensor_gateway sensor_node
 	@echo "Add your own implementation here..."
 
+
 zip:
 	zip lab_final.zip main.c connmgr.c connmgr.h datamgr.c datamgr.h sbuffer.c sbuffer.h sensor_db.c sensor_db.h config.h lib/dplist.c lib/dplist.h lib/tcpsock.c lib/tcpsock.h
 
+# my own scripts:
 datamgr: libdplist
 	gcc -c -L./lib -Wl,-rpath=./lib -ldplist datamgr.c -DSET_MIN_TEMP=5.0 -DSET_MAX_TEMP=30.0
 
@@ -77,3 +79,8 @@ sqlite:
 	sudo apt install sqlite3
 	sudo apt install libsqlite3-dev
 	sudo apt install sqlitebrowser
+
+sensors:
+	./sensor_node 15 1 127.0.0.1 5678 &
+	./sensor_node 21 2 127.0.0.1 5678 &
+	./sensor_node 142 3 127.0.0.1 5678 &

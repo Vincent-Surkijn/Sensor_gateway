@@ -185,7 +185,6 @@ void datamgr_free(){
 void datamgr_parse_sensor_files(FILE *fp_sensor_map, sbuffer_t **buffer){
 
   int size1 = datamgr_findFileSize(fp_sensor_map);
-//  int size2 = findBinFileSize(fp_sensor_data);
 
     list = dpl_create(datamgr_element_copy, datamgr_element_free, datamgr_element_compare);
 
@@ -204,7 +203,7 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, sbuffer_t **buffer){
 	sensor_data_t *sensor = createElement(sensor_id, room_id, 0, 0, 0);
 	list = dpl_insert_at_index(list, sensor, i, false);
     }
-    printf("List size after inserts: %d\n", dpl_size(list));
+    //printf("List size after inserts: %d\n", dpl_size(list));
 
 // Read sensor data
     //printf("Sensor Data: \n");
@@ -228,8 +227,6 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, sbuffer_t **buffer){
 
 	if(index==-1){	//Invalid index -> id not found
 	    fprintf(stderr, "Tried to add data of non existing sensor id\n");
-printf("Res: %d\n", res);
-exit(0);//TODO delete this
 	}
 	else{
             datamgr_update_value_array(index, data->value);
@@ -240,7 +237,6 @@ exit(0);//TODO delete this
     	        datamgr_check_avg_at_index(index);
             }
 	}
-//    }while(res == SBUFFER_SUCCESS);
     }while(res != SBUFFER_FAILURE);
 
 

@@ -143,7 +143,7 @@ int sensor_findBinFileSize(FILE *file){
 }
 
 
-int insert_sensor_from_sbuffer(DBCONN *conn, sbuffer_t **buffer){	// TODO: test
+int insert_sensor_from_sbuffer(DBCONN *conn, sbuffer_t **buffer){
     int res;
     do{ // Read data values --> sbuffer
         sensor_data_t *data = malloc(sizeof(sensor_data_t));
@@ -160,7 +160,6 @@ int insert_sensor_from_sbuffer(DBCONN *conn, sbuffer_t **buffer){	// TODO: test
         //printf("Temp: %f -- \n", data->value);
         //printf("Time: %lld\n", (long long)(data->ts) );
 
-//    }while(res == SBUFFER_SUCCESS);
     }while(res != SBUFFER_FAILURE);
 
     return 0;
