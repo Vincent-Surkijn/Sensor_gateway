@@ -120,7 +120,7 @@ void connmgr_listen(int port_number, sbuffer_t **buffer){
 			dummy->id = data->id;
                         if( (long)(dummy->ts) == 0){	// If no timestamp is filled yet, the sensor is new
                             char *msg;
-                            asprintf(&msg,"New sensor node connected with sensor id %d",data->id);
+                            asprintf(&msg,"New sensor node connected with sensor id %d\n",data->id);
                             write_fifo(msg);
                         }
 
@@ -140,7 +140,7 @@ void connmgr_listen(int port_number, sbuffer_t **buffer){
                 	printf("Peer has closed connection\n");
 			dummy = dpl_get_element_at_index(conn_list, i);
 			char *msg;
-			asprintf(&msg,"Sensor node with id %d closed connection",dummy->id);
+			asprintf(&msg,"Sensor node with id %d closed connection\n",dummy->id);
                         write_fifo(msg);
 			poll_fd[i+1].fd = -1;	// stop listening to this one
 			conn_list = dpl_remove_at_index(conn_list, i, true);	// can be removed from list as well

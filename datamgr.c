@@ -275,12 +275,12 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, sbuffer_t **buffer){
     printf("Element amount at index 4: %d\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 4)) )->amount );
     printf("Element amount at index 5: %d\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 5)) )->amount );
     printf("Element amount at index 6: %d\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 6)) )->amount );
-    printf("Element amount at index 7: %d\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 7)) )->amount );*/
+    printf("Element amount at index 7: %d\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 7)) )->amount );
 
 	printf("Size of list: %d\n", datamgr_get_total_sensors());
 	printf("RUN_AVG_LENGTH: %d\n", RUN_AVG_LENGTH);
 	printf("SET_MIN_TEMP: %f\n", SET_MIN_TEMP);
-	printf("SET_MAX_TEMP: %f\n", SET_MAX_TEMP);
+	printf("SET_MAX_TEMP: %f\n", SET_MAX_TEMP);*/
 }
 
 void datamgr_print(int i){

@@ -70,7 +70,7 @@ void *connmgr(){
     connmgr_listen(port,&buffer);
     connmgr_free();
     sbuffer_died(buffer);
-    printf("Exiting connmgr thread with %d\n", sbuffer_alive(buffer));
+    printf("Exiting connmgr thread\n");
     return NULL;
 }
 
@@ -79,10 +79,11 @@ void shut_down(){
     int exit_status;
     printf("Ending parent process\n");
 
-    char *msg;
+/*    char *msg;
     asprintf(&msg,"Log process has ended\n");
     write_fifo(msg);
-
+printf("Sent end msg to child: %s",msg);
+*/
     log_pid = wait(&exit_status);
     if(log_pid == -1)    perror("Error executing wait for child process");
     if (WIFEXITED(exit_status)){
@@ -103,6 +104,7 @@ void parent(){
 
     res = mkfifo(FIFO_NAME, 0666);	// Create FIFO with read&write(6) permissions for all
     if(res == -1)	perror("An error ocurred while creating the FIFO");
+
     char *msg;
     asprintf(&msg,"Starting new log process\n");
     write_fifo(msg);
@@ -115,9 +117,14 @@ void parent(){
     if(pthread_join(thread1, NULL) !=0) printf("can't join datamgr thread\n\n");
     if(pthread_join(thread2, NULL) !=0) printf("can't join sensordb thread\n\n");
 
+    asprintf(&msg,"Log process has ended\n");
+    write_fifo(msg);
+printf("Sent end msg to child: %s",msg);
+
     printf("Freeing...\n");
     sbuffer_free(&buffer);
     free(buffer);
+    free(msg);
 
     shut_down();
 }
@@ -143,6 +150,9 @@ void read_fifo(){
 
     char *str_result;
     do{
+	printf("Listening to FIFO\n");
+	sleep(1);
+
 	str_result = fgets(msg, 200, fifo);
 	if ( str_result != NULL ){
 	    printf("Message received: %s", msg);
@@ -159,7 +169,7 @@ void read_fifo(){
     return;
 }
 
-void write_fifo(char *msg){
+void write_fifo(char *msg){	// TODO: add timestamp and sequence number
     FILE *fifo;
     int res;
 
@@ -170,6 +180,8 @@ void write_fifo(char *msg){
 
     res = fputs(msg,fifo);
     if(res == EOF)	perror("Failed to write to fifo");
+
+printf("Result of wirte to fifo: %d\n",res);
 
     fflush(fifo);
 
