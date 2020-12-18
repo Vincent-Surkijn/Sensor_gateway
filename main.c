@@ -6,6 +6,9 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <sqlite3.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include "connmgr.h"
 #include "sbuffer.h"
 #include "config.h"
@@ -65,6 +68,22 @@ void *connmgr(){
     return NULL;
 }
 
+void shut_down(){
+    pid_t log_pid;
+    int exit_status;
+    printf("Ending parent process\n");
+
+    log_pid = wait(&exit_status);
+    if(log_pid == -1)    perror("Error executing wait for child process");
+    if (WIFEXITED(exit_status)){
+	printf("Child exited successfully\n");
+    }
+    else{
+	fprintf(stderr,"Child exited abnormally\n");
+    }
+
+    pthread_exit(NULL);
+}
 
 void parent(){
     pthread_t thread1, thread2, thread3;
@@ -83,8 +102,18 @@ void parent(){
     sbuffer_free(&buffer);
     free(buffer);
 
-    pthread_exit(NULL);
+    shut_down();
+}
 
+
+void child(){
+    int i = 0;
+    while(i<=10){
+	printf("Child process running(%d)\n", i);
+	i++;
+	sleep(1);
+    }
+    exit(EXIT_SUCCESS);
 }
 
 
@@ -100,7 +129,21 @@ int main(int argc, char **argv){
         return -1;
     }
 
-    parent();
+    pid_t gw_pid, log_pid;	// Init pid for gateway and log processes
+
+    gw_pid = getpid();
+    printf("Parent process (pid = %d) is started ...\n", gw_pid);
+
+    log_pid = fork();
+    if(log_pid != 0)	perror("Error executing fork");
+
+    if(log_pid == 0){
+	child();
+    }
+    else{
+	printf("Parent process (pid = %d) has created child process (pid = %d)\n", gw_pid, log_pid);
+	parent();
+    }
 
     return 0;
 }
