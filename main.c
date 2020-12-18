@@ -2,8 +2,11 @@
  * \author Vincent Surkijn
  */
 
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <pthread.h>
 #include <sqlite3.h>
 #include <unistd.h>
@@ -76,6 +79,10 @@ void shut_down(){
     int exit_status;
     printf("Ending parent process\n");
 
+    char *msg;
+    asprintf(&msg,"Log process has ended\n");
+    write_fifo(msg);
+
     log_pid = wait(&exit_status);
     if(log_pid == -1)    perror("Error executing wait for child process");
     if (WIFEXITED(exit_status)){
@@ -95,7 +102,10 @@ void parent(){
     sbuffer_init(&buffer);
 
     res = mkfifo(FIFO_NAME, 0666);	// Create FIFO with read&write(6) permissions for all
-    if(res != 0)	perror("An error ocurred while creating the FIFO");
+    if(res == -1)	perror("An error ocurred while creating the FIFO");
+    char *msg;
+    asprintf(&msg,"Starting new log process\n");
+    write_fifo(msg);
 
     if(pthread_create( &thread1, NULL, &datamgr, NULL ) != 0) printf("Can't create datamgr thread\n");
     if(pthread_create( &thread2, NULL, &sensordb, NULL ) != 0) printf("Can't create sensordb thread\n");
@@ -126,7 +136,7 @@ void read_fifo(){
         perror("Opening fifo failed: ");
     }
 
-    log_file = fopen("sensor_gateway.log", "r");
+    log_file = fopen("sensor_gateway.log", "a");	// Write to end of log file
     if (log_file == NULL) {
         perror("Opening log_file failed: ");
     }
@@ -138,7 +148,7 @@ void read_fifo(){
 	    printf("Message received: %s", msg);
 	    //TODO: write msg to log_file(maybe with fprintf?)
 	}
-    }while(str_result != NULL);
+    }while(strcmp(msg, "Log process has ended\n")!=0);
 
     res = fclose(fifo);
     if(res != 0) perror("Fifo close failed");
@@ -160,6 +170,8 @@ void write_fifo(char *msg){
 
     res = fputs(msg,fifo);
     if(res == EOF)	perror("Failed to write to fifo");
+
+    fflush(fifo);
 
     fclose(fifo);
 }
@@ -193,7 +205,7 @@ int main(int argc, char **argv){
     printf("Parent process (pid = %d) is started ...\n", gw_pid);
 
     log_pid = fork();
-    if(log_pid != 0)	perror("Error executing fork");
+    if(log_pid == -1)	perror("Error executing fork");
 
     if(log_pid == 0){
 	child();

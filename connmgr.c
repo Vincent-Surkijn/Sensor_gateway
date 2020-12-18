@@ -6,6 +6,8 @@
 #define TIMEOUT 5
 #endif
 
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <poll.h>
@@ -19,6 +21,7 @@
 typedef struct {
     tcpsock_t *sock;
     int conn_sd;
+    sensor_id_t id;
     sensor_ts_t ts;
 } connection_t;
 
@@ -98,18 +101,12 @@ void connmgr_listen(int port_number, sbuffer_t **buffer){
 	    	if (tcp_wait_for_connection(server, &client) != TCP_NO_ERROR) exit(EXIT_FAILURE);
 	    	tcp_get_sd(client, &clientsd);
 	    	printf("client sd=%d\n",clientsd);
-	    	// Add new connection to the poll list
-	    	connmgr_add_conn(client,clientsd);
-/*	printf("indexO: %d\n", poll_fd[0].fd);
-	printf("index1: %d\n", poll_fd[1].fd);
-	printf("index2: %d\n", poll_fd[2].fd);
-	printf("size list: %d\n", dpl_size(conn_list));*/
+	    	connmgr_add_conn(client,clientsd);      // Add new connection to the poll list
 	    }
 	    int i;
 	    for(i=0;i<dpl_size(conn_list);i++){
 		//printf("For loop\n");
 		if(poll_fd[i+1].revents & POLLIN){
-		printf("Sensor %d sending data\n", i+1);
 		    connection_t *dummy;
 		    time_t now;
 		    do{
@@ -120,6 +117,13 @@ void connmgr_listen(int port_number, sbuffer_t **buffer){
 			// read sensor ID
                 	bytes = sizeof(data->id);
                 	result = tcp_receive(client, (void *) &(data->id), &bytes);
+			dummy->id = data->id;
+                        if( (long)(dummy->ts) == 0){	// If no timestamp is filled yet, the sensor is new
+                            char *msg;
+                            asprintf(&msg,"New sensor node connected with sensor id %d",data->id);
+                            write_fifo(msg);
+                        }
+
                 	// read temperature
                 	bytes = sizeof(data->value);
                 	result = tcp_receive(client, (void *) &(data->value), &bytes);
@@ -129,12 +133,15 @@ void connmgr_listen(int port_number, sbuffer_t **buffer){
 			dummy->ts = data->ts;
                 	if ((result == TCP_NO_ERROR) && bytes) {
                 	    printf("Connmgr: sensor id = %" PRIu16 " - temperature = %g - timestamp = %ld\n", data->id, data->value, (long int)(data->ts) );
-
 			    sbuffer_insert(*buffer,data);
                 	}
             	    }while(result == TCP_NO_ERROR && (((dummy->ts) - now) < TIMEOUT));
             	    if (result == TCP_CONNECTION_CLOSED){
                 	printf("Peer has closed connection\n");
+			dummy = dpl_get_element_at_index(conn_list, i);
+			char *msg;
+			asprintf(&msg,"Sensor node with id %d closed connection",dummy->id);
+                        write_fifo(msg);
 			poll_fd[i+1].fd = -1;	// stop listening to this one
 			conn_list = dpl_remove_at_index(conn_list, i, true);	// can be removed from list as well
 			printf("Size of list now: %d\n", dpl_size(conn_list));

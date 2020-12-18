@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 #include <time.h>
+#include "main.h"	// Include main.h so all 'mgr's can use the FIFO functions
 
 typedef uint16_t sensor_id_t;
 typedef uint16_t room_id_t;
