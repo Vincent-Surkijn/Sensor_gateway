@@ -125,12 +125,18 @@ int datamgr_check_avg_at_index(int index){
     double avg = datamgr_get_avg(sensor->id);
     if(avg > SET_MAX_TEMP){
         ERROR_HANDLER(true, DATAMGR_OUTOFRANGE_ERROR);
-	printf("Sensor %d in room %d was too hot at %lld\n", sensor->id, sensor->room_id, (long long)(sensor->ts));
+	char *msg;
+	asprintf(&msg,"Sensor %d in room %d was too hot at %lld\n", sensor->id, sensor->room_id, (long long)(sensor->ts));
+	printf("Datamgr: tx_msg = %s\n", msg);
+	write_fifo(msg);
 	return 1;
     }
     else if(avg < SET_MIN_TEMP){
         ERROR_HANDLER(true, DATAMGR_OUTOFRANGE_ERROR);
-        printf("Sensor %d in room %d was too cold at %lld\n", sensor->id, sensor->room_id, (long long)(sensor->ts));
+        char *msg;
+        asprintf(&msg,"Sensor %d in room %d was too hot at %lld\n", sensor->id, sensor->room_id, (long long)(sensor->ts));
+        printf("Datamgr: tx_msg = %s\n", msg);
+	write_fifo(msg);
 	return -1;
     }
     else{
@@ -160,7 +166,9 @@ uint16_t datamgr_get_room_id(sensor_id_t sensor_id){
             return ( (sensor_data_t *)(dpl_get_element_at_index(list, i)) )->room_id;
         }
     }
-    printf("Sensor id not found in list\n");
+    char *msg;
+    asprintf(&msg,"Sensor id not found in list\n");
+    write_fifo(msg);
     ERROR_HANDLER(true, DATAMGR_INVALID_ERROR);
     return -1;
 }

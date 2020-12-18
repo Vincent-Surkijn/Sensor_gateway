@@ -46,7 +46,7 @@ void *datamgr(){
 void *sensordb(){
     int attempts = 0;
     DBCONN *conn;
-    while(attempts<3){
+    while(attempts<3){	// TODO: what if connection can't be made? + log msg if connection can't be made
 	conn = init_connection(1);
         if(conn==NULL){
             attempts++;
@@ -54,6 +54,7 @@ void *sensordb(){
         }
 	else break;
     }
+    write_fifo("Connected to the SQL database\n");
     printf("Connected to db!\n");
     while(sbuffer_alive(buffer)){
     	int res = insert_sensor_from_sbuffer(conn,&buffer);
@@ -169,7 +170,7 @@ void read_fifo(){
     return;
 }
 
-void write_fifo(char *msg){	// TODO: add timestamp and sequence number
+void write_fifo(char *msg){	// TODO: add timestamp and sequence number & messages after first one don't always get read?
     FILE *fifo;
     int res;
 

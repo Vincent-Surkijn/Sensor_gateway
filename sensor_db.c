@@ -48,7 +48,6 @@ DBCONN *init_connection(char clear_up_flag){
 
     char q[250] = "";
     char *sql = q;
-    // Impossible to give table name as a parameter in an sqlite query
     if(clear_up_flag == 1){
 	//printf("flag = 1\n");
 	char a[30] = "DROP TABLE IF EXISTS ";
@@ -66,6 +65,8 @@ DBCONN *init_connection(char clear_up_flag){
 	//sql = "DROP TABLE IF EXISTS @table_name;"
           //      "CREATE TABLE @table_name(Id INTEGER PRIMARY KEY, sensor_id INTEGER,"
 	  //	"sensor_value DECIMAL(4,2), timestamp TIMESTAMP);";
+
+	write_fifo("New SQL table created");
     }
     else{
 	//printf("flag != 1\n");
