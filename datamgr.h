@@ -83,9 +83,9 @@ int datamgr_findBinFileSize(FILE *file);
  * This method creates a sensor_data_t struct from some variables
  * \param id is the sensor id
  * \param room_id is the room id
- * \amount is the amount of temperature values for the sensor
- * \value is the running avg of the sensor
- * \ts is the timestamp of the last modification for the sensor
+ * \param amount is the amount of temperature values for the sensor
+ * \param value is the running avg of the sensor
+ * \param ts is the timestamp of the last modification for the sensor
  * \returns a pointer to the created element
 */
 sensor_data_t *createElement(sensor_id_t id, room_id_t room_id, sensor_amount_values_t amount, sensor_value_t value, sensor_ts_t ts);

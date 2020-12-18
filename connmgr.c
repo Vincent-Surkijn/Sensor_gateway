@@ -112,7 +112,7 @@ void connmgr_listen(int port_number, sbuffer_t **buffer){
 		printf("Sensor %d sending data\n", i+1);
 		    connection_t *dummy;
 		    time_t now;
-		    do{	// TODO: changed data from sensor_data_t to sensor_data_t*(not tested yet)
+		    do{
 			// retrieve conn_list element from this sensor
 			dummy = dpl_get_element_at_index(conn_list, i);
                 	client = dummy->sock;
@@ -130,13 +130,7 @@ void connmgr_listen(int port_number, sbuffer_t **buffer){
                 	if ((result == TCP_NO_ERROR) && bytes) {
                 	    printf("Connmgr: sensor id = %" PRIu16 " - temperature = %g - timestamp = %ld\n", data->id, data->value, (long int)(data->ts) );
 
-			/*** Now write to sbuffer instead ***
-			    // write data to bin file
-			    fwrite(&(data.id), sizeof(data.id), 1, fp_bindata);
-			    fwrite(&(data.value), sizeof(data.value), 1, fp_bindata);
-			    fwrite(&(data.ts), sizeof(data.ts), 1 , fp_bindata);*/
-
-			sbuffer_insert(*buffer,data);	//TODO test this
+			    sbuffer_insert(*buffer,data);
                 	}
             	    }while(result == TCP_NO_ERROR && (((dummy->ts) - now) < TIMEOUT));
             	    if (result == TCP_CONNECTION_CLOSED){

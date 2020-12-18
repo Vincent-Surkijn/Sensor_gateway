@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include "connmgr.h"
 #include "sbuffer.h"
 #include "config.h"
@@ -17,10 +18,12 @@
 #include "sensor_db.h"
 #include "lib/dplist.h"
 #include "lib/tcpsock.h"
+#include "main.h"
 
 int port;
 sbuffer_t *buffer;
 
+/*** all parent functions ***/
 void *datamgr(){
     FILE *fp_map = fopen("./room_sensor.map", "r");
     if (fp_map == NULL) {
@@ -87,8 +90,12 @@ void shut_down(){
 
 void parent(){
     pthread_t thread1, thread2, thread3;
+    int res;
 
     sbuffer_init(&buffer);
+
+    res = mkfifo(FIFO_NAME, 0666);	// Create FIFO with read&write(6) permissions for all
+    if(res != 0)	perror("An error ocurred while creating the FIFO");
 
     if(pthread_create( &thread1, NULL, &datamgr, NULL ) != 0) printf("Can't create datamgr thread\n");
     if(pthread_create( &thread2, NULL, &sensordb, NULL ) != 0) printf("Can't create sensordb thread\n");
@@ -106,16 +113,67 @@ void parent(){
 }
 
 
-void child(){
-    int i = 0;
-    while(i<=10){
-	printf("Child process running(%d)\n", i);
-	i++;
-	sleep(1);
+/*** all child functions ***/
+
+void read_fifo(){
+    FILE *log_file;
+    FILE *fifo;
+    int res;
+    char msg[200];	// Make sure it is big enough for all the messages
+
+    fifo = fopen(FIFO_NAME, "r");
+    if (fifo == NULL) {
+        perror("Opening fifo failed: ");
     }
+
+    log_file = fopen("sensor_gateway.log", "r");
+    if (log_file == NULL) {
+        perror("Opening log_file failed: ");
+    }
+
+    char *str_result;
+    do{
+	str_result = fgets(msg, 200, fifo);
+	if ( str_result != NULL ){
+	    printf("Message received: %s", msg);
+	    //TODO: write msg to log_file(maybe with fprintf?)
+	}
+    }while(str_result != NULL);
+
+    res = fclose(fifo);
+    if(res != 0) perror("Fifo close failed");
+
+    res = fclose(log_file);
+    if(res != 0) perror("Log file close failed");
+
+    return;
+}
+
+void write_fifo(char *msg){
+    FILE *fifo;
+    int res;
+
+    fifo = fopen(FIFO_NAME, "w");
+    if (fifo == NULL) {
+        perror("Opening fifo failed: ");
+    }
+
+    res = fputs(msg,fifo);
+    if(res == EOF)	perror("Failed to write to fifo");
+
+    fclose(fifo);
+}
+
+void child(){
+    read_fifo();
+
+    printf("Exiting child process\n");
+
     exit(EXIT_SUCCESS);
 }
 
+
+/*** main function ***/
 
 int main(int argc, char **argv){
 
