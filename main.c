@@ -136,7 +136,7 @@ void read_fifo(){
     int res;
     char msg[200];	// Make sure it is big enough for all the messages
 
-    fifo = fopen(FIFO_NAME, "r");
+    fifo = fopen(FIFO_NAME, "r+");
     if (fifo == NULL) {
         perror("Opening fifo failed: ");
     }
