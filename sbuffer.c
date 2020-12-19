@@ -10,9 +10,6 @@
 #include <pthread.h>
 #include "sbuffer.h"
 
-pthread_rwlock_t lock = PTHREAD_RWLOCK_INITIALIZER;
-//pthread_cond_t cond1 = PTHREAD_COND_INITIALIZER;
-
 /**
  * basic node for the buffer, these nodes are linked together to create the buffer
  */
@@ -39,7 +36,7 @@ int sbuffer_init(sbuffer_t **buffer) {		// Thread safe
     if (*buffer == NULL) return SBUFFER_FAILURE;
     (*buffer)->head = NULL;
     (*buffer)->tail = NULL;
-    (*buffer)->rw_lock = lock;
+    if(pthread_rwlock_init(&((*buffer)->rw_lock),NULL) != 0)	fprintf(stderr, "Failed to create rw lock\n");
     (*buffer)->alive = true;
     return SBUFFER_SUCCESS;
 }

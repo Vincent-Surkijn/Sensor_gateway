@@ -16,16 +16,6 @@
 #define REAL_TO_STRING(s) #s
 #define TO_STRING(s) REAL_TO_STRING(s)    //force macro-expansion on s before stringify s
 
-#ifndef DB_NAME
-#define DB_NAME Sensor.db
-#endif
-
-#ifndef TABLE_NAME
-#define TABLE_NAME SensorData
-#endif
-
-#define DBCONN sqlite3
-
 typedef int (*callback_t)(void *, int, char **, char **);
 
 /**

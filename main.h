@@ -5,7 +5,7 @@
 #ifndef MAIN_H_
 #define MAIN_H_
 
-#define FIFO_NAME "the_FIFO"
+//#define FIFO_NAME "the_FIFO"
 
 /**
  * This method runs the datamgr thread

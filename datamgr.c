@@ -2,10 +2,6 @@
 * author: Vincent Surkijn
 **/
 
-#ifndef RUN_AVG_LENGTH
- #define RUN_AVG_LENGTH 5
-#endif
-
 #define _GNU_SOURCE
 
 #include <stdio.h>
@@ -34,7 +30,6 @@ void * datamgr_element_copy(void * element){
 }
 
 void datamgr_element_free(void ** element){
-    //printf("In element_free\n");
     free(*element);
     *element = NULL;
 }
@@ -52,7 +47,6 @@ int datamgr_findFileSize(FILE *file){
         }
     }
     fseek(file, 0, SEEK_SET);  // Set cursor back to start of file, rewind(file) can also be used, but doesn't return value in case of error
-    //printf("Lines: %d\n", lines);
     return lines;
 }
 
@@ -61,7 +55,6 @@ int datamgr_findBinFileSize(FILE *file){
     int size = ftell(file);
     size = size/(sizeof(sensor_id_t) + sizeof(sensor_value_t) + sizeof(sensor_ts_t));
     fseek(file, 0, SEEK_SET);
-    //printf("Size: %d\n", size);
     return size;
 }
 
@@ -88,17 +81,14 @@ int datamgr_get_index_of_sensor_id(sensor_id_t sensor_id){
     }
     for(i = 0; i<size; i++){
 	if( ( (sensor_data_t*)(dpl_get_element_at_index(list, i)) )->id == sensor_id ){
-	    //printf("Sensor id found at %d\n", i);
 	    return i;
 	}
     }
-    printf("Sensor id not found in list\n");
     ERROR_HANDLER(true, DATAMGR_INVALID_ERROR);
     return -1;
 }
 
 sensor_value_t datamgr_get_avg(sensor_id_t sensor_id){
-    //printf("Find avg of sensor: %d\n", sensor_id);
     int index = datamgr_get_index_of_sensor_id(sensor_id);
     if(index == -1)	return -1;	// Invalid return
     sensor_data_t *sensor = dpl_get_element_at_index(list, index);
@@ -145,9 +135,8 @@ int datamgr_check_avg_at_index(int index){
 }
 
 void datamgr_update_value_array(int index, double value){
-    //printf("Update array called\n");
     sensor_data_t *sensor = dpl_get_element_at_index(list, index);
-    if(sensor == NULL){      // list is empty or NULL
+    if(sensor == NULL){      					// list is empty or NULL
 	ERROR_HANDLER(true, DATAMGR_INVALID_ERROR);
         return;
     }
@@ -156,7 +145,7 @@ void datamgr_update_value_array(int index, double value){
 
 uint16_t datamgr_get_room_id(sensor_id_t sensor_id){
     int size = dpl_size(list);
-    if(size==-1){      // list is NULL
+    if(size==-1){      						// list is NULL
 	ERROR_HANDLER(true, DATAMGR_INVALID_ERROR);
 	return -1;
     }
@@ -214,18 +203,16 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, sbuffer_t **buffer){
 	sensor_data_t *sensor = createElement(sensor_id, room_id, 0, 0, 0);
 	list = dpl_insert_at_index(list, sensor, i, false);
     }
-    //printf("List size after inserts: %d\n", dpl_size(list));
 
 // Read sensor data
     int res;
     sensor_data_t *data = malloc(sizeof(sensor_data_t));
-    do{	// Read data values --> sbuffer
+    do{
 	res = sbuffer_read(*buffer,data,SBUFFER_DATAMGR);
-	//printf("Id: %hd -- ", data->id);
 
 	if(res == SBUFFER_NO_DATA || res == SBUFFER_FINISHED){
             if(sbuffer_alive(*buffer)){       // If buffer is still being updated, wait for new value
-                usleep(1);					//TODO: not most efficient way, condition variable is better
+                usleep(1);
                 continue;
             }
             else break;
@@ -233,11 +220,7 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, sbuffer_t **buffer){
 
 	int index = datamgr_get_index_of_sensor_id(data->id);
 
-        //printf("Temp: %f -- \n", data->value);
-
-        //printf("Time: %lld\n", (long long)(data->ts) );
-
-	if(index==-1){	//Invalid index -> id not found
+	if(index==-1){				//Invalid index -> id not found
 	    fprintf(stderr, "Tried to add data of non existing sensor id\n");
 	}
 	else{
@@ -250,77 +233,6 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, sbuffer_t **buffer){
             }
 	}
     }while(res != SBUFFER_FAILURE);
+
     free(data);
-
-
-/**    printf("Element id at index 0: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 0)) )->id );
-    printf("Element id at index 1: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 1)) )->id );
-    printf("Element id at index 2: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 2)) )->id );
-    printf("Element id at index 3: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 3)) )->id );
-    printf("Element id at index 4: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 4)) )->id );
-    printf("Element id at index 5: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 5)) )->id );
-    printf("Element id at index 6: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 6)) )->id );
-    printf("Element id at index 7: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 7)) )->id );
-
-
-    printf("Element value1 at index 1: %f\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 1)) )->values[0] );
-    printf("Element value2 at index 1: %f\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 1)) )->values[1] );
-    printf("Element value3 at index 1: %f\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 1)) )->values[2] );
-    printf("Element value4 at index 1: %f\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 1)) )->values[3] );
-    printf("Element value5 at index 1: %f\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 1)) )->values[4] );
-    printf("Element value6 at index 1: %f\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 1)) )->values[5] );
-    printf("Element value7 at index 1: %f\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 1)) )->values[6] );
-    printf("Element value at index 7: %f\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 7)) )->values[1] );
-
-    printf("Run avg of index 0: %f\n", datamgr_get_avg((  (sensor_data_t *)(dpl_get_element_at_index(list, 0)) )->id));
-    printf("Run avg of index 1: %f\n", datamgr_get_avg((  (sensor_data_t *)(dpl_get_element_at_index(list, 1)) )->id));
-
-    printf("Element amount at index 0: %d\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 0)) )->amount );
-    printf("Element amount at index 1: %d\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 1)) )->amount );
-    printf("Element amount at index 2: %d\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 2)) )->amount );
-    printf("Element amount at index 3: %d\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 3)) )->amount );
-    printf("Element amount at index 4: %d\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 4)) )->amount );
-    printf("Element amount at index 5: %d\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 5)) )->amount );
-    printf("Element amount at index 6: %d\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 6)) )->amount );
-    printf("Element amount at index 7: %d\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 7)) )->amount );
-
-	printf("Size of list: %d\n", datamgr_get_total_sensors());
-	printf("RUN_AVG_LENGTH: %d\n", RUN_AVG_LENGTH);
-	printf("SET_MIN_TEMP: %f\n", SET_MIN_TEMP);
-	printf("SET_MAX_TEMP: %f\n", SET_MAX_TEMP);*/
 }
-
-void datamgr_print(int i){
-    printf("Element value1 at index %d: %f\n", i,( (sensor_data_t *)(dpl_get_element_at_index(list, i)) )->values[0] );
-    printf("Element value2 at index %d: %f\n", i,( (sensor_data_t *)(dpl_get_element_at_index(list, i)) )->values[1] );
-    printf("Element value3 at index %d: %f\n", i,( (sensor_data_t *)(dpl_get_element_at_index(list, i)) )->values[2] );
-    printf("Element value4 at index %d: %f\n", i,( (sensor_data_t *)(dpl_get_element_at_index(list, i)) )->values[3] );
-    printf("Element value5 at index %d: %f\n", i,( (sensor_data_t *)(dpl_get_element_at_index(list, i)) )->values[4] );
-    printf("Element amount at index 1: %d\n\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 1)) )->amount );
-}
-/*int main(){
-
-    FILE *fp_map = fopen("./room_sensor.map", "r");
-    FILE *fp_data = fopen("./sensor_data", "rb");
-
-    if (fp_map == NULL) {
-        perror("Map failed: ");
-        return -1;
-    }
-    if (fp_data == NULL) {
-        perror("Data failed: ");
-        return -1;
-    }
-
-    datamgr_parse_sensor_files( fp_map, fp_data);
-
-    printf("Element id at index 0: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 0)) )->id );
-    printf("Element id at index 1: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 1)) )->id );
-    printf("Element id at index 2: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 2)) )->id );
-    printf("Element id at index 3: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 3)) )->id );
-    printf("Element id at index 4: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 4)) )->id );
-    printf("Element id at index 5: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 5)) )->id );
-    printf("Element id at index 6: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 6)) )->id );
-    printf("Element id at index 7: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 7)) )->id );
-
-}*/

@@ -26,8 +26,6 @@
 int port;
 sbuffer_t *buffer;
 
-//TODO: check with Valgrind, cppcheck...
-
 /*** all parent functions ***/
 void *datamgr(){
     FILE *fp_map = fopen("./room_sensor.map", "r");
@@ -51,18 +49,16 @@ void *sensordb(){
     do{
 	conn = init_connection(1);
 	attempts++;
-//	sleep(5);
-    }while(attempts<3 && conn==NULL);
+	sleep(WAIT_TIME);
+    }while(attempts<CONN_TRIES && conn==NULL);
     if(conn==NULL){
 	write_fifo("Cannot make a connection to the SQL database\n");
 	return NULL;	// Finish thread, others will finish once server reaches timeout
     }
 
-//    printf("Connected to db!\n");
 
     while(sbuffer_alive(buffer)){
     	int res = insert_sensor_from_sbuffer(conn,&buffer);
-	//printf("Main sensor res = %d\n",res);
     	if(res != 0) printf("Error while inserting sensor into sqlite db\n");
     }
     disconnect(conn);
@@ -82,7 +78,6 @@ void *connmgr(){
 void shut_down(){
     pid_t log_pid;
     int exit_status;
-    //printf("Ending parent process\n");
 
     write_fifo("Log process has ended\n");
 
@@ -121,7 +116,6 @@ void parent(){
     if(pthread_join(thread1, NULL) !=0) printf("can't join datamgr thread\n\n");
     if(pthread_join(thread2, NULL) !=0) printf("can't join sensordb thread\n\n");
 
-    printf("Freeing...\n");
     sbuffer_free(&buffer);
     free(buffer);
     free(msg);
@@ -145,7 +139,7 @@ void read_fifo(){
         perror("Opening fifo failed: ");
     }
 
-    log_file = fopen("sensor_gateway.log", "a");	// "a" -> Write to end of log file
+    log_file = fopen(LOG_NAME, "a");	// "a" -> Write to end of log file
     if (log_file == NULL) {
         perror("Opening log_file failed: ");
     }
@@ -189,8 +183,6 @@ void write_fifo(char *msg){
 
 void child(){
     read_fifo();
-
-    //printf("Exiting child process\n");
 
     exit(EXIT_SUCCESS);
 }

@@ -6,8 +6,22 @@
 #define _CONFIG_H_
 
 #ifndef RUN_AVG_LENGTH
- #define RUN_AVG_LENGTH 5
+ #define RUN_AVG_LENGTH 5		// The length of the running average of the datamgr
 #endif
+
+#ifndef DB_NAME
+#define DB_NAME Sensor.db		// The name of the database of the sensor_db
+#endif
+
+#ifndef TABLE_NAME
+#define TABLE_NAME SensorData		// The name of the table of the sensor_db
+#endif
+
+#define DBCONN sqlite3			// For the type of the db connection in sensor_db
+#define WAIT_TIME 5			// The amount of time in seconds the program will wait between connection attempts
+#define CONN_TRIES 3			// The amount of times the program will try to connect to the database
+#define FIFO_NAME "the_FIFO"		// The name of the FIFO
+#define LOG_NAME "sensor_gateway.log"	// The name of the log file
 
 #include <stdint.h>
 #include <time.h>
