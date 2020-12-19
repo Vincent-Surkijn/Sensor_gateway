@@ -41,10 +41,13 @@ DBCONN *init_connection(char clear_up_flag){
 
     if (rc != SQLITE_OK) {
         fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
+	write_fifo("Connection to the SQL database failed\n");
         sqlite3_close(db);
 
         return NULL;
     }
+
+    write_fifo("Connected to the SQL database\n");
 
     char q[250] = "";
     char *sql = q;
@@ -66,7 +69,7 @@ DBCONN *init_connection(char clear_up_flag){
           //      "CREATE TABLE @table_name(Id INTEGER PRIMARY KEY, sensor_id INTEGER,"
 	  //	"sensor_value DECIMAL(4,2), timestamp TIMESTAMP);";
 
-	write_fifo("New SQL table created");
+	write_fifo("New SQL table created\n");
     }
     else{
 	//printf("flag != 1\n");
@@ -154,7 +157,7 @@ int insert_sensor_from_sbuffer(DBCONN *conn, sbuffer_t **buffer){
         res = sbuffer_read(*buffer,data,SBUFFER_SENSORDB);
         if(res == SBUFFER_NO_DATA || res == SBUFFER_FINISHED){
             if(sbuffer_alive(*buffer)){ // If buffer is still being updated, wait for new value
-                usleep(1);
+                usleep(1);	//TODO: not most efficient way, condition variable is better
                 continue;
             }
             else break;

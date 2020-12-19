@@ -46,16 +46,18 @@ void *datamgr(){
 void *sensordb(){
     int attempts = 0;
     DBCONN *conn;
-    while(attempts<3){	// TODO: what if connection can't be made? + log msg if connection can't be made
+    do{
 	conn = init_connection(1);
-        if(conn==NULL){
-            attempts++;
-            continue;
-        }
-	else break;
+	attempts++;
+	sleep(5);
+    }while(attempts<3 && conn==NULL);
+    if(conn==NULL){
+	write_fifo("Cannot make a connection to the SQL database\n");
+	shut_down();	//TODO: not a completely clean way to shut down(join threads, close files...)
     }
-    write_fifo("Connected to the SQL database\n");
+
     printf("Connected to db!\n");
+
     while(sbuffer_alive(buffer)){
     	int res = insert_sensor_from_sbuffer(conn,&buffer);
 	//printf("Main sensor res = %d\n",res);
@@ -80,11 +82,9 @@ void shut_down(){
     int exit_status;
     printf("Ending parent process\n");
 
-/*    char *msg;
-    asprintf(&msg,"Log process has ended\n");
-    write_fifo(msg);
-printf("Sent end msg to child: %s",msg);
-*/
+    write_fifo("Log process has ended\n");
+printf("Sent end msg to child\n");
+
     log_pid = wait(&exit_status);
     if(log_pid == -1)    perror("Error executing wait for child process");
     if (WIFEXITED(exit_status)){
@@ -96,6 +96,7 @@ printf("Sent end msg to child: %s",msg);
 
     pthread_exit(NULL);
 }
+
 
 void parent(){
     pthread_t thread1, thread2, thread3;
@@ -117,10 +118,6 @@ void parent(){
     if(pthread_join(thread3, NULL) !=0) printf("can't join connmgr thread\n\n");
     if(pthread_join(thread1, NULL) !=0) printf("can't join datamgr thread\n\n");
     if(pthread_join(thread2, NULL) !=0) printf("can't join sensordb thread\n\n");
-
-    asprintf(&msg,"Log process has ended\n");
-    write_fifo(msg);
-printf("Sent end msg to child: %s",msg);
 
     printf("Freeing...\n");
     sbuffer_free(&buffer);
@@ -157,7 +154,7 @@ void read_fifo(){
 	str_result = fgets(msg, 200, fifo);
 	if ( str_result != NULL ){
 	    printf("Message received: %s", msg);
-	    //TODO: write msg to log_file(maybe with fprintf?)
+	    //TODO: write msg to log_file(maybe with fprintf?), also timestamp and sequence number needed
 	}
     }while(strcmp(msg, "Log process has ended\n")!=0);
 
@@ -170,7 +167,8 @@ void read_fifo(){
     return;
 }
 
-void write_fifo(char *msg){	// TODO: add timestamp and sequence number & messages after first one don't always get read?
+
+void write_fifo(char *msg){	// TODO: messages after first one don't always get read?
     FILE *fifo;
     int res;
 
@@ -182,12 +180,13 @@ void write_fifo(char *msg){	// TODO: add timestamp and sequence number & message
     res = fputs(msg,fifo);
     if(res == EOF)	perror("Failed to write to fifo");
 
-printf("Result of wirte to fifo: %d\n",res);
+printf("Result of write to fifo: %d\n",res);
 
     fflush(fifo);
 
     fclose(fifo);
 }
+
 
 void child(){
     read_fifo();
