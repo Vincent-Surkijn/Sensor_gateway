@@ -1,0 +1,26 @@
+0: (@1608381516) Starting new log process
+1: (@1608381516) Connected to the SQL database
+2: (@1608381516) New SQL table created
+3: (@1608381521) Server timeout reached
+4: (@1608381522) Log process has ended
+0: (@1608381613) Starting new log process
+1: (@1608381613) Connected to the SQL database
+2: (@1608381613) New SQL table created
+3: (@1608381614) New sensor node connected with sensor id 15
+4: (@1608381619) Sensor 15 in room 1 was too hot at 1608381618
+5: (@1608381620) Sensor 15 in room 1 was too hot at 1608381619
+6: (@1608381621) Sensor 15 in room 1 was too hot at 1608381620
+7: (@1608381622) Sensor 15 in room 1 was too hot at 1608381621
+8: (@1608381623) Sensor 15 in room 1 was too hot at 1608381622
+9: (@1608381624) Sensor 15 in room 1 was too hot at 1608381623
+10: (@1608381625) Sensor 15 in room 1 was too hot at 1608381624
+11: (@1608381626) Sensor 15 in room 1 was too hot at 1608381625
+12: (@1608381627) Sensor 15 in room 1 was too hot at 1608381626
+13: (@1608381628) Sensor 15 in room 1 was too hot at 1608381627
+14: (@1608381629) Sensor 15 in room 1 was too hot at 1608381628
+15: (@1608381629) Sensor node with id 15 closed connection
+16: (@1608381629) New sensor node connected with sensor id 21
+17: (@1608381629) Sensor node with id 21 closed connection
+18: (@1608381630) Sensor 21 in room 2 was too hot at 1608381626
+19: (@1608381634) Server timeout reached
+20: (@1608381635) Log process has ended

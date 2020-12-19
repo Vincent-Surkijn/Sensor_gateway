@@ -137,14 +137,14 @@ void read_fifo(){
     int res;
     char msg[200];	// Make sure it is big enough for all the messages
     int seq_nr = 0;
-    char *log_buff;
+//    char *log_buff;
 
-    fifo = fopen(FIFO_NAME, "r+");
+    fifo = fopen(FIFO_NAME, "r+");	// "r+"-> read+write because otherwise FIFO is closed when main process isn't writing
     if (fifo == NULL) {
         perror("Opening fifo failed: ");
     }
 
-    log_file = fopen("sensor_gateway.log", "a");	// Write to end of log file
+    log_file = fopen("sensor_gateway.log", "a");	// "a" -> Write to end of log file
     if (log_file == NULL) {
         perror("Opening log_file failed: ");
     }
@@ -153,9 +153,7 @@ void read_fifo(){
     do{
 	str_result = fgets(msg, 200, fifo);
 	if ( str_result != NULL ){
-	    printf("Message received\n");
-	    asprintf(&log_buff,"%d: (@%ld) %s",seq_nr,time(NULL),msg);						    //TODO: write msg to log_file(maybe with fprintf?), also timestamp and sequence number needed
-	    printf("Log msg: %s",log_buff);
+	    fprintf(log_file,"%d: (@%ld) %s",seq_nr,time(NULL),msg);
 	    seq_nr++;
 	}
     }while(strcmp(msg, "Log process has ended\n")!=0);
