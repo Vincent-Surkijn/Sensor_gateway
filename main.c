@@ -51,11 +51,11 @@ void *sensordb(){
     do{
 	conn = init_connection(1);
 	attempts++;
-	sleep(5);
+//	sleep(5);
     }while(attempts<3 && conn==NULL);
     if(conn==NULL){
 	write_fifo("Cannot make a connection to the SQL database\n");
-	shut_down();					//TODO: not a completely clean way to shut down(join threads, close files...)
+	return NULL;	// Finish thread, others will finish once server reaches timeout
     }
 
 //    printf("Connected to db!\n");
@@ -95,6 +95,7 @@ void shut_down(){
 	fprintf(stderr,"Child exited abnormally\n");
     }
 
+    remove(FIFO_NAME);
     pthread_exit(NULL);
 }
 
@@ -213,7 +214,7 @@ int main(int argc, char **argv){
     pid_t gw_pid, log_pid;	// Init pid for gateway and log processes
 
     gw_pid = getpid();
-    printf("Parent process (pid = %d) is started ...\n", gw_pid);
+    printf("Sensor_gateway process (pid = %d) has started\n", gw_pid);
 
     log_pid = fork();
     if(log_pid == -1)	perror("Error executing fork");
@@ -222,7 +223,7 @@ int main(int argc, char **argv){
 	child();
     }
     else{
-	printf("Parent process (pid = %d) has created child process (pid = %d)\n", gw_pid, log_pid);
+	printf("Sensor_gateway process (pid = %d) has created log process (pid = %d)\n", gw_pid, log_pid);
 	parent();
     }
 

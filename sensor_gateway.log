@@ -24,3 +24,28 @@
 18: (@1608381630) Sensor 21 in room 2 was too hot at 1608381626
 19: (@1608381634) Server timeout reached
 20: (@1608381635) Log process has ended
+0: (@1608382039) Starting new log process
+1: (@1608382039) Connected to the SQL database
+2: (@1608382039) New SQL table created
+3: (@1608382044) Server timeout reached
+4: (@1608382045) Log process has ended
+0: (@1608382221) Starting new log process
+1: (@1608382221) Connected to the SQL database
+2: (@1608382221) New SQL table created
+3: (@1608382226) Cannot make a connection to the SQL database
+4: (@1608382226) Log process has ended
+0: (@1608382246) Starting new log process
+1: (@1608382246) Connected to the SQL database
+2: (@1608382246) New SQL table created
+3: (@1608382246) Cannot make a connection to the SQL database
+4: (@1608382246) Log process has ended
+0: (@1608382538) Starting new log process
+1: (@1608382538) Connected to the SQL database
+2: (@1608382538) New SQL table created
+3: (@1608382538) Cannot make a connection to the SQL database
+4: (@1608382538) Log process has ended
+0: (@1608382614) Starting new log process
+1: (@1608382614) Connected to the SQL database
+2: (@1608382614) New SQL table created
+3: (@1608382614) Cannot make a connection to the SQL database
+4: (@1608382614) Log process has ended

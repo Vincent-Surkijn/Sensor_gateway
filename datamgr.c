@@ -224,7 +224,7 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, sbuffer_t **buffer){
 
 	if(res == SBUFFER_NO_DATA || res == SBUFFER_FINISHED){
             if(sbuffer_alive(*buffer)){       // If buffer is still being updated, wait for new value
-                sleep(1);	//TODO: not most efficient way, condition variable is better
+                usleep(1);					//TODO: not most efficient way, condition variable is better
                 continue;
             }
             else break;
