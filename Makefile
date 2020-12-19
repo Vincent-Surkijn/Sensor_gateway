@@ -82,5 +82,10 @@ sqlite:
 
 sensors:
 	./sensor_node 15 1 127.0.0.1 5678 &
-	./sensor_node 21 2 127.0.0.1 5678 &
-	./sensor_node 142 3 127.0.0.1 5678 &
+	./sensor_node 21 1 127.0.0.1 5678 &
+	./sensor_node 37 1 127.0.0.1 5678 &
+	./sensor_node 49 1 127.0.0.1 5678 &
+	./sensor_node 142 1 127.0.0.1 5678 &
+
+sensorWithLoop:
+	gcc sensor_node.c -ltcpsock -o sensor_node -Wall -L./lib -Wl,-rpath=./lib -DLOOPS=5
