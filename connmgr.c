@@ -137,7 +137,7 @@ void connmgr_listen(int port_number, sbuffer_t **buffer){
                 	}
             	    }while(result == TCP_NO_ERROR && (((dummy->ts) - now) < TIMEOUT));
             	    if (result == TCP_CONNECTION_CLOSED){
-                	printf("Peer has closed connection\n");
+//                	printf("Peer has closed connection\n");
 			dummy = dpl_get_element_at_index(conn_list, i);
 			char *msg;
 			asprintf(&msg,"Sensor node with id %d closed connection\n",dummy->id);
@@ -148,10 +148,13 @@ void connmgr_listen(int port_number, sbuffer_t **buffer){
 //			printf("Time: %ld\n", time(NULL));
                     }
 		    else if(( (dummy->ts) - now) >= TIMEOUT){
-			printf("Timeout reached for sensor %d\n", i+1);
+                        char *msg;
+                        asprintf(&msg,"Sensor node with id %d has reached timeout\n",dummy->id);
+			write_fifo(msg);
+//			printf("Timeout reached for sensor %d\n", i+1);
 		    }
             	    else{
-                	printf("Error occured on connection to peer\n");
+                	fprintf(stderr,"Error occured on connection to peer\n");
             	    }
             	    tcp_close(&client);
 		}

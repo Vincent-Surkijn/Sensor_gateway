@@ -136,6 +136,8 @@ void read_fifo(){
     FILE *fifo;
     int res;
     char msg[200];	// Make sure it is big enough for all the messages
+    int seq_nr = 0;
+    char *log_buff;
 
     fifo = fopen(FIFO_NAME, "r+");
     if (fifo == NULL) {
@@ -149,13 +151,12 @@ void read_fifo(){
 
     char *str_result;
     do{
-//	printf("Listening to FIFO\n");
-	sleep(1);
-
 	str_result = fgets(msg, 200, fifo);
 	if ( str_result != NULL ){
-	    printf("Message received: %s", msg);
-						    //TODO: write msg to log_file(maybe with fprintf?), also timestamp and sequence number needed
+	    printf("Message received\n");
+	    asprintf(&log_buff,"%d: (@%ld) %s",seq_nr,time(NULL),msg);						    //TODO: write msg to log_file(maybe with fprintf?), also timestamp and sequence number needed
+	    printf("Log msg: %s",log_buff);
+	    seq_nr++;
 	}
     }while(strcmp(msg, "Log process has ended\n")!=0);
 
