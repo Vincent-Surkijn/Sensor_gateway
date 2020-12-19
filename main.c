@@ -26,6 +26,8 @@
 int port;
 sbuffer_t *buffer;
 
+//TODO: check with Valgrind, cppcheck...
+
 /*** all parent functions ***/
 void *datamgr(){
     FILE *fp_map = fopen("./room_sensor.map", "r");
@@ -53,10 +55,10 @@ void *sensordb(){
     }while(attempts<3 && conn==NULL);
     if(conn==NULL){
 	write_fifo("Cannot make a connection to the SQL database\n");
-	shut_down();	//TODO: not a completely clean way to shut down(join threads, close files...)
+	shut_down();					//TODO: not a completely clean way to shut down(join threads, close files...)
     }
 
-    printf("Connected to db!\n");
+//    printf("Connected to db!\n");
 
     while(sbuffer_alive(buffer)){
     	int res = insert_sensor_from_sbuffer(conn,&buffer);
@@ -80,10 +82,9 @@ void *connmgr(){
 void shut_down(){
     pid_t log_pid;
     int exit_status;
-    printf("Ending parent process\n");
+    //printf("Ending parent process\n");
 
     write_fifo("Log process has ended\n");
-printf("Sent end msg to child\n");
 
     log_pid = wait(&exit_status);
     if(log_pid == -1)    perror("Error executing wait for child process");
@@ -148,13 +149,13 @@ void read_fifo(){
 
     char *str_result;
     do{
-	printf("Listening to FIFO\n");
+//	printf("Listening to FIFO\n");
 	sleep(1);
 
 	str_result = fgets(msg, 200, fifo);
 	if ( str_result != NULL ){
 	    printf("Message received: %s", msg);
-	    //TODO: write msg to log_file(maybe with fprintf?), also timestamp and sequence number needed
+						    //TODO: write msg to log_file(maybe with fprintf?), also timestamp and sequence number needed
 	}
     }while(strcmp(msg, "Log process has ended\n")!=0);
 
@@ -168,7 +169,7 @@ void read_fifo(){
 }
 
 
-void write_fifo(char *msg){	// TODO: messages after first one don't always get read?
+void write_fifo(char *msg){
     FILE *fifo;
     int res;
 
@@ -180,8 +181,6 @@ void write_fifo(char *msg){	// TODO: messages after first one don't always get r
     res = fputs(msg,fifo);
     if(res == EOF)	perror("Failed to write to fifo");
 
-printf("Result of write to fifo: %d\n",res);
-
     fflush(fifo);
 
     fclose(fifo);
@@ -191,7 +190,7 @@ printf("Result of write to fifo: %d\n",res);
 void child(){
     read_fifo();
 
-    printf("Exiting child process\n");
+    //printf("Exiting child process\n");
 
     exit(EXIT_SUCCESS);
 }
@@ -207,7 +206,8 @@ int main(int argc, char **argv){
         printf("Port number = %d\n", port);
     }
     else{
-        fprintf(stderr, "Failure: wrong amount of arguments passed to connmgr.c\n");
+        fprintf(stderr, "Failure: wrong amount of arguments passed in command:\n");
+	fprintf(stderr, "1 command line option needed: a port number for the TCP connection\n");
         return -1;
     }
 

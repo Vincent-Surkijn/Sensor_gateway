@@ -127,7 +127,6 @@ int datamgr_check_avg_at_index(int index){
         ERROR_HANDLER(true, DATAMGR_OUTOFRANGE_ERROR);
 	char *msg;
 	asprintf(&msg,"Sensor %d in room %d was too hot at %lld\n", sensor->id, sensor->room_id, (long long)(sensor->ts));
-	printf("Datamgr: tx_msg = %s\n", msg);
 	write_fifo(msg);
 	return 1;
     }
@@ -135,7 +134,6 @@ int datamgr_check_avg_at_index(int index){
         ERROR_HANDLER(true, DATAMGR_OUTOFRANGE_ERROR);
         char *msg;
         asprintf(&msg,"Sensor %d in room %d was too hot at %lld\n", sensor->id, sensor->room_id, (long long)(sensor->ts));
-        printf("Datamgr: tx_msg = %s\n", msg);
 	write_fifo(msg);
 	return -1;
     }

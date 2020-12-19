@@ -68,7 +68,7 @@ void connmgr_add_conn(tcpsock_t *sock, int sd){
 }
 
 void connmgr_listen(int port_number, sbuffer_t **buffer){
-    printf("Timeout = %d\n", TIMEOUT);
+//    printf("Timeout = %d\n", TIMEOUT);
     tcpsock_t *server, *client;
     int serversd, clientsd;
 
@@ -78,7 +78,7 @@ void connmgr_listen(int port_number, sbuffer_t **buffer){
     // Add server port to the polling list
     if(tcp_passive_open(&server,port_number) != TCP_NO_ERROR) exit(EXIT_FAILURE);
     tcp_get_sd(server, &serversd);
-    printf("Server sd = %d\n",serversd);
+//    printf("Server sd = %d\n",serversd);
     poll_fd[0].fd = serversd;
     poll_fd[0].events = POLLIN;
 
@@ -93,14 +93,14 @@ void connmgr_listen(int port_number, sbuffer_t **buffer){
 	    fprintf(stderr, "Failure: an error occurred during polling\n");
     	}
     	else if(result==0){
-            printf("Timeout reached\n");
+	    write_fifo("Server timeout reached\n");
 	    loop = false;
     	}
 	else{
 	    if(poll_fd[0].revents & POLLIN){	// If it's the server then a new sensor will be added to the poll list
 	    	if (tcp_wait_for_connection(server, &client) != TCP_NO_ERROR) exit(EXIT_FAILURE);
 	    	tcp_get_sd(client, &clientsd);
-	    	printf("client sd=%d\n",clientsd);
+//	    	printf("client sd=%d\n",clientsd);
 	    	connmgr_add_conn(client,clientsd);      // Add new connection to the poll list
 	    }
 	    int i;
@@ -144,8 +144,8 @@ void connmgr_listen(int port_number, sbuffer_t **buffer){
                         write_fifo(msg);
 			poll_fd[i+1].fd = -1;	// stop listening to this one
 			conn_list = dpl_remove_at_index(conn_list, i, true);	// can be removed from list as well
-			printf("Size of list now: %d\n", dpl_size(conn_list));
-			printf("Time: %ld\n", time(NULL));
+//			printf("Size of list now: %d\n", dpl_size(conn_list));
+//			printf("Time: %ld\n", time(NULL));
                     }
 		    else if(( (dummy->ts) - now) >= TIMEOUT){
 			printf("Timeout reached for sensor %d\n", i+1);
@@ -158,12 +158,12 @@ void connmgr_listen(int port_number, sbuffer_t **buffer){
 	    }
 	}
     }
-    printf("Closed server at %ld\n", time(NULL));
+//    printf("Closed server at %ld\n", time(NULL));
     tcp_close(&server);
 }
 
 void connmgr_free(){
-    printf("Freeing..\n");
+//    printf("Freeing..\n");
 //printf("Size of list: %d\n", dpl_size(conn_list));
     int size = dpl_size(conn_list);
     if(size > 0){	// check if list is empty
