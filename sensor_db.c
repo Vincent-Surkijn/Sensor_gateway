@@ -102,10 +102,9 @@ DBCONN *init_connection(char clear_up_flag){
 
 
 void disconnect(DBCONN *conn){
-    sqlite3_close(conn);
-    /*if(sqlite3_close(conn) != 0){
-	fprintf(stderr, "Failed to close database: %s\n", sqlite3_errmsg(sqlite3_close(conn)));
-    }*/
+    if(sqlite3_close(conn) != 0){
+	fprintf(stderr, "Failed to close database: %s\n", sqlite3_errmsg(conn));
+    }
 }
 
 
@@ -151,9 +150,8 @@ int sensor_findBinFileSize(FILE *file){
 
 int insert_sensor_from_sbuffer(DBCONN *conn, sbuffer_t **buffer){
     int res;
+    sensor_data_t *data = malloc(sizeof(sensor_data_t));
     do{ // Read data values --> sbuffer
-        sensor_data_t *data = malloc(sizeof(sensor_data_t));
-
         res = sbuffer_read(*buffer,data,SBUFFER_SENSORDB);
         if(res == SBUFFER_NO_DATA || res == SBUFFER_FINISHED){
             if(sbuffer_alive(*buffer)){ // If buffer is still being updated, wait for new value
@@ -170,7 +168,7 @@ int insert_sensor_from_sbuffer(DBCONN *conn, sbuffer_t **buffer){
         //printf("Time: %lld\n", (long long)(data->ts) );
 
     }while(res != SBUFFER_FAILURE);
-
+    free(data);
     return 0;
 }
 

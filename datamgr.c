@@ -128,6 +128,7 @@ int datamgr_check_avg_at_index(int index){
 	char *msg;
 	asprintf(&msg,"Sensor %d in room %d was too hot at %lld\n", sensor->id, sensor->room_id, (long long)(sensor->ts));
 	write_fifo(msg);
+	free(msg);
 	return 1;
     }
     else if(avg < SET_MIN_TEMP){
@@ -135,6 +136,7 @@ int datamgr_check_avg_at_index(int index){
         char *msg;
         asprintf(&msg,"Sensor %d in room %d was too hot at %lld\n", sensor->id, sensor->room_id, (long long)(sensor->ts));
 	write_fifo(msg);
+	free(msg);
 	return -1;
     }
     else{
@@ -167,6 +169,7 @@ uint16_t datamgr_get_room_id(sensor_id_t sensor_id){
     char *msg;
     asprintf(&msg,"Sensor id not found in list\n");
     write_fifo(msg);
+    free(msg);
     ERROR_HANDLER(true, DATAMGR_INVALID_ERROR);
     return -1;
 }
@@ -197,7 +200,7 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, sbuffer_t **buffer){
     list = dpl_create(datamgr_element_copy, datamgr_element_free, datamgr_element_compare);
 
 // Read map data
-    //printf("Sensor_map: \n");
+    printf("Sensor_map: \n");
     int i;
     for(i=0; i<size1; i++){	// Read map values
 	room_id_t room_id;
@@ -214,11 +217,9 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, sbuffer_t **buffer){
     //printf("List size after inserts: %d\n", dpl_size(list));
 
 // Read sensor data
-    //printf("Sensor Data: \n");
     int res;
+    sensor_data_t *data = malloc(sizeof(sensor_data_t));
     do{	// Read data values --> sbuffer
-	sensor_data_t *data = malloc(sizeof(sensor_data_t));
-
 	res = sbuffer_read(*buffer,data,SBUFFER_DATAMGR);
 	//printf("Id: %hd -- ", data->id);
 
@@ -249,7 +250,7 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, sbuffer_t **buffer){
             }
 	}
     }while(res != SBUFFER_FAILURE);
-
+    free(data);
 
 
 /**    printf("Element id at index 0: %hd\n", ( (sensor_data_t *)(dpl_get_element_at_index(list, 0)) )->id );

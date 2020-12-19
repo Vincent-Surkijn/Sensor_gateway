@@ -98,14 +98,16 @@ void connmgr_listen(int port_number, sbuffer_t **buffer){
     	}
 	else{
 	    if(poll_fd[0].revents & POLLIN){	// If it's the server then a new sensor will be added to the poll list
-	    	if (tcp_wait_for_connection(server, &client) != TCP_NO_ERROR) exit(EXIT_FAILURE);
+	    	if (tcp_wait_for_connection(server, &client) != TCP_NO_ERROR){
+		    free(data);
+		    exit(EXIT_FAILURE);
+		}
 	    	tcp_get_sd(client, &clientsd);
 //	    	printf("client sd=%d\n",clientsd);
 	    	connmgr_add_conn(client,clientsd);      // Add new connection to the poll list
 	    }
 	    int i;
 	    for(i=0;i<dpl_size(conn_list);i++){
-		//printf("For loop\n");
 		if(poll_fd[i+1].revents & POLLIN){
 		    connection_t *dummy;
 		    time_t now;
@@ -122,6 +124,7 @@ void connmgr_listen(int port_number, sbuffer_t **buffer){
                             char *msg;
                             asprintf(&msg,"New sensor node connected with sensor id %d\n",data->id);
                             write_fifo(msg);
+			    free(msg);
                         }
 
                 	// read temperature
@@ -142,6 +145,7 @@ void connmgr_listen(int port_number, sbuffer_t **buffer){
 			char *msg;
 			asprintf(&msg,"Sensor node with id %d closed connection\n",dummy->id);
                         write_fifo(msg);
+			free(msg);
 			poll_fd[i+1].fd = -1;	// stop listening to this one
 			conn_list = dpl_remove_at_index(conn_list, i, true);	// can be removed from list as well
 //			printf("Size of list now: %d\n", dpl_size(conn_list));
@@ -151,6 +155,7 @@ void connmgr_listen(int port_number, sbuffer_t **buffer){
                         char *msg;
                         asprintf(&msg,"Sensor node with id %d has reached timeout\n",dummy->id);
 			write_fifo(msg);
+			free(msg);
 //			printf("Timeout reached for sensor %d\n", i+1);
 		    }
             	    else{
@@ -160,6 +165,7 @@ void connmgr_listen(int port_number, sbuffer_t **buffer){
 		}
 	    }
 	}
+	free(data);
     }
 //    printf("Closed server at %ld\n", time(NULL));
     tcp_close(&server);

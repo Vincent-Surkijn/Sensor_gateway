@@ -10,7 +10,6 @@
 #include <pthread.h>
 #include "sbuffer.h"
 
-pthread_mutex_t list_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_rwlock_t lock = PTHREAD_RWLOCK_INITIALIZER;
 //pthread_cond_t cond1 = PTHREAD_COND_INITIALIZER;
 
@@ -55,6 +54,7 @@ int sbuffer_free(sbuffer_t **buffer) {		// Thread safe
         (*buffer)->head = (*buffer)->head->next;
         free(dummy);
     }
+    pthread_rwlock_destroy(&((*buffer)->rw_lock));
     free(*buffer);
     *buffer = NULL;
     return SBUFFER_SUCCESS;
@@ -111,28 +111,27 @@ int sbuffer_read(sbuffer_t *buffer, sensor_data_t *data, int reader){		// Thread
         pthread_rwlock_unlock(&buffer->rw_lock);
         return SBUFFER_FAILURE;
     }
-    dummy = malloc(sizeof(sbuffer_node_t));
     if (buffer->head == NULL){
         pthread_rwlock_unlock(&buffer->rw_lock);
         return SBUFFER_NO_DATA;
     }
 
     dummy = buffer->head;
-    if(reader == 1){
+    if(reader == SBUFFER_DATAMGR){
 	if( (buffer->head->readby1) == true){
 	    while( dummy->readby1 == true && dummy->next != NULL)	dummy = dummy->next;
 	}
-        if(dummy->readby1 == true && dummy->next == NULL){      // This means that reader 1 has read all values already
+        if(dummy->readby1 == true && dummy->next == NULL){      // This means that reader 1(datamgr) has read all values already
             data = NULL;
 	    pthread_rwlock_unlock(&buffer->rw_lock);
             return SBUFFER_FINISHED;
         }
     }
-    else if(reader == 2){
+    else if(reader == SBUFFER_SENSORDB){
         if( (buffer->head->readby2) == true){
             while( dummy->readby2 == true && dummy->next != NULL)       dummy = dummy->next;
         }
-	if(dummy->readby2 == true && dummy->next == NULL){	// This means that reader 2 has read all values already
+	if(dummy->readby2 == true && dummy->next == NULL){	// This means that reader 2(sensor_db) has read all values already
 	    data = NULL;
 	    pthread_rwlock_unlock(&buffer->rw_lock);
 	    return SBUFFER_FINISHED;

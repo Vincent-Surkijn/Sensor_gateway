@@ -1,51 +1,116 @@
-0: (@1608381516) Starting new log process
-1: (@1608381516) Connected to the SQL database
-2: (@1608381516) New SQL table created
-3: (@1608381521) Server timeout reached
-4: (@1608381522) Log process has ended
-0: (@1608381613) Starting new log process
-1: (@1608381613) Connected to the SQL database
-2: (@1608381613) New SQL table created
-3: (@1608381614) New sensor node connected with sensor id 15
-4: (@1608381619) Sensor 15 in room 1 was too hot at 1608381618
-5: (@1608381620) Sensor 15 in room 1 was too hot at 1608381619
-6: (@1608381621) Sensor 15 in room 1 was too hot at 1608381620
-7: (@1608381622) Sensor 15 in room 1 was too hot at 1608381621
-8: (@1608381623) Sensor 15 in room 1 was too hot at 1608381622
-9: (@1608381624) Sensor 15 in room 1 was too hot at 1608381623
-10: (@1608381625) Sensor 15 in room 1 was too hot at 1608381624
-11: (@1608381626) Sensor 15 in room 1 was too hot at 1608381625
-12: (@1608381627) Sensor 15 in room 1 was too hot at 1608381626
-13: (@1608381628) Sensor 15 in room 1 was too hot at 1608381627
-14: (@1608381629) Sensor 15 in room 1 was too hot at 1608381628
-15: (@1608381629) Sensor node with id 15 closed connection
-16: (@1608381629) New sensor node connected with sensor id 21
-17: (@1608381629) Sensor node with id 21 closed connection
-18: (@1608381630) Sensor 21 in room 2 was too hot at 1608381626
-19: (@1608381634) Server timeout reached
-20: (@1608381635) Log process has ended
-0: (@1608382039) Starting new log process
-1: (@1608382039) Connected to the SQL database
-2: (@1608382039) New SQL table created
-3: (@1608382044) Server timeout reached
-4: (@1608382045) Log process has ended
-0: (@1608382221) Starting new log process
-1: (@1608382221) Connected to the SQL database
-2: (@1608382221) New SQL table created
-3: (@1608382226) Cannot make a connection to the SQL database
-4: (@1608382226) Log process has ended
-0: (@1608382246) Starting new log process
-1: (@1608382246) Connected to the SQL database
-2: (@1608382246) New SQL table created
-3: (@1608382246) Cannot make a connection to the SQL database
-4: (@1608382246) Log process has ended
-0: (@1608382538) Starting new log process
-1: (@1608382538) Connected to the SQL database
-2: (@1608382538) New SQL table created
-3: (@1608382538) Cannot make a connection to the SQL database
-4: (@1608382538) Log process has ended
-0: (@1608382614) Starting new log process
-1: (@1608382614) Connected to the SQL database
-2: (@1608382614) New SQL table created
-3: (@1608382614) Cannot make a connection to the SQL database
-4: (@1608382614) Log process has ended
+0: (@1608384830) Starting new log process
+1: (@1608384830) Connected to the SQL database
+2: (@1608384830) New SQL table created
+3: (@1608384832) New sensor node connected with sensor id 21
+4: (@1608384837) Sensor node with id 21 closed connection
+5: (@1608384842) Server timeout reached
+6: (@1608384842) Log process has ended
+0: (@1608384925) Starting new log process
+1: (@1608384925) Connected to the SQL database
+2: (@1608384925) New SQL table created
+3: (@1608384929) New sensor node connected with sensor id 21
+4: (@1608384935) Sensor node with id 21 closed connection
+5: (@1608384940) Server timeout reached
+6: (@1608384940) Log process has ended
+0: (@1608384969) Starting new log process
+1: (@1608384969) Connected to the SQL database
+2: (@1608384969) New SQL table created
+3: (@1608384973) New sensor node connected with sensor id 21
+4: (@1608384976) Sensor node with id 21 closed connection
+5: (@1608384981) Server timeout reached
+6: (@1608384981) Log process has ended
+0: (@1608384993) Starting new log process
+1: (@1608384993) Connected to the SQL database
+2: (@1608384993) New SQL table created
+3: (@1608384998) Server timeout reached
+4: (@1608384998) Log process has ended
+0: (@1608385015) Starting new log process
+1: (@1608385015) Connected to the SQL database
+2: (@1608385015) New SQL table created
+3: (@1608385020) Server timeout reached
+4: (@1608385020) Log process has ended
+0: (@1608385036) Starting new log process
+1: (@1608385036) Connected to the SQL database
+2: (@1608385036) New SQL table created
+3: (@1608385041) Server timeout reached
+4: (@1608385041) Log process has ended
+0: (@1608385298) Starting new log process
+1: (@1608385298) Connected to the SQL database
+2: (@1608385298) New SQL table created
+3: (@1608385303) Server timeout reached
+4: (@1608385303) Log process has ended
+0: (@1608385325) Starting new log process
+1: (@1608385326) Connected to the SQL database
+2: (@1608385326) New SQL table created
+3: (@1608385331) Server timeout reached
+4: (@1608385331) Log process has ended
+0: (@1608385381) Starting new log process
+1: (@1608385381) Connected to the SQL database
+2: (@1608385381) New SQL table created
+3: (@1608385386) Server timeout reached
+4: (@1608385386) Log process has ended
+0: (@1608385441) Connected to the SQL database
+1: (@1608385443) New sensor node connected with sensor id 21
+2: (@1608385454) Sensor node with id 21 closed connection
+3: (@1608385459) Server timeout reached
+4: (@1608385459) Log process has ended
+0: (@1608385645) Starting new log process
+1: (@1608385645) Connected to the SQL database
+2: (@1608385645) New SQL table created
+3: (@1608385650) Server timeout reached
+4: (@1608385650) Log process has ended
+0: (@1608385686) Starting new log process
+1: (@1608385686) Connected to the SQL database
+2: (@1608385686) New SQL table created
+3: (@1608385689) New sensor node connected with sensor id 21
+4: (@1608385700) Sensor node with id 21 closed connection
+5: (@1608385705) Server timeout reached
+6: (@1608385705) Log process has ended
+0: (@1608385803) Starting new log process
+1: (@1608385803) Connected to the SQL database
+2: (@1608385803) New SQL table created
+3: (@1608385808) Server timeout reached
+4: (@1608385808) Log process has ended
+0: (@1608385812) Starting new log process
+1: (@1608385812) Connected to the SQL database
+2: (@1608385812) New SQL table created
+3: (@1608385814) New sensor node connected with sensor id 21
+4: (@1608385828) Sensor node with id 21 closed connection
+5: (@1608385833) Server timeout reached
+6: (@1608385833) Log process has ended
+0: (@1608385911) Starting new log process
+1: (@1608385911) Connected to the SQL database
+2: (@1608385911) New SQL table created
+3: (@1608385916) Server timeout reached
+4: (@1608385916) Log process has ended
+0: (@1608385920) Starting new log process
+1: (@1608385920) Connected to the SQL database
+2: (@1608385920) New SQL table created
+3: (@1608385922) New sensor node connected with sensor id 21
+4: (@1608385933) Sensor node with id 21 closed connection
+5: (@1608385938) Server timeout reached
+6: (@1608385938) Log process has ended
+0: (@1608385943) Starting new log process
+1: (@1608385943) Connected to the SQL database
+2: (@1608385943) New SQL table created
+3: (@1608385948) Server timeout reached
+4: (@1608385948) Log process has ended
+0: (@1608385956) Starting new log process
+1: (@1608385956) Connected to the SQL database
+2: (@1608385956) New SQL table created
+3: (@1608385958) New sensor node connected with sensor id 21
+4: (@1608385966) Sensor 21 in room 2 was too hot at 1608385966
+5: (@1608385968) Sensor 21 in room 2 was too hot at 1608385968
+6: (@1608385970) Sensor 21 in room 2 was too hot at 1608385970
+7: (@1608385972) Sensor 21 in room 2 was too hot at 1608385972
+8: (@1608385974) Sensor 21 in room 2 was too hot at 1608385974
+9: (@1608385976) Sensor 21 in room 2 was too hot at 1608385976
+10: (@1608385976) Sensor node with id 21 closed connection
+11: (@1608385976) New sensor node connected with sensor id 15
+12: (@1608385976) Sensor 15 in room 1 was too hot at 1608385969
+13: (@1608385976) Sensor 15 in room 1 was too hot at 1608385970
+14: (@1608385976) Sensor 15 in room 1 was too hot at 1608385971
+15: (@1608385976) Sensor 15 in room 1 was too hot at 1608385972
+16: (@1608385976) Sensor node with id 15 closed connection
+17: (@1608385981) Server timeout reached
+18: (@1608385981) Log process has ended
