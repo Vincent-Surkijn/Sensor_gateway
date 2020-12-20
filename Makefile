@@ -88,4 +88,4 @@ sensors:
 	./sensor_node 142 1 127.0.0.1 5678 &
 
 sensorWithLoop:
-	gcc sensor_node.c -ltcpsock -o sensor_node -Wall -L./lib -Wl,-rpath=./lib -DLOOPS=5
+	gcc sensor_node.c -ltcpsock -o sensor_node -Wall -L./lib -Wl,-rpath=./lib -DLOOPS=1000

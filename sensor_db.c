@@ -128,7 +128,6 @@ int insert_sensor_from_sbuffer(DBCONN *conn, sbuffer_t **buffer){
         res = sbuffer_read(*buffer,data,SBUFFER_SENSORDB);
         if(res == SBUFFER_NO_DATA || res == SBUFFER_FINISHED){
             if(sbuffer_alive(*buffer)){ 		// If buffer is still being updated, keep doing loop
-/*TODO*/printf("Sensor_db empty\n");
                 continue;
             }
             else break;
