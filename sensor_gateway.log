@@ -52,3 +52,98 @@
 171608458346Sensor node with id 142 closed connection
 181608458351Server timeout reached
 191608458351Log process has ended
+01608460943Starting new log process
+11608460943Connected to the SQL database
+21608460943New SQL table created
+31608460948Server timeout reached
+41608460948Log process has ended
+01608460954Starting new log process
+11608460954Connected to the SQL database
+21608460954New SQL table created
+31608460956New sensor node connected with sensor id 15
+41608460961Sensor node with id 15 closed connection
+51608460961New sensor node connected with sensor id 21
+61608460961Sensor node with id 21 closed connection
+71608460961New sensor node connected with sensor id 37
+81608460961Sensor node with id 37 closed connection
+91608460961New sensor node connected with sensor id 49
+101608460961Sensor node with id 49 closed connection
+111608460961New sensor node connected with sensor id 142
+121608460961Sensor node with id 142 closed connection
+131608460966Server timeout reached
+141608460966Log process has ended
+01608461067Starting new log process
+11608461067Connected to the SQL database
+21608461067New SQL table created
+31608461072New sensor node connected with sensor id 15
+41608461077Sensor node with id 15 closed connection
+51608461077New sensor node connected with sensor id 21
+61608461077Sensor node with id 21 closed connection
+71608461077New sensor node connected with sensor id 37
+81608461077Sensor node with id 37 closed connection
+91608461077New sensor node connected with sensor id 49
+101608461077Sensor node with id 49 closed connection
+111608461077New sensor node connected with sensor id 142
+121608461077Sensor node with id 142 closed connection
+131608461082Server timeout reached
+141608461082Log process has ended
+01608461489Starting new log process
+11608461489Connected to the SQL database
+21608461489New SQL table created
+31608461494Server timeout reached
+41608461494Log process has ended
+01608461502Starting new log process
+11608461502Connected to the SQL database
+21608461502New SQL table created
+31608461505New sensor node connected with sensor id 15
+41608461510Sensor node with id 15 closed connection
+51608461510New sensor node connected with sensor id 21
+61608461510Sensor node with id 21 closed connection
+71608461510New sensor node connected with sensor id 37
+81608461510Sensor node with id 37 closed connection
+91608461510New sensor node connected with sensor id 49
+101608461510Sensor node with id 49 closed connection
+111608461510New sensor node connected with sensor id 142
+121608461510Sensor node with id 142 closed connection
+131608461515Server timeout reached
+141608461515Log process has ended
+01608461572Starting new log process
+11608461572Connected to the SQL database
+21608461572New SQL table created
+31608461575New sensor node connected with sensor id 15
+41608461580Sensor node with id 15 closed connection
+51608461580New sensor node connected with sensor id 21
+61608461580Sensor node with id 21 closed connection
+71608461580New sensor node connected with sensor id 37
+81608461580Sensor node with id 37 closed connection
+91608461580New sensor node connected with sensor id 49
+101608461580Sensor node with id 49 closed connection
+111608461580New sensor node connected with sensor id 142
+121608461580Sensor node with id 142 closed connection
+131608461585Server timeout reached
+141608461585Log process has ended
+01608461600Starting new log process
+11608461600Connected to the SQL database
+21608461600New SQL table created
+31608461605Server timeout reached
+41608461605Log process has ended
+01608461904Starting new log process
+11608461904Connected to the SQL database
+21608461904New SQL table created
+31608461909Server timeout reached
+41608461909Log process has ended
+01608462190Starting new log process
+11608462190Connected to the SQL database
+21608462190New SQL table created
+31608462195New sensor node connected with sensor id 142
+41608462199Sensor 142 in room 14 was too hot at 1608462199
+51608462199Sensor node with id 142 closed connection
+61608462204New sensor node connected with sensor id 142
+71608462204Sensor 142 in room 14 was too hot at 1608462204
+81608462205Sensor 142 in room 14 was too hot at 1608462205
+91608462206Sensor 142 in room 14 was too hot at 1608462206
+101608462207Sensor 142 in room 14 was too hot at 1608462207
+111608462208Sensor 142 in room 14 was too hot at 1608462208
+121608462209Sensor node with id 142 closed connection
+131608462214Server timeout reached
+141608462214Log process has ended

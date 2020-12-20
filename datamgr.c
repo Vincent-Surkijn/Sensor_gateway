@@ -211,8 +211,8 @@ void datamgr_parse_sensor_files(FILE *fp_sensor_map, sbuffer_t **buffer){
 	res = sbuffer_read(*buffer,data,SBUFFER_DATAMGR);
 
 	if(res == SBUFFER_NO_DATA || res == SBUFFER_FINISHED){
-            if(sbuffer_alive(*buffer)){       // If buffer is still being updated, wait for new value
-                usleep(1);
+            if(sbuffer_alive(*buffer)){       // If buffer is still being updated, keep doing loop
+/*TODO*/printf("Datamgr empty\n");
                 continue;
             }
             else break;

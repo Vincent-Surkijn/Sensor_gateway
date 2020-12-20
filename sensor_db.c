@@ -127,8 +127,8 @@ int insert_sensor_from_sbuffer(DBCONN *conn, sbuffer_t **buffer){
     do{
         res = sbuffer_read(*buffer,data,SBUFFER_SENSORDB);
         if(res == SBUFFER_NO_DATA || res == SBUFFER_FINISHED){
-            if(sbuffer_alive(*buffer)){ 		// If buffer is still being updated, wait for new value
-                usleep(1);				//TODO: not most efficient way, condition variable is better
+            if(sbuffer_alive(*buffer)){ 		// If buffer is still being updated, keep doing loop
+/*TODO*/printf("Sensor_db empty\n");
                 continue;
             }
             else break;
