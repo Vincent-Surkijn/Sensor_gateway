@@ -17,10 +17,11 @@
 #define TABLE_NAME SensorData		// The name of the table of the sensor_db
 #endif
 
+#define MAX_MSG 200			// The maximum size for a log message
 #define DBCONN sqlite3			// For the type of the db connection in sensor_db
 #define WAIT_TIME 5			// The amount of time in seconds the program will wait between connection attempts
 #define CONN_TRIES 3			// The amount of times the program will try to connect to the database
-#define FIFO_NAME "the_FIFO"		// The name of the FIFO
+#define FIFO_NAME "logFifo"		// The name of the FIFO
 #define LOG_NAME "sensor_gateway.log"	// The name of the log file
 
 #include <stdint.h>

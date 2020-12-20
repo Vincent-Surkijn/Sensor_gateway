@@ -130,7 +130,7 @@ void read_fifo(){
     FILE *log_file;
     FILE *fifo;
     int res;
-    char msg[200];	// Make sure it is big enough for all the messages
+    char msg[MAX_MSG];	// Make sure it is big enough for all the messages
     int seq_nr = 0;
 //    char *log_buff;
 
@@ -146,9 +146,9 @@ void read_fifo(){
 
     char *str_result;
     do{
-	str_result = fgets(msg, 200, fifo);
+	str_result = fgets(msg, MAX_MSG, fifo);
 	if ( str_result != NULL ){
-	    fprintf(log_file,"%d: (@%ld) %s",seq_nr,time(NULL),msg);
+	    fprintf(log_file,"%d%ld%s",seq_nr,time(NULL),msg);
 	    seq_nr++;
 	}
     }while(strcmp(msg, "Log process has ended\n")!=0);

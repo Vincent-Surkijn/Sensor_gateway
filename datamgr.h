@@ -128,7 +128,7 @@ void datamgr_free();
  * \param sensor_id the sensor id to look for
  * \return the corresponding room id
  */
-uint16_t datamgr_get_room_id(sensor_id_t sensor_id);
+room_id_t datamgr_get_room_id(sensor_id_t sensor_id);
 
 /**
  * Gets the running AVG of a certain senor ID (if less then RUN_AVG_LENGTH measurements are recorded the avg is 0)
@@ -144,7 +144,7 @@ sensor_value_t datamgr_get_avg(sensor_id_t sensor_id);
  * \param sensor_id the sensor id to look for
  * \return the last modified timestamp for the given sensor
  */
-time_t datamgr_get_last_modified(sensor_id_t sensor_id);
+sensor_ts_t datamgr_get_last_modified(sensor_id_t sensor_id);
 
 /**
  *  Return the total amount of unique sensor ID's recorded by the datamgr

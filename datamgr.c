@@ -143,7 +143,7 @@ void datamgr_update_value_array(int index, double value){
     sensor->values[(sensor->amount)%(RUN_AVG_LENGTH)] = value;
 }
 
-uint16_t datamgr_get_room_id(sensor_id_t sensor_id){
+room_id_t datamgr_get_room_id(sensor_id_t sensor_id){
     int size = dpl_size(list);
     if(size==-1){      						// list is NULL
 	ERROR_HANDLER(true, DATAMGR_INVALID_ERROR);
@@ -163,7 +163,7 @@ uint16_t datamgr_get_room_id(sensor_id_t sensor_id){
     return -1;
 }
 
-time_t datamgr_get_last_modified(sensor_id_t sensor_id){
+sensor_ts_t datamgr_get_last_modified(sensor_id_t sensor_id){
     int index = datamgr_get_index_of_sensor_id(sensor_id);
     if(index == -1)     return 0;       // Invalid return
     sensor_data_t *sensor = dpl_get_element_at_index(list, index);

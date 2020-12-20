@@ -105,7 +105,7 @@ int insert_sensor(DBCONN *conn, sensor_id_t id, sensor_value_t value, sensor_ts_
         sqlite3_bind_double(res, idx, value);
 
         idx = sqlite3_bind_parameter_index(res, "@ts");
-        time_t val_ts = ts;
+        sensor_ts_t val_ts = ts;
 	sqlite3_bind_int64(res, idx, val_ts);
     }
     else {
